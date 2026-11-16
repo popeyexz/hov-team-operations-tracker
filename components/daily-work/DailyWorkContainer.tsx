@@ -337,7 +337,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
       {/* Filter Pills & Search */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Status Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1.5 sm:pb-0 scrollbar-none touch-pan-x -webkit-overflow-scrolling-touch py-1">
           {[
             { id: 'all', label: 'All Items' },
             { id: 'active', label: 'Active Work' },
@@ -359,7 +359,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
             <button
               key={pill.id}
               onClick={() => setStatusFilter(pill.id)}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer min-h-[38px] ${
                 statusFilter === pill.id
                   ? 'bg-[#F4AEBE] text-[#03153D] border-[#F4AEBE] shadow-[0_2px_14px_rgba(244,174,190,0.4)] font-bold'
                   : 'bg-[#020B20]/80 text-[#F4AEBE]/80 border-[#F4AEBE]/20 hover:text-white hover:border-[#F4AEBE]/40'
@@ -526,6 +526,21 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
           })}
         </div>
       )}
+
+      {/* Mobile Ergonomic Floating Action Button (Fitts's Law Thumb Zone) */}
+      <button
+        onClick={() => {
+          setSelectedVentureForTask(ventures[0]?.id || '');
+          setSelectedObjectiveForTask('');
+          setSelectedKeyResultForTask('');
+          setIsAddActionModalOpen(true);
+        }}
+        className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-gradient-to-tr from-[#F4AEBE] to-[#f7bac8] text-[#03153D] flex items-center justify-center shadow-[0_8px_28px_rgba(244,174,190,0.65)] border-2 border-white/60 active:scale-95 transition-all cursor-pointer"
+        aria-label="Create Action Item"
+        title="Quick Add Task"
+      >
+        <Plus className="w-6 h-6 stroke-[2.5]" />
+      </button>
 
       {/* Modals */}
       <VentureDocumentsDrawer

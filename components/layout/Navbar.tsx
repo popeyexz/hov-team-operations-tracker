@@ -8,6 +8,7 @@ import { NotificationBell } from '../notifications/NotificationBell';
 import { EmailPromptModal } from '../auth/EmailPromptModal';
 import { AddMemberModal } from '../auth/AddMemberModal';
 import { NetflixAvatar } from '../auth/NetflixAvatar';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import {
   Briefcase,
   Calendar,
@@ -146,6 +147,9 @@ export function Navbar() {
                 </select>
               </div>
             )}
+
+            {/* Theme Toggle (Light / Dark) */}
+            <ThemeToggle />
 
             {/* Notification Center */}
             {!isHomePage && activeProfile && <NotificationBell />}
@@ -302,6 +306,10 @@ export function Navbar() {
                     <Mail className="w-4 h-4 text-[#F4AEBE]" />
                     <span>Update Alert Email</span>
                   </button>
+
+                  <div className="px-3.5 py-1">
+                    <ThemeToggle showLabel className="w-full justify-start py-2.5 px-3.5" />
+                  </div>
 
                   <button
                     onClick={() => {

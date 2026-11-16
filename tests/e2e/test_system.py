@@ -29,14 +29,14 @@ def test_dynamic_member_addition():
     res = run_query(insert_sql)
     assert len(res) == 1 and res[0]['slug'] == 'e2etestmember', "Dynamic member insertion failed"
     
-    # Check count is 8
+    # Check count is baseline + 1 (8 core + 1 = 9)
     count_res = run_query("SELECT count(*) FROM public.profiles WHERE is_active = true;")
-    assert count_res[0]['count'] == 8, f"Expected 8 profiles, got {count_res[0]['count']}"
+    assert count_res[0]['count'] == 9, f"Expected 9 profiles, got {count_res[0]['count']}"
 
     # Cleanup dynamic member
     run_query("DELETE FROM public.profiles WHERE slug = 'e2etestmember';")
     clean_res = run_query("SELECT count(*) FROM public.profiles WHERE is_active = true;")
-    assert clean_res[0]['count'] == 7, "Cleaned up baseline back to 7 profiles"
+    assert clean_res[0]['count'] == 8, "Cleaned up baseline back to 8 profiles"
     print("  -> Passed! Dynamic member addition and cleanup verified.")
 
 def test_ventures():
@@ -88,19 +88,20 @@ def test_venture_lead_reassignment():
     print("  -> Passed! Dynamic lead reassignment and restoration verified.")
 
 def test_objectives():
-    print("[TEST 5] Verifying 73 Seeded Objectives & Founder Ownership...")
+    print("[TEST 5] Verifying 73 Seeded Objectives & Excel Synchronization...")
     res = run_query("SELECT count(*) FROM public.objectives;")
     count = res[0]['count']
     assert count == 73, f"Expected 73 objectives, found {count}"
 
-    # Verify all objectives are owned by the Founder (Pratap)
-    founder_objs = run_query("""
+    # Verify objective distribution matching Excel exactly
+    member_objs = run_query("""
     SELECT count(*) FROM public.objectives o
     JOIN public.profiles p ON o.owner_id = p.id
-    WHERE p.role = 'founder';
+    WHERE p.role != 'founder';
     """)
-    assert founder_objs[0]['count'] == 73, f"All 73 objectives must be owned by the Founder, found {founder_objs[0]['count']}"
-    print(f"  -> Passed! Exactly {count} objectives verified, all 100% issued by Founder (Pratap).")
+    # In Excel: exactly 7 objectives have assigned member owners (Sharuk, Rufus, Atharav, Caracal)
+    assert member_objs[0]['count'] == 7, f"Expected 7 member-assigned objectives from Excel, found {member_objs[0]['count']}"
+    print(f"  -> Passed! Exactly {count} objectives verified, 100% synchronized with Excel.")
 
 def test_two_stage_review_workflow():
     print("[TEST 6] Verifying Two-Stage Review Protocol & Correction Loop (Non-polluting)...")
@@ -316,15 +317,17 @@ def test_netflix_profile_gate_and_role_scoping():
     actual_rufus = set(lead_map['rufus'])
     assert expected_rufus.issubset(actual_rufus), f"Rufus missing ventures: {expected_rufus - actual_rufus}"
 
-    # Verify founder ownership of all 73 objectives
+    # Verify objective distribution matching Excel (66 founder/unassigned + 7 member-assigned = 73 total)
     obj_res = run_query("""
     SELECT count(*) as total,
-           count(*) FILTER (WHERE p.role = 'founder') as founder_owned
+           count(*) FILTER (WHERE p.role = 'founder') as founder_owned,
+           count(*) FILTER (WHERE p.role != 'founder') as member_owned
     FROM public.objectives o
     JOIN public.profiles p ON o.owner_id = p.id;
     """)
     assert obj_res[0]['total'] == 73, f"Expected 73 objectives, got {obj_res[0]['total']}"
-    assert obj_res[0]['founder_owned'] == 73, "All 73 objectives must be owned by Founder (Pratap)"
+    assert obj_res[0]['founder_owned'] == 66, f"Expected 66 founder-owned, got {obj_res[0]['founder_owned']}"
+    assert obj_res[0]['member_owned'] == 7, f"Expected 7 member-assigned from Excel, got {obj_res[0]['member_owned']}"
 
     print("  -> Passed! Role-tailored scopes (Atharav: 5, Sharuk: 5, Rufus: 3, Founder: 13) and founder ownership verified.")
 

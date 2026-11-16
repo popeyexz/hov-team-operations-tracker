@@ -9,6 +9,7 @@ import { AddMemberModal } from './AddMemberModal';
 import { ChangeAvatarModal } from './ChangeAvatarModal';
 import { Profile } from '@/lib/types';
 import { Plus, Camera, Sparkles } from 'lucide-react';
+import { ThemeToggle } from '../ui/ThemeToggle';
 
 export function ProfileGrid() {
   const router = useRouter();
@@ -132,6 +133,8 @@ export function ProfileGrid() {
         >
           {isManageMode ? 'Done' : 'Manage Profiles'}
         </button>
+
+        <ThemeToggle showLabel className="px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider font-bold" />
       </div>
 
       {/* Modals */}

@@ -360,7 +360,7 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
           <span>2 · Progress by Venture (13 Ventures Portfolio)</span>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl liquid-card shadow-xl border border-white/[0.08]">
+        <div className="overflow-x-auto rounded-2xl liquid-card shadow-xl border border-white/[0.08] touch-pan-x -webkit-overflow-scrolling-touch">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-zinc-800 bg-zinc-950/80 text-zinc-400 font-mono uppercase tracking-wider text-[10px]">
@@ -433,7 +433,7 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
           <span>3 · Progress by Team Member (Founder Excluded)</span>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl liquid-card shadow-xl border border-white/[0.08]">
+        <div className="overflow-x-auto rounded-2xl liquid-card shadow-xl border border-white/[0.08] touch-pan-x -webkit-overflow-scrolling-touch">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-zinc-800 bg-zinc-950/80 text-zinc-400 font-mono uppercase tracking-wider text-[10px]">
@@ -500,7 +500,7 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
           <span>4 · Planning Gaps — Fill These First</span>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl liquid-card shadow-xl border border-white/[0.08]">
+        <div className="overflow-x-auto rounded-2xl liquid-card shadow-xl border border-white/[0.08] touch-pan-x -webkit-overflow-scrolling-touch">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-zinc-800 bg-zinc-950/80 text-zinc-400 font-mono uppercase tracking-wider text-[10px]">
@@ -551,7 +551,7 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
           <span>5 · Weekly Trend — Last 8 Weeks (Mon–Sun)</span>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl liquid-card shadow-xl border border-white/[0.08]">
+        <div className="overflow-x-auto rounded-2xl liquid-card shadow-xl border border-white/[0.08] touch-pan-x -webkit-overflow-scrolling-touch">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-zinc-800 bg-zinc-950/80 text-zinc-400 font-mono uppercase tracking-wider text-[10px]">
