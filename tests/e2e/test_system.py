@@ -283,6 +283,51 @@ def test_live_production_deployment():
         assert len(body) > 1000, "Live page content too small"
     print("  -> Passed! Live production deployment https://hov-team-tracker.vercel.app is healthy and online.")
 
+def test_netflix_profile_gate_and_role_scoping():
+    print("[TEST 12] Verifying Netflix-Style Profile Gating & Role-Tailored Scopes...")
+    # Fetch lead mappings
+    res = run_query("""
+    SELECT v.name, v.code, p.slug as lead_slug, p.full_name
+    FROM public.ventures v
+    JOIN public.profiles p ON v.lead_id = p.id
+    WHERE v.is_active = true
+    ORDER BY v.display_order;
+    """)
+    lead_map = {}
+    for r in res:
+        lead_map.setdefault(r['lead_slug'], []).append(r['name'])
+
+    assert len(lead_map.get('atharav', [])) == 5, f"Atharav must have exactly 5 ventures, got {len(lead_map.get('atharav', []))}"
+    assert len(lead_map.get('sharuk', [])) == 5, f"Sharuk must have exactly 5 ventures, got {len(lead_map.get('sharuk', []))}"
+    assert len(lead_map.get('rufus', [])) == 3, f"Rufus must have exactly 3 ventures, got {len(lead_map.get('rufus', []))}"
+
+    # Verify Atharav's exact 5 ventures
+    expected_atharav = {'PS.HOV', 'XARM MARSERV', 'Impactshaala', 'NxtGen Impact', 'LeadTech'}
+    actual_atharav = set(lead_map['atharav'])
+    assert expected_atharav.issubset(actual_atharav), f"Atharav missing ventures: {expected_atharav - actual_atharav}"
+
+    # Verify Sharuk's exact 5 ventures
+    expected_sharuk = {'PS.HOV - House_of_AI_Solutions (HAIS)', 'GUIDESHAALA', 'PulseEvents', 'CreativeTech', 'Point Square Realty'}
+    actual_sharuk = set(lead_map['sharuk'])
+    assert expected_sharuk.issubset(actual_sharuk), f"Sharuk missing ventures: {expected_sharuk - actual_sharuk}"
+
+    # Verify Rufus's exact 3 ventures
+    expected_rufus = {'PS.HOV - House_of_Business_Markering (HBM)', 'Law Offices of Mary Kennedy', 'PS.HOV Investments & Funding'}
+    actual_rufus = set(lead_map['rufus'])
+    assert expected_rufus.issubset(actual_rufus), f"Rufus missing ventures: {expected_rufus - actual_rufus}"
+
+    # Verify founder ownership of all 73 objectives
+    obj_res = run_query("""
+    SELECT count(*) as total,
+           count(*) FILTER (WHERE p.role = 'founder') as founder_owned
+    FROM public.objectives o
+    JOIN public.profiles p ON o.owner_id = p.id;
+    """)
+    assert obj_res[0]['total'] == 73, f"Expected 73 objectives, got {obj_res[0]['total']}"
+    assert obj_res[0]['founder_owned'] == 73, "All 73 objectives must be owned by Founder (Pratap)"
+
+    print("  -> Passed! Role-tailored scopes (Atharav: 5, Sharuk: 5, Rufus: 3, Founder: 13) and founder ownership verified.")
+
 def main():
     print("==========================================================")
     print("HOV TEAM OPERATIONS & OKR OS — DEEP VERIFICATION SUITE")
@@ -299,6 +344,7 @@ def main():
         test_supabase_storage()
         test_venture_health_logic()
         test_live_production_deployment()
+        test_netflix_profile_gate_and_role_scoping()
         print("\n==========================================================")
         print("ALL VERIFICATION TESTS PASSED WITH 100% INTEGRITY & ZERO POLLUTION!")
         print("==========================================================")

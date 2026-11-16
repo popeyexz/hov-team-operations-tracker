@@ -83,32 +83,34 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Desktop Navigation Tabs (Tactile Segmented Control) */}
-          <nav className="hidden md:flex items-center bg-zinc-900/90 p-0.5 rounded-lg border border-zinc-800">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname.startsWith(link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 ${
-                    isActive
-                      ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-sm'
-                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{link.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
+          {/* Desktop Navigation Tabs (Tactile Segmented Control) - Only visible when an operator profile is selected */}
+          {activeProfile && (
+            <nav className="hidden md:flex items-center bg-zinc-900/90 p-0.5 rounded-lg border border-zinc-800 animate-in fade-in duration-150">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                const isActive = pathname.startsWith(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 ${
+                      isActive
+                        ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-sm'
+                        : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
 
           {/* Right Header Controls */}
           <div className="flex items-center gap-2.5">
             {/* Founder "View As" Dropdown */}
-            {isFounder && (
+            {activeProfile && isFounder && (
               <div className="hidden sm:block relative">
                 <select
                   value={impersonatedMember?.id || 'master'}
@@ -137,8 +139,8 @@ export function Navbar() {
               </div>
             )}
 
-            {/* Notification Center */}
-            <NotificationBell />
+            {/* Notification Center - only active when profile selected */}
+            {activeProfile && <NotificationBell />}
 
             {/* Active Profile Switcher */}
             {activeProfile ? (
@@ -245,62 +247,76 @@ export function Navbar() {
         {/* Mobile menu drawer */}
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-zinc-800 px-4 py-3 bg-[#09090b] space-y-2">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname.startsWith(link.href);
-              return (
+            {activeProfile ? (
+              <>
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = pathname.startsWith(link.href);
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium ${
+                        isActive
+                          ? 'bg-zinc-800 text-white'
+                          : 'text-zinc-400 hover:bg-zinc-900'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{link.label}</span>
+                    </Link>
+                  );
+                })}
+
+                <div className="border-t border-zinc-800 pt-2 mt-2 space-y-1">
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsAddMemberModalOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 rounded-lg text-left"
+                  >
+                    <UserPlus className="w-4 h-4 text-zinc-400" />
+                    <span>Add Team Member</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsEmailModalOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 rounded-lg text-left"
+                  >
+                    <Mail className="w-4 h-4 text-zinc-400" />
+                    <span>Update Alert Email</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setActiveProfile(null);
+                      setImpersonatedMember(null);
+                      router.push('/');
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-rose-400 hover:bg-rose-500/10 rounded-lg text-left"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Switch Profile</span>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="py-2 text-center">
                 <Link
-                  key={link.href}
-                  href={link.href}
+                  href="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium ${
-                    isActive
-                      ? 'bg-zinc-800 text-white'
-                      : 'text-zinc-400 hover:bg-zinc-900'
-                  }`}
+                  className="inline-block w-full py-2 rounded-lg bg-zinc-100 text-zinc-950 font-semibold text-xs"
                 >
-                  <Icon className="w-4 h-4" />
-                  <span>{link.label}</span>
+                  Select Operator Profile
                 </Link>
-              );
-            })}
-
-            <div className="border-t border-zinc-800 pt-2 mt-2 space-y-1">
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsAddMemberModalOpen(true);
-                }}
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 rounded-lg"
-              >
-                <UserPlus className="w-4 h-4 text-zinc-400" />
-                <span>Add Team Member</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsEmailModalOpen(true);
-                }}
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 rounded-lg"
-              >
-                <Mail className="w-4 h-4 text-zinc-400" />
-                <span>Update Alert Email</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setActiveProfile(null);
-                  setImpersonatedMember(null);
-                  router.push('/');
-                }}
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-rose-400 hover:bg-rose-500/10 rounded-lg"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Switch Profile</span>
-              </button>
-            </div>
+              </div>
+            )}
           </div>
         )}
       </header>

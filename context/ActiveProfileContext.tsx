@@ -13,6 +13,7 @@ interface ActiveProfileContextType {
   effectiveProfile: Profile | null;
   profiles: Profile[];
   refreshProfiles: () => Promise<void>;
+  isLoading: boolean;
   notifications: InAppNotification[];
   unreadCount: number;
   markNotificationRead: (id: string) => Promise<void>;
@@ -31,6 +32,7 @@ export function ActiveProfileProvider({ children }: { children: React.ReactNode 
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load profiles on mount
   const refreshProfiles = async () => {
@@ -47,6 +49,8 @@ export function ActiveProfileProvider({ children }: { children: React.ReactNode 
       }
     } catch (e) {
       console.error('Failed to load profiles:', e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,8 +64,10 @@ export function ActiveProfileProvider({ children }: { children: React.ReactNode 
     if (typeof window !== 'undefined') {
       if (profile) {
         localStorage.setItem('hov_active_slug', profile.slug);
+        document.cookie = `hov_active_slug=${profile.slug}; path=/; max-age=2592000; SameSite=Lax`;
       } else {
         localStorage.removeItem('hov_active_slug');
+        document.cookie = 'hov_active_slug=; path=/; max-age=0; SameSite=Lax';
       }
     }
   };
@@ -120,6 +126,7 @@ export function ActiveProfileProvider({ children }: { children: React.ReactNode 
         effectiveProfile,
         profiles,
         refreshProfiles,
+        isLoading,
         notifications,
         unreadCount,
         markNotificationRead,

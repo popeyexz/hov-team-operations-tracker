@@ -35,6 +35,7 @@ import {
   Activity,
   CheckCheck,
   Compass,
+  Crown,
 } from 'lucide-react';
 import { updateVentureLead, deleteActionItem } from '@/app/actions/work-actions';
 import { VentureDocumentsDrawer } from '../venture/VentureDocumentsDrawer';
@@ -73,8 +74,10 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
   // View mode: 'by_venture' | 'by_lead'
   const [viewMode, setViewMode] = useState<'by_venture' | 'by_lead'>('by_venture');
 
-  // Filter mode: 'all' | 'my_ventures'
-  const [scopeFilter, setScopeFilter] = useState<'all' | 'my_ventures'>('all');
+  // Filter mode: 'all' | 'my_ventures' - defaults to 'my_ventures' for non-founder leads!
+  const [scopeFilter, setScopeFilter] = useState<'all' | 'my_ventures'>(
+    isFounder ? 'all' : 'my_ventures'
+  );
 
   // Status Filter Pill
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -82,14 +85,32 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
   // Search Query
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Expanded ventures and objectives
+  // Expanded ventures and objectives: auto-expand assigned ventures for leads
   const [expandedVentures, setExpandedVentures] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
     ventures.forEach((v, idx) => {
-      init[v.id] = idx === 0; // expand first venture by default
+      if (isFounder) {
+        init[v.id] = idx < 2;
+      } else {
+        init[v.id] = myVentureIds.includes(v.id);
+      }
     });
     return init;
   });
+
+  // Keep scope and auto-expansion aligned when profile or impersonation changes
+  React.useEffect(() => {
+    if (!isFounder) {
+      setScopeFilter('my_ventures');
+      setExpandedVentures((prev) => {
+        const next = { ...prev };
+        myVentureIds.forEach((id) => {
+          next[id] = true;
+        });
+        return next;
+      });
+    }
+  }, [effectiveProfile?.id, isFounder, myVentureIds]);
 
   const [expandedObjectives, setExpandedObjectives] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
@@ -268,43 +289,43 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
 
         {/* Live Mini-Metrics Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-5 border-t border-zinc-800/80">
-          <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+          <div className="p-3 rounded-lg bg-zinc-950/70 border border-zinc-800/80 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300">
               <Briefcase className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-base font-bold text-white font-mono">{ventures.length}</div>
-              <div className="text-[10px] text-slate-400 font-medium">Ventures Portfolio</div>
+              <div className="text-sm font-semibold text-zinc-100 font-mono">{ventures.length}</div>
+              <div className="text-[10px] text-zinc-500 font-mono">Ventures Portfolio</div>
             </div>
           </div>
 
-          <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+          <div className="p-3 rounded-lg bg-zinc-950/70 border border-zinc-800/80 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300">
               <Target className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-base font-bold text-white font-mono">{objectives.length}</div>
-              <div className="text-[10px] text-slate-400 font-medium">Seeded Objectives</div>
+              <div className="text-sm font-semibold text-zinc-100 font-mono">{objectives.length}</div>
+              <div className="text-[10px] text-zinc-500 font-mono">Seeded Objectives</div>
             </div>
           </div>
 
-          <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="p-3 rounded-lg bg-zinc-950/70 border border-zinc-800/80 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-emerald-400">
               <CheckCheck className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-base font-bold text-emerald-300 font-mono">{completedCount}</div>
-              <div className="text-[10px] text-slate-400 font-medium">Completed Items</div>
+              <div className="text-sm font-semibold text-emerald-400 font-mono">{completedCount}</div>
+              <div className="text-[10px] text-zinc-500 font-mono">Completed Items</div>
             </div>
           </div>
 
-          <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+          <div className="p-3 rounded-lg bg-zinc-950/70 border border-zinc-800/80 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-400">
               <Clock className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-base font-bold text-amber-300 font-mono">{submittedCount + needsWorkCount}</div>
-              <div className="text-[10px] text-slate-400 font-medium">Review Pipeline</div>
+              <div className="text-sm font-semibold text-amber-400 font-mono">{submittedCount + needsWorkCount}</div>
+              <div className="text-[10px] text-zinc-500 font-mono">Review Pipeline</div>
             </div>
           </div>
         </div>
@@ -370,20 +391,19 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
 
       {/* Main Content Area */}
       {filteredVentures.length === 0 ? (
-        <div className="p-10 sm:p-16 rounded-3xl glass-panel border border-white/10 text-center space-y-4 shadow-xl">
-          <div className="w-16 h-16 rounded-3xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/10">
-            <Briefcase className="w-8 h-8" />
+        <div className="p-8 sm:p-12 rounded-xl bg-zinc-900/40 border border-zinc-800 text-center space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 mx-auto flex items-center justify-center">
+            <Briefcase className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">No Assigned Ventures Found</h3>
-            <p className="text-xs text-slate-400 mt-1.5 max-w-md mx-auto leading-relaxed">
-              You currently have no action items or OKRs assigned under this scope filter.
-              Switch to viewing all 13 ventures to explore the active portfolio.
+            <h3 className="text-base font-semibold text-zinc-100">No Assigned Ventures Under Scope</h3>
+            <p className="text-xs text-zinc-400 mt-1 max-w-md mx-auto leading-relaxed">
+              You currently have no direct lead ownership under this scope. Switch to viewing all 13 portfolio ventures.
             </p>
           </div>
           <button
             onClick={() => setScopeFilter('all')}
-            className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-bold shadow-lg shadow-indigo-500/25 border border-white/20 transition-all cursor-pointer"
+            className="px-4 py-2 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm transition-all cursor-pointer"
           >
             View All 13 Ventures
           </button>
@@ -439,18 +459,18 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
 
             return (
               <div key={lead.id} className="space-y-4">
-                <div className="flex items-center gap-3.5 pb-3 border-b border-white/[0.08]">
-                  <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 border border-white/20 flex items-center justify-center text-white font-black text-xs shadow-md shadow-indigo-500/20">
+                <div className="flex items-center gap-3.5 pb-3 border-b border-zinc-800">
+                  <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-200 font-mono font-bold text-xs">
                     {lead.name.charAt(0)}
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                    <h2 className="text-base font-semibold text-zinc-100 tracking-tight flex items-center gap-2">
                       {lead.name}
-                      <span className="text-[10px] font-mono text-indigo-400 bg-indigo-950/60 px-2 py-0.5 rounded-full border border-indigo-800/40">
+                      <span className="text-[10px] font-mono text-zinc-300 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
                         {leadVentures.length} {leadVentures.length === 1 ? 'Venture' : 'Ventures'}
                       </span>
                     </h2>
-                    <p className="text-xs text-slate-400">{lead.title}</p>
+                    <p className="text-xs text-zinc-400 font-mono">{lead.title}</p>
                   </div>
                 </div>
 
@@ -730,19 +750,19 @@ function VentureSection({
 
       {/* Accordion Body: OKRs & Action Items */}
       {isExpanded && (
-        <div className="p-4 sm:p-6 border-t border-white/[0.06] space-y-6 bg-black/30">
+        <div className="p-4 sm:p-5 border-t border-zinc-800 space-y-5 bg-zinc-950/60">
           {/* Objectives Hierarchy */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
-              <span className="flex items-center gap-1.5 text-indigo-300">
-                <Target className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-zinc-400 px-1">
+              <span className="flex items-center gap-1.5 text-zinc-300 font-semibold">
+                <Target className="w-3.5 h-3.5 text-zinc-400" />
                 Strategic Objectives ({objectives.length})
               </span>
             </div>
 
             {objectives.length === 0 ? (
-              <div className="text-xs text-slate-500 py-4 text-center bg-white/[0.02] rounded-2xl border border-white/5">
-                No objectives created for this venture yet.
+              <div className="text-xs text-zinc-500 py-4 text-center bg-zinc-900/30 rounded-lg border border-zinc-800/60 font-mono">
+                No strategic objectives issued for this venture yet.
               </div>
             ) : (
               objectives.map((obj) => {
@@ -753,25 +773,25 @@ function VentureSection({
                 return (
                   <div
                     key={obj.id}
-                    className="rounded-2xl glass-card border border-white/[0.07] overflow-hidden shadow-sm transition-all hover:border-white/15"
+                    className="rounded-xl bg-zinc-900/40 border border-zinc-800/80 overflow-hidden transition-all hover:border-zinc-700/80"
                   >
                     {/* Objective Title Row */}
                     <div
-                      className="p-3.5 flex items-start sm:items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.04] transition-colors"
+                      className="p-3 sm:p-3.5 flex items-start sm:items-center justify-between gap-3 cursor-pointer hover:bg-zinc-800/30 transition-colors"
                       onClick={() => toggleObjective(obj.id)}
                     >
-                      <div className="flex items-start sm:items-center gap-3 min-w-0">
-                        <button className="mt-0.5 sm:mt-0 text-slate-400 hover:text-white transition-colors">
+                      <div className="flex items-start sm:items-center gap-2.5 min-w-0">
+                        <button className="mt-0.5 sm:mt-0 text-zinc-500 hover:text-zinc-200 transition-colors">
                           {isObjExpanded ? (
                             <ChevronDown className="w-4 h-4" />
                           ) : (
                             <ChevronRight className="w-4 h-4" />
                           )}
                         </button>
-                        <span className="font-mono text-xs font-bold text-indigo-300 bg-indigo-950/70 px-2 py-0.5 rounded border border-indigo-700/50 shrink-0">
+                        <span className="font-mono text-xs font-semibold text-zinc-300 bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-700 shrink-0">
                           #{obj.sl_no}
                         </span>
-                        <h4 className="text-xs sm:text-sm font-semibold text-slate-100 leading-snug">
+                        <h4 className="text-xs sm:text-sm font-medium text-zinc-100 leading-snug">
                           {obj.title}
                         </h4>
                       </div>
@@ -779,33 +799,33 @@ function VentureSection({
                       <div className="flex items-center gap-2 shrink-0">
                         {/* Status Badge */}
                         <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
+                          className={`px-2 py-0.5 rounded text-[10px] font-mono border ${
                             obj.status === 'completed'
                               ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                               : obj.status === 'blocker'
-                              ? 'bg-red-500/15 text-red-400 border-red-500/30'
+                              ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
                               : obj.status === 'on_hold'
                               ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
                               : obj.status === 'dropped'
-                              ? 'bg-slate-500/10 text-slate-400 border-slate-500/20'
+                              ? 'bg-zinc-800 text-zinc-400 border-zinc-700'
                               : 'bg-sky-500/10 text-sky-400 border-sky-500/20'
                           }`}
                         >
                           {obj.status.replace('_', ' ')}
                         </span>
 
-                        {obj.owner && (
-                          <span className="hidden sm:inline-block text-[11px] text-zinc-400 font-mono">
-                            By: <span className="text-zinc-200 font-medium">{obj.owner.full_name} (Founder)</span>
-                          </span>
-                        )}
+                        {/* Founder Ownership Badge */}
+                        <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                          <Crown className="w-3 h-3 text-amber-400" />
+                          <span>By: Pratap (Founder)</span>
+                        </span>
 
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             onAddKr(obj);
                           }}
-                          className="px-2.5 py-1 rounded-xl glass-pill hover:bg-white/10 text-[10px] font-bold text-teal-300 flex items-center gap-1 cursor-pointer border border-teal-500/30 shadow-sm"
+                          className="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-[10px] font-mono text-zinc-300 flex items-center gap-1 cursor-pointer border border-zinc-800 transition-colors"
                         >
                           <Plus className="w-2.5 h-2.5" />
                           <span>KR</span>
@@ -815,38 +835,38 @@ function VentureSection({
 
                     {/* Collapsible Key Results & Child Tasks */}
                     {isObjExpanded && (
-                      <div className="p-3.5 bg-black/40 border-t border-white/5 space-y-3">
+                      <div className="p-3.5 bg-zinc-950/80 border-t border-zinc-800/80 space-y-3">
                         {/* Key Results */}
                         {objKrs.length > 0 && (
                           <div className="space-y-2">
-                            <div className="text-[10px] uppercase font-bold tracking-wider text-teal-400 flex items-center gap-1.5">
-                              <Compass className="w-3 h-3 text-teal-400" />
+                            <div className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 flex items-center gap-1.5">
+                              <Compass className="w-3 h-3 text-zinc-400" />
                               Key Results ({objKrs.length})
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                               {objKrs.map((kr) => (
                                 <div
                                   key={kr.id}
-                                  className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 text-xs flex items-start justify-between gap-2 shadow-sm"
+                                  className="p-3 rounded-lg bg-zinc-900/60 border border-zinc-800 text-xs flex items-start justify-between gap-2 shadow-sm"
                                 >
                                   <div>
-                                    <div className="font-mono text-[10px] font-bold text-teal-300">
+                                    <div className="font-mono text-[10px] font-semibold text-zinc-400">
                                       KR {kr.kr_code}
                                     </div>
-                                    <div className="font-medium text-slate-200 mt-1 leading-snug">
+                                    <div className="font-medium text-zinc-200 mt-1 leading-snug">
                                       {kr.title}
                                     </div>
                                     {kr.target_measure && (
-                                      <div className="text-[11px] text-slate-400 mt-1 font-mono">
+                                      <div className="text-[11px] text-zinc-500 mt-1 font-mono">
                                         Target: {kr.target_measure}
                                       </div>
                                     )}
                                   </div>
                                   <span
-                                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold capitalize border ${
+                                    className={`px-2 py-0.5 rounded text-[9px] font-mono uppercase border ${
                                       kr.status === 'completed'
-                                        ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30'
-                                        : 'text-slate-400 bg-white/5 border-white/10'
+                                        ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                                        : 'text-zinc-400 bg-zinc-800 border-zinc-700'
                                     }`}
                                   >
                                     {kr.status}
@@ -860,7 +880,7 @@ function VentureSection({
                         {/* Associated Actions */}
                         {objActions.length > 0 && (
                           <div className="space-y-2 pt-2">
-                            <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                            <div className="text-[10px] uppercase font-mono tracking-wider text-zinc-400">
                               Linked Action Items ({objActions.length})
                             </div>
                             {objActions.map((action) => (
@@ -885,17 +905,17 @@ function VentureSection({
             )}
           </div>
 
-          {/* Standalone Action Items (not linked to an objective or venture-wide) */}
+          {/* Standalone Action Items */}
           <div className="space-y-2 pt-2">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
-              <span className="flex items-center gap-1.5 text-sky-300">
-                <Briefcase className="w-3.5 h-3.5 text-sky-400" />
+            <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-zinc-400 px-1">
+              <span className="flex items-center gap-1.5 text-zinc-300 font-semibold">
+                <Briefcase className="w-3.5 h-3.5 text-zinc-400" />
                 All Venture Action Items ({visibleActions.length})
               </span>
             </div>
 
             {visibleActions.length === 0 ? (
-              <div className="text-xs text-slate-500 py-3 text-center bg-white/[0.02] rounded-2xl border border-white/5">
+              <div className="text-xs text-zinc-500 py-3 text-center bg-zinc-900/30 rounded-lg border border-zinc-800/60 font-mono">
                 No action items match the selected filter.
               </div>
             ) : (
@@ -949,37 +969,37 @@ function ActionItemCard({
       case 'submitted_for_review':
         return {
           label: 'Submitted for Review',
-          color: 'bg-amber-500/15 text-amber-300 border-amber-500/30 led-amber',
+          color: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
           icon: Clock,
         };
       case 'needs_work':
         return {
           label: 'Needs Work',
-          color: 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse led-rose',
+          color: 'bg-rose-500/10 text-rose-300 border-rose-500/20',
           icon: AlertCircle,
         };
       case 'completed':
         return {
           label: 'Completed',
-          color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 led-emerald',
+          color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
           icon: CheckCircle2,
         };
       case 'in_progress':
         return {
           label: 'In Progress',
-          color: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
+          color: 'bg-sky-500/10 text-sky-300 border-sky-500/20',
           icon: Clock,
         };
       case 'blocker':
         return {
           label: 'Blocker',
-          color: 'bg-red-500/20 text-red-300 border-red-500/30 led-rose',
+          color: 'bg-red-500/15 text-red-400 border-red-500/30',
           icon: AlertTriangle,
         };
       default:
         return {
           label: 'Not Started',
-          color: 'bg-white/10 text-slate-300 border-white/10',
+          color: 'bg-zinc-800 text-zinc-400 border-zinc-700',
           icon: Clock,
         };
     }
@@ -989,61 +1009,61 @@ function ActionItemCard({
   const StatusIcon = statusInfo.icon;
 
   return (
-    <div className="p-3.5 sm:p-4 rounded-2xl glass-card border border-white/[0.08] hover:border-white/20 transition-all duration-200 flex flex-col md:flex-row md:items-center justify-between gap-3 group shadow-sm">
+    <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/90 hover:border-zinc-700/80 transition-all duration-150 flex flex-col md:flex-row md:items-center justify-between gap-3 group shadow-sm">
       {/* Title & metadata */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span
-            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusInfo.color}`}
+            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono border ${statusInfo.color}`}
           >
             <StatusIcon className="w-3 h-3" />
             <span>{statusInfo.label}</span>
           </span>
 
           {action.is_founder_confirmed && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30 flex items-center gap-1">
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
               <Shield className="w-2.5 h-2.5" />
               Founder Confirmed
             </span>
           )}
 
           {overdue && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/30">
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-red-500/15 text-red-400 border border-red-500/30">
               Overdue
             </span>
           )}
         </div>
 
-        <h5 className="text-xs sm:text-sm font-semibold text-white mt-2 leading-snug group-hover:text-sky-200 transition-colors">
+        <h5 className="text-xs sm:text-sm font-medium text-zinc-100 mt-2 leading-snug group-hover:text-zinc-200 transition-colors">
           {action.title}
         </h5>
 
         {/* Outcome summary if available */}
         {action.outcome_achieved && (
-          <p className="text-[11px] text-slate-400 mt-1.5 italic line-clamp-2 bg-white/[0.02] p-2 rounded-xl border border-white/5">
+          <p className="text-[11px] text-zinc-400 mt-1.5 font-mono line-clamp-2 bg-zinc-950/60 p-2 rounded border border-zinc-800/60">
             Deliverable: {action.outcome_achieved}
           </p>
         )}
 
         {/* Date & Assignee metadata */}
-        <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-2.5 font-medium">
+        <div className="flex items-center gap-3 text-[11px] text-zinc-400 mt-2.5 font-mono">
           <div className="flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-slate-400" />
-            <span className={`font-mono ${overdue ? 'text-red-400 font-bold' : ''}`}>
+            <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+            <span className={overdue ? 'text-red-400 font-bold' : ''}>
               {formatDateDDMMYYYY(action.date)}
             </span>
           </div>
 
-          <span className="text-slate-600">•</span>
+          <span className="text-zinc-700">•</span>
 
           <div className="flex items-center gap-1.5">
             <div
-              className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow-sm ring-1 ring-white/20"
+              className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow-sm ring-1 ring-zinc-700"
               style={{ backgroundColor: action.assignee?.avatar_color || '#6366f1' }}
             >
               {action.assignee?.full_name?.charAt(0) || 'U'}
             </div>
-            <span className="text-slate-300">
+            <span className="text-zinc-300">
               {action.assignee?.full_name || 'Unassigned'}
             </span>
           </div>
@@ -1051,14 +1071,14 @@ function ActionItemCard({
       </div>
 
       {/* Review & Feedback Actions */}
-      <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/5">
+      <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-zinc-800/60">
         {/* Stage 1: Member Submit for Review button */}
         {(isAssignedToMe || isFounder) &&
           action.status !== 'completed' &&
           action.status !== 'submitted_for_review' && (
             <button
               onClick={onSubmitReview}
-              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-amber-600/20 hover:from-amber-500/30 hover:to-amber-600/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+              className="px-3 py-1 rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Submit for Review</span>
@@ -1069,7 +1089,7 @@ function ActionItemCard({
         {isFounder && action.status === 'submitted_for_review' && (
           <button
             onClick={onFounderReview}
-            className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 border border-white/20 animate-pulse cursor-pointer"
+            className="px-3 py-1 rounded-md bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
           >
             <Shield className="w-3.5 h-3.5" />
             <span>Founder Review</span>
@@ -1079,20 +1099,20 @@ function ActionItemCard({
         {/* Audit & Feedback Log Modal Button */}
         <button
           onClick={onOpenLogs}
-          className="p-2 rounded-xl glass-pill hover:bg-white/10 text-slate-400 hover:text-white transition-all cursor-pointer border border-white/10 shadow-sm"
+          className="p-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 transition-all cursor-pointer border border-zinc-700/60"
           title="Threaded Feedback Log"
         >
-          <MessageSquare className="w-4 h-4" />
+          <MessageSquare className="w-3.5 h-3.5" />
         </button>
 
         {/* Delete Action Item Button (for owner or Founder) */}
         {(isAssignedToMe || isFounder) && (
           <button
             onClick={onDeleteTask}
-            className="p-2 rounded-xl glass-pill hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 transition-all cursor-pointer border border-white/10"
+            className="p-1.5 rounded-md bg-zinc-800 hover:bg-rose-500/10 text-zinc-500 hover:text-rose-400 transition-all cursor-pointer border border-zinc-700/60"
             title="Delete Action Item"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3.5 h-3.5" />
           </button>
         )}
       </div>

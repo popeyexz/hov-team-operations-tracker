@@ -169,7 +169,7 @@ export function PlanTaskModal({
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-semibold text-xs shadow-lg shadow-indigo-500/20 flex items-center gap-2"
+              className="px-4 py-2 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs shadow-sm flex items-center gap-2 cursor-pointer transition-all"
             >
               {saving ? 'Saving...' : 'Add to Next Plans'}
             </button>

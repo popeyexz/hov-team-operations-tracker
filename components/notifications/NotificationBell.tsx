@@ -13,12 +13,12 @@ export function NotificationBell() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-xl glass-pill hover:bg-white/10 transition-colors text-slate-300 hover:text-white"
+        className="relative p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
         title="Notifications"
       >
-        <Bell className="w-5 h-5" />
+        <Bell className="w-4 h-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-lg animate-pulse">
+          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-lg">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -27,35 +27,35 @@ export function NotificationBell() {
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl glass-panel border border-white/15 p-4 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+          <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl bg-zinc-900 border border-zinc-800 p-3 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-100">
+            <div className="flex items-center justify-between pb-2.5 border-b border-zinc-800">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-white text-sm">Notifications</span>
+                <span className="font-semibold text-zinc-100 text-xs">Notifications</span>
                 {unreadCount > 0 && (
-                  <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                  <span className="px-1.5 py-0.2 text-[10px] font-mono rounded bg-rose-500/10 text-rose-300 border border-rose-500/20">
                     {unreadCount} unread
                   </span>
                 )}
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-xs text-slate-400 hover:text-white"
+                className="text-xs text-zinc-400 hover:text-white"
               >
                 Close
               </button>
             </div>
 
-            <div className="mt-2 max-h-80 overflow-y-auto space-y-2 divide-y divide-white/5">
+            <div className="mt-2 max-h-80 overflow-y-auto space-y-1 divide-y divide-zinc-800/60">
               {notifications.length === 0 ? (
-                <div className="py-8 text-center text-xs text-slate-400">
+                <div className="py-6 text-center text-xs text-zinc-500 font-mono">
                   No notifications yet. You're all caught up!
                 </div>
               ) : (
                 notifications.map((notif) => (
                   <div
                     key={notif.id}
-                    className={`pt-2.5 pb-2 text-xs flex items-start gap-3 transition-colors ${
-                      notif.is_read ? 'opacity-65' : 'bg-white/5 p-2 rounded-xl'
+                    className={`pt-2.5 pb-2 text-xs flex items-start gap-2.5 transition-colors ${
+                      notif.is_read ? 'opacity-60' : 'bg-zinc-800/40 p-2 rounded-lg'
                     }`}
                   >
                     <div className="mt-0.5">

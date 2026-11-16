@@ -160,41 +160,41 @@ export function NextPlansBoard({
               <div>
                 {/* Venture Code & Target Date */}
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="font-mono text-xs font-bold text-sky-300 bg-sky-950/70 px-2.5 py-0.5 rounded-lg border border-sky-800/40">
+                  <span className="font-mono text-xs font-semibold text-zinc-300 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">
                     {item.venture?.code || 'HOV'}
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300 bg-white/5 px-2.5 py-0.5 rounded-full border border-white/10">
-                    <Clock className="w-3 h-3 text-slate-400" />
+                  <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 bg-zinc-950 px-2 py-0.5 rounded border border-zinc-800">
+                    <Clock className="w-3 h-3 text-zinc-500" />
                     <span>Target: {formatDateDDMMYYYY(item.date)}</span>
                   </div>
                 </div>
 
-                <h4 className="text-sm font-bold text-white leading-snug group-hover:text-violet-200 transition-colors">
+                <h4 className="text-sm font-medium text-zinc-100 leading-snug group-hover:text-zinc-200 transition-colors">
                   {item.title}
                 </h4>
 
-                <p className="text-xs text-slate-400 mt-1 font-medium">
+                <p className="text-xs text-zinc-500 mt-1 font-mono">
                   {item.venture?.name}
                 </p>
 
                 {item.objective && (
-                  <div className="mt-3 p-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-[11px] text-slate-300 flex items-start gap-2">
-                    <span className="font-mono font-bold text-violet-400">Obj #{item.objective.sl_no}</span>
+                  <div className="mt-3 p-2 rounded-lg bg-zinc-950/80 border border-zinc-800 text-[11px] text-zinc-300 flex items-start gap-2">
+                    <span className="font-mono font-medium text-zinc-400">Obj #{item.objective.sl_no}</span>
                     <span className="truncate">{item.objective.title}</span>
                   </div>
                 )}
               </div>
 
               {/* Assignee & Promote Button */}
-              <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between gap-2">
+              <div className="mt-5 pt-3.5 border-t border-zinc-800/80 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-sm ring-1 ring-white/20"
+                    className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-sm ring-1 ring-zinc-700"
                     style={{ backgroundColor: item.assignee?.avatar_color || '#6366f1' }}
                   >
                     {item.assignee?.full_name?.charAt(0) || 'U'}
                   </div>
-                  <span className="text-xs text-slate-300 font-medium">
+                  <span className="text-xs text-zinc-300 font-medium">
                     {item.assignee?.full_name || 'Unassigned'}
                   </span>
                 </div>
@@ -202,7 +202,7 @@ export function NextPlansBoard({
                 <button
                   onClick={() => handlePromote(item)}
                   disabled={promotingId === item.id}
-                  className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600/30 to-teal-600/30 hover:from-emerald-600/50 hover:to-teal-600/50 text-emerald-300 border border-emerald-500/40 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer disabled:opacity-50"
+                  className="px-3 py-1 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
                   title="Move to Tab 1 (Daily Work)"
                 >
                   <Send className="w-3 h-3" />
