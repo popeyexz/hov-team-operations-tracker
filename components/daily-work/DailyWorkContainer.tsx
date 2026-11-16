@@ -7,13 +7,11 @@ import {
   Objective,
   Profile,
   Venture,
-  VentureHealth,
 } from '@/lib/types';
 import { useActiveProfile } from '@/context/ActiveProfileContext';
 import {
   formatDateDDMMYYYY,
   getHealthBadge,
-  isDueWithin7Days,
   isOverdue,
 } from '@/lib/utils';
 import {
@@ -26,17 +24,17 @@ import {
   Paperclip,
   Plus,
   Search,
-  Filter,
-  Users,
   ChevronDown,
   ChevronRight,
   Shield,
   MessageSquare,
   Sparkles,
-  ExternalLink,
   Calendar,
   AlertTriangle,
   Trash2,
+  Activity,
+  CheckCheck,
+  Compass,
 } from 'lucide-react';
 import { updateVentureLead, deleteActionItem } from '@/app/actions/work-actions';
 import { VentureDocumentsDrawer } from '../venture/VentureDocumentsDrawer';
@@ -183,89 +181,144 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
   }, [filteredVentures]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
-      {/* Header controls & stats */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 glass-panel p-5 rounded-3xl border border-white/10">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-sky-400 bg-sky-950/60 px-2.5 py-0.5 rounded-full border border-sky-800/40">
-              Tab 1 · Daily Operations
-            </span>
-            <span className="text-xs text-slate-400">13 Active Ventures Portfolio</span>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-7">
+      {/* Luxury Command Center Header */}
+      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/[0.12] shadow-2xl relative overflow-hidden">
+        {/* Subtle decorative background gradient beam */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/[0.08] rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-violet-500/[0.06] rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-sky-400 bg-sky-950/70 px-3 py-1 rounded-full border border-sky-800/50 shadow-[0_0_12px_rgba(56,189,248,0.2)] flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse led-cyan" />
+                TAB 1 · OPERATIONS COCKPIT
+              </span>
+              <span className="text-xs text-slate-400 font-medium">13 Portfolio Ventures</span>
+            </div>
+            
+            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight text-gradient-silver">
+              Daily Work & OKR Hierarchy
+            </h1>
+            
+            <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl">
+              Track multi-venture execution, dynamic lead assignments, two-stage review approvals, and real-time Key Result progress.
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white mt-1 tracking-tight">
-            Work Tracker & OKR Hierarchy
-          </h1>
+
+          {/* Controls & Creation CTA */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Dual View Mode Toggle */}
+            <div className="flex items-center bg-black/40 p-1 rounded-2xl border border-white/10 shadow-inner">
+              <button
+                onClick={() => setViewMode('by_venture')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                  viewMode === 'by_venture'
+                    ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25 border border-white/20'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                By Venture (13)
+              </button>
+              <button
+                onClick={() => setViewMode('by_lead')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                  viewMode === 'by_lead'
+                    ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25 border border-white/20'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                By Venture Lead
+              </button>
+            </div>
+
+            {/* Scope Filter (Cross-Venture Visibility) */}
+            <div className="flex items-center bg-black/40 p-1 rounded-2xl border border-white/10 shadow-inner">
+              <button
+                onClick={() => setScopeFilter('all')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                  scopeFilter === 'all'
+                    ? 'bg-white/15 text-white shadow-sm border border-white/20'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                All 13 Ventures
+              </button>
+              <button
+                onClick={() => setScopeFilter('my_ventures')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                  scopeFilter === 'my_ventures'
+                    ? 'bg-white/15 text-white shadow-sm border border-white/20'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                My Ventures ({myVentureIds.length})
+              </button>
+            </div>
+
+            {/* New Task Button */}
+            <button
+              onClick={() => {
+                setSelectedVentureForTask(ventures[0]?.id || '');
+                setIsAddActionModalOpen(true);
+              }}
+              className="px-4 py-2 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-bold shadow-lg shadow-indigo-500/25 border border-white/20 flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>New Action Item</span>
+            </button>
+          </div>
         </div>
 
-        {/* View Switchers & Creation CTA */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          {/* Dual View Mode Toggle */}
-          <div className="flex items-center bg-white/5 p-1 rounded-2xl border border-white/10">
-            <button
-              onClick={() => setViewMode('by_venture')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                viewMode === 'by_venture'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              By Venture (13)
-            </button>
-            <button
-              onClick={() => setViewMode('by_lead')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                viewMode === 'by_lead'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              By Venture Lead
-            </button>
+        {/* Live Mini-Metrics Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-white/[0.08]">
+          <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+              <Briefcase className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-base font-bold text-white font-mono">{ventures.length}</div>
+              <div className="text-[10px] text-slate-400 font-medium">Ventures Portfolio</div>
+            </div>
           </div>
 
-          {/* Scope Filter (Cross-Venture Visibility) */}
-          <div className="flex items-center bg-white/5 p-1 rounded-2xl border border-white/10">
-            <button
-              onClick={() => setScopeFilter('all')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                scopeFilter === 'all'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              All 13 Ventures
-            </button>
-            <button
-              onClick={() => setScopeFilter('my_ventures')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                scopeFilter === 'my_ventures'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              My Assigned Ventures ({myVentureIds.length})
-            </button>
+          <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+              <Target className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-base font-bold text-white font-mono">{objectives.length}</div>
+              <div className="text-[10px] text-slate-400 font-medium">Seeded Objectives</div>
+            </div>
           </div>
 
-          {/* New Task Button */}
-          <button
-            onClick={() => {
-              setSelectedVentureForTask(ventures[0]?.id || '');
-              setIsAddActionModalOpen(true);
-            }}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>New Action Item</span>
-          </button>
+          <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <CheckCheck className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-base font-bold text-emerald-300 font-mono">{completedCount}</div>
+              <div className="text-[10px] text-slate-400 font-medium">Completed Items</div>
+            </div>
+          </div>
+
+          <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <Clock className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-base font-bold text-amber-300 font-mono">{submittedCount + needsWorkCount}</div>
+              <div className="text-[10px] text-slate-400 font-medium">Review Pipeline</div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Filter Pills & Search */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Status Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           {[
             { id: 'all', label: 'All Items' },
             { id: 'active', label: 'Active Work' },
@@ -273,30 +326,30 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
               id: 'submitted_for_review',
               label: 'Submitted for Review',
               badge: submittedCount,
-              badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+              badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/40 led-amber',
             },
             {
               id: 'needs_work',
               label: 'Needs Work',
               badge: needsWorkCount,
-              badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+              badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/40 led-rose',
             },
-            { id: 'completed', label: 'Completed', badge: completedCount },
-            { id: 'blocker', label: 'Blockers', badge: blockerCount, badgeColor: 'bg-red-500/20 text-red-300 border-red-500/30' },
+            { id: 'completed', label: 'Completed', badge: completedCount, badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
+            { id: 'blocker', label: 'Blockers', badge: blockerCount, badgeColor: 'bg-red-500/25 text-red-300 border-red-500/40 led-rose' },
           ].map((pill) => (
             <button
               key={pill.id}
               onClick={() => setStatusFilter(pill.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
                 statusFilter === pill.id
-                  ? 'bg-white/15 text-white border-white/25 shadow-sm'
-                  : 'glass-pill text-slate-400 border-white/5 hover:text-white'
+                  ? 'bg-gradient-to-r from-indigo-600/30 to-violet-600/30 text-white border-indigo-400/40 shadow-sm shadow-indigo-500/20'
+                  : 'glass-pill text-slate-400 border-white/5 hover:text-white hover:border-white/20'
               }`}
             >
               <span>{pill.label}</span>
               {pill.badge !== undefined && pill.badge > 0 && (
                 <span
-                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold border ${
+                  className={`px-2 py-0.2 rounded-full text-[10px] font-bold border ${
                     pill.badgeColor || 'bg-white/10 text-slate-300 border-white/10'
                   }`}
                 >
@@ -307,42 +360,42 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
           ))}
         </div>
 
-        {/* Search */}
-        <div className="relative min-w-[240px]">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
+        {/* Search Input */}
+        <div className="relative min-w-[260px]">
+          <Search className="w-3.5 h-3.5 absolute left-3.5 top-3 text-slate-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search tasks, OKRs, assignees..."
-            className="w-full glass-input pl-9 pr-3 py-1.5 rounded-xl text-xs placeholder:text-slate-500"
+            placeholder="Search action items, OKRs, assignees..."
+            className="w-full glass-input pl-9 pr-3 py-1.5 rounded-2xl text-xs placeholder:text-slate-500 focus:border-indigo-400"
           />
         </div>
       </div>
 
       {/* Main Content Area */}
       {filteredVentures.length === 0 ? (
-        <div className="p-8 sm:p-12 rounded-3xl glass-panel border border-white/10 text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 mx-auto flex items-center justify-center">
-            <Briefcase className="w-7 h-7" />
+        <div className="p-10 sm:p-16 rounded-3xl glass-panel border border-white/10 text-center space-y-4 shadow-xl">
+          <div className="w-16 h-16 rounded-3xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/10">
+            <Briefcase className="w-8 h-8" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">No Assigned Ventures Found</h3>
-            <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
-              You currently have no action items, objectives, or key results assigned under this view filter.
+            <h3 className="text-lg font-bold text-white">No Assigned Ventures Found</h3>
+            <p className="text-xs text-slate-400 mt-1.5 max-w-md mx-auto leading-relaxed">
+              You currently have no action items or OKRs assigned under this scope filter.
               Switch to viewing all 13 ventures to explore the active portfolio.
             </p>
           </div>
           <button
             onClick={() => setScopeFilter('all')}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md"
+            className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-bold shadow-lg shadow-indigo-500/25 border border-white/20 transition-all cursor-pointer"
           >
             View All 13 Ventures
           </button>
         </div>
       ) : viewMode === 'by_venture' ? (
         // Standard 13-Venture Board
-        <div className="space-y-4">
+        <div className="space-y-5">
           {filteredVentures.map((venture) => (
             <VentureSection
               key={venture.id}
@@ -382,7 +435,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
         </div>
       ) : (
         // Dynamic Grouping by Venture Lead
-        <div className="space-y-8">
+        <div className="space-y-9">
           {dynamicLeads.map((lead) => {
             const leadVentures = filteredVentures.filter((v) =>
               lead.id === 'unassigned' ? !v.lead_id : v.lead_id === lead.id
@@ -391,16 +444,18 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
 
             return (
               <div key={lead.id} className="space-y-4">
-                <div className="flex items-center gap-3 pb-2 border-b border-white/10">
-                  <div className="w-8 h-8 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs">
+                <div className="flex items-center gap-3.5 pb-3 border-b border-white/[0.08]">
+                  <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 border border-white/20 flex items-center justify-center text-white font-black text-xs shadow-md shadow-indigo-500/20">
                     {lead.name.charAt(0)}
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white">{lead.name}</h2>
-                    <p className="text-xs text-slate-400">
-                      {lead.title} ({leadVentures.length}{' '}
-                      {leadVentures.length === 1 ? 'Venture' : 'Ventures'})
-                    </p>
+                    <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                      {lead.name}
+                      <span className="text-[10px] font-mono text-indigo-400 bg-indigo-950/60 px-2 py-0.5 rounded-full border border-indigo-800/40">
+                        {leadVentures.length} {leadVentures.length === 1 ? 'Venture' : 'Ventures'}
+                      </span>
+                    </h2>
+                    <p className="text-xs text-slate-400">{lead.title}</p>
                   </div>
                 </div>
 
@@ -581,45 +636,45 @@ function VentureSection({
   );
 
   return (
-    <div className="rounded-3xl glass-panel border border-white/10 overflow-hidden shadow-lg transition-all">
+    <div className="rounded-3xl glass-panel border border-white/[0.09] overflow-hidden shadow-xl transition-all duration-300 hover:border-white/20">
       {/* Venture Header Bar */}
-      <div className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:bg-white/[0.02] transition-colors">
-        <div className="flex items-center gap-3 cursor-pointer" onClick={onToggle}>
-          <button className="p-1 rounded-lg text-slate-400 hover:text-white">
+      <div className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors">
+        <div className="flex items-center gap-3.5 cursor-pointer" onClick={onToggle}>
+          <button className="p-1.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-colors">
             {isExpanded ? (
-              <ChevronDown className="w-5 h-5" />
+              <ChevronDown className="w-4 h-4" />
             ) : (
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             )}
           </button>
 
           <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-mono text-xs font-bold text-sky-400 bg-sky-950/60 px-2 py-0.5 rounded border border-sky-800/40">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="font-mono text-xs font-bold text-sky-300 bg-sky-950/70 px-2.5 py-0.5 rounded-lg border border-sky-700/40">
                 {venture.code}
               </span>
-              <h3 className="text-base sm:text-lg font-bold text-white">{venture.name}</h3>
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">{venture.name}</h3>
 
               {/* Automated Health Badge */}
               <span
-                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${healthBadge.badgeClass}`}
+                className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-bold border shadow-sm ${healthBadge.badgeClass}`}
               >
                 <span className={`w-1.5 h-1.5 rounded-full ${healthBadge.dotClass}`} />
                 {healthBadge.label} Health
               </span>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-slate-400 mt-1 flex-wrap">
+            <div className="flex items-center gap-3 text-xs text-slate-400 mt-1.5 flex-wrap font-medium">
               {isFounder ? (
                 <div
                   className="inline-flex items-center gap-1.5"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <span className="text-slate-400 font-medium">Lead:</span>
+                  <span className="text-slate-400 text-xs">Lead:</span>
                   <select
                     value={venture.lead_id || ''}
                     onChange={(e) => onReassignLead(venture.id, e.target.value)}
-                    className="glass-input text-[11px] font-semibold px-2 py-0.5 rounded-lg text-sky-300 bg-slate-900 border-sky-500/30 cursor-pointer"
+                    className="glass-input text-[11px] font-semibold px-2.5 py-0.5 rounded-lg text-sky-300 bg-slate-900 border-sky-500/30 cursor-pointer"
                     title="Founder: Reassign Venture Lead"
                   >
                     <option value="">Unassigned</option>
@@ -635,21 +690,21 @@ function VentureSection({
                   Lead: <strong className="text-slate-200">{venture.lead?.full_name || 'Unassigned'}</strong>
                 </span>
               )}
-              <span>•</span>
+              <span className="text-slate-600">•</span>
               <span>{objectives.length} Objectives</span>
-              <span>•</span>
+              <span className="text-slate-600">•</span>
               <span>{keyResults.length} KRs</span>
-              <span>•</span>
+              <span className="text-slate-600">•</span>
               <span>{actionItems.length} Actions</span>
             </div>
           </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 pl-8 md:pl-0">
+        <div className="flex items-center gap-2 pl-9 md:pl-0">
           <button
             onClick={onOpenDocs}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-pill hover:bg-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-pill hover:bg-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer border border-white/10 shadow-sm"
             title="Open Venture Documents"
           >
             <Paperclip className="w-3.5 h-3.5 text-sky-400" />
@@ -658,7 +713,7 @@ function VentureSection({
 
           <button
             onClick={onAddObjective}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-pill hover:bg-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-pill hover:bg-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer border border-white/10 shadow-sm"
           >
             <Plus className="w-3.5 h-3.5 text-indigo-400" />
             <span>Add Obj</span>
@@ -666,7 +721,7 @@ function VentureSection({
 
           <button
             onClick={onAddTask}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 border border-blue-500/30 text-xs font-semibold transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-bold shadow-md shadow-indigo-500/20 transition-all cursor-pointer border border-white/20"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Task</span>
@@ -676,18 +731,18 @@ function VentureSection({
 
       {/* Accordion Body: OKRs & Action Items */}
       {isExpanded && (
-        <div className="p-4 sm:p-6 border-t border-white/5 space-y-6 bg-black/20">
+        <div className="p-4 sm:p-6 border-t border-white/[0.06] space-y-6 bg-black/30">
           {/* Objectives Hierarchy */}
           <div className="space-y-3">
             <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 text-indigo-300">
                 <Target className="w-3.5 h-3.5 text-indigo-400" />
                 Strategic Objectives ({objectives.length})
               </span>
             </div>
 
             {objectives.length === 0 ? (
-              <div className="text-xs text-slate-500 py-4 text-center bg-white/5 rounded-2xl">
+              <div className="text-xs text-slate-500 py-4 text-center bg-white/[0.02] rounded-2xl border border-white/5">
                 No objectives created for this venture yet.
               </div>
             ) : (
@@ -699,25 +754,25 @@ function VentureSection({
                 return (
                   <div
                     key={obj.id}
-                    className="rounded-2xl glass-card border border-white/5 overflow-hidden"
+                    className="rounded-2xl glass-card border border-white/[0.07] overflow-hidden shadow-sm transition-all hover:border-white/15"
                   >
                     {/* Objective Title Row */}
                     <div
-                      className="p-3.5 flex items-start sm:items-center justify-between gap-3 cursor-pointer hover:bg-white/5 transition-colors"
+                      className="p-3.5 flex items-start sm:items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.04] transition-colors"
                       onClick={() => toggleObjective(obj.id)}
                     >
-                      <div className="flex items-start sm:items-center gap-2.5 min-w-0">
-                        <button className="mt-0.5 sm:mt-0 text-slate-400 hover:text-white">
+                      <div className="flex items-start sm:items-center gap-3 min-w-0">
+                        <button className="mt-0.5 sm:mt-0 text-slate-400 hover:text-white transition-colors">
                           {isObjExpanded ? (
                             <ChevronDown className="w-4 h-4" />
                           ) : (
                             <ChevronRight className="w-4 h-4" />
                           )}
                         </button>
-                        <span className="font-mono text-xs font-bold text-indigo-400 bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-800/40 shrink-0">
+                        <span className="font-mono text-xs font-bold text-indigo-300 bg-indigo-950/70 px-2 py-0.5 rounded border border-indigo-700/50 shrink-0">
                           #{obj.sl_no}
                         </span>
-                        <h4 className="text-xs sm:text-sm font-semibold text-slate-200 leading-snug">
+                        <h4 className="text-xs sm:text-sm font-semibold text-slate-100 leading-snug">
                           {obj.title}
                         </h4>
                       </div>
@@ -725,11 +780,11 @@ function VentureSection({
                       <div className="flex items-center gap-2 shrink-0">
                         {/* Status Badge */}
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
                             obj.status === 'completed'
                               ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                               : obj.status === 'blocker'
-                              ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                              ? 'bg-red-500/15 text-red-400 border-red-500/30'
                               : obj.status === 'on_hold'
                               ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
                               : obj.status === 'dropped'
@@ -742,7 +797,7 @@ function VentureSection({
 
                         {obj.owner && (
                           <span className="hidden sm:inline-block text-[11px] text-slate-400">
-                            Owner: <span className="text-slate-300 font-medium">{obj.owner.full_name}</span>
+                            Owner: <span className="text-slate-200 font-medium">{obj.owner.full_name}</span>
                           </span>
                         )}
 
@@ -751,7 +806,7 @@ function VentureSection({
                             e.stopPropagation();
                             onAddKr(obj);
                           }}
-                          className="px-2 py-1 rounded-lg glass-pill hover:bg-white/10 text-[10px] font-semibold text-teal-300 flex items-center gap-1"
+                          className="px-2.5 py-1 rounded-xl glass-pill hover:bg-white/10 text-[10px] font-bold text-teal-300 flex items-center gap-1 cursor-pointer border border-teal-500/30 shadow-sm"
                         >
                           <Plus className="w-2.5 h-2.5" />
                           <span>KR</span>
@@ -761,37 +816,38 @@ function VentureSection({
 
                     {/* Collapsible Key Results & Child Tasks */}
                     {isObjExpanded && (
-                      <div className="p-3.5 bg-black/30 border-t border-white/5 space-y-3">
+                      <div className="p-3.5 bg-black/40 border-t border-white/5 space-y-3">
                         {/* Key Results */}
                         {objKrs.length > 0 && (
                           <div className="space-y-2">
-                            <div className="text-[10px] uppercase font-bold tracking-wider text-teal-400">
+                            <div className="text-[10px] uppercase font-bold tracking-wider text-teal-400 flex items-center gap-1.5">
+                              <Compass className="w-3 h-3 text-teal-400" />
                               Key Results ({objKrs.length})
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                               {objKrs.map((kr) => (
                                 <div
                                   key={kr.id}
-                                  className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 text-xs flex items-start justify-between gap-2"
+                                  className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 text-xs flex items-start justify-between gap-2 shadow-sm"
                                 >
                                   <div>
-                                    <div className="font-mono text-[10px] font-bold text-teal-400">
+                                    <div className="font-mono text-[10px] font-bold text-teal-300">
                                       KR {kr.kr_code}
                                     </div>
-                                    <div className="font-medium text-slate-200 mt-0.5">
+                                    <div className="font-medium text-slate-200 mt-1 leading-snug">
                                       {kr.title}
                                     </div>
                                     {kr.target_measure && (
-                                      <div className="text-[11px] text-slate-400 mt-0.5">
+                                      <div className="text-[11px] text-slate-400 mt-1 font-mono">
                                         Target: {kr.target_measure}
                                       </div>
                                     )}
                                   </div>
                                   <span
-                                    className={`px-1.5 py-0.5 rounded text-[9px] font-semibold capitalize ${
+                                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold capitalize border ${
                                       kr.status === 'completed'
-                                        ? 'text-emerald-400 bg-emerald-950/60'
-                                        : 'text-slate-400 bg-white/5'
+                                        ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/30'
+                                        : 'text-slate-400 bg-white/5 border-white/10'
                                     }`}
                                   >
                                     {kr.status}
@@ -804,7 +860,7 @@ function VentureSection({
 
                         {/* Associated Actions */}
                         {objActions.length > 0 && (
-                          <div className="space-y-1.5 pt-2">
+                          <div className="space-y-2 pt-2">
                             <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
                               Linked Action Items ({objActions.length})
                             </div>
@@ -833,18 +889,18 @@ function VentureSection({
           {/* Standalone Action Items (not linked to an objective or venture-wide) */}
           <div className="space-y-2 pt-2">
             <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 text-sky-300">
                 <Briefcase className="w-3.5 h-3.5 text-sky-400" />
                 All Venture Action Items ({visibleActions.length})
               </span>
             </div>
 
             {visibleActions.length === 0 ? (
-              <div className="text-xs text-slate-500 py-3 text-center bg-white/5 rounded-2xl">
+              <div className="text-xs text-slate-500 py-3 text-center bg-white/[0.02] rounded-2xl border border-white/5">
                 No action items match the selected filter.
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {visibleActions.map((action) => (
                   <ActionItemCard
                     key={action.id}
@@ -894,19 +950,19 @@ function ActionItemCard({
       case 'submitted_for_review':
         return {
           label: 'Submitted for Review',
-          color: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+          color: 'bg-amber-500/15 text-amber-300 border-amber-500/30 led-amber',
           icon: Clock,
         };
       case 'needs_work':
         return {
           label: 'Needs Work',
-          color: 'bg-rose-500/20 text-rose-300 border-rose-500/30 animate-pulse',
+          color: 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse led-rose',
           icon: AlertCircle,
         };
       case 'completed':
         return {
           label: 'Completed',
-          color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+          color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 led-emerald',
           icon: CheckCircle2,
         };
       case 'in_progress':
@@ -918,7 +974,7 @@ function ActionItemCard({
       case 'blocker':
         return {
           label: 'Blocker',
-          color: 'bg-red-500/20 text-red-300 border-red-500/30',
+          color: 'bg-red-500/20 text-red-300 border-red-500/30 led-rose',
           icon: AlertTriangle,
         };
       default:
@@ -934,19 +990,19 @@ function ActionItemCard({
   const StatusIcon = statusInfo.icon;
 
   return (
-    <div className="p-3 sm:p-4 rounded-2xl glass-card border border-white/10 hover:border-white/20 transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 group">
+    <div className="p-3.5 sm:p-4 rounded-2xl glass-card border border-white/[0.08] hover:border-white/20 transition-all duration-200 flex flex-col md:flex-row md:items-center justify-between gap-3 group shadow-sm">
       {/* Title & metadata */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span
-            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${statusInfo.color}`}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusInfo.color}`}
           >
             <StatusIcon className="w-3 h-3" />
             <span>{statusInfo.label}</span>
           </span>
 
           {action.is_founder_confirmed && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-300 border border-teal-500/20 flex items-center gap-1">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30 flex items-center gap-1">
               <Shield className="w-2.5 h-2.5" />
               Founder Confirmed
             </span>
@@ -959,36 +1015,36 @@ function ActionItemCard({
           )}
         </div>
 
-        <h5 className="text-xs sm:text-sm font-semibold text-white mt-1.5 leading-snug">
+        <h5 className="text-xs sm:text-sm font-semibold text-white mt-2 leading-snug group-hover:text-sky-200 transition-colors">
           {action.title}
         </h5>
 
         {/* Outcome summary if available */}
         {action.outcome_achieved && (
-          <p className="text-[11px] text-slate-400 mt-1 italic line-clamp-2">
-            Outcome: {action.outcome_achieved}
+          <p className="text-[11px] text-slate-400 mt-1.5 italic line-clamp-2 bg-white/[0.02] p-2 rounded-xl border border-white/5">
+            Deliverable: {action.outcome_achieved}
           </p>
         )}
 
         {/* Date & Assignee metadata */}
-        <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-2">
-          <div className="flex items-center gap-1">
-            <Calendar className="w-3 h-3 text-slate-400" />
+        <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-2.5 font-medium">
+          <div className="flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-slate-400" />
             <span className={`font-mono ${overdue ? 'text-red-400 font-bold' : ''}`}>
               {formatDateDDMMYYYY(action.date)}
             </span>
           </div>
 
-          <span>•</span>
+          <span className="text-slate-600">•</span>
 
           <div className="flex items-center gap-1.5">
             <div
-              className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white"
-              style={{ backgroundColor: action.assignee?.avatar_color || '#3b82f6' }}
+              className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow-sm ring-1 ring-white/20"
+              style={{ backgroundColor: action.assignee?.avatar_color || '#6366f1' }}
             >
               {action.assignee?.full_name?.charAt(0) || 'U'}
             </div>
-            <span className="text-slate-300 font-medium">
+            <span className="text-slate-300">
               {action.assignee?.full_name || 'Unassigned'}
             </span>
           </div>
@@ -1003,7 +1059,7 @@ function ActionItemCard({
           action.status !== 'submitted_for_review' && (
             <button
               onClick={onSubmitReview}
-              className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-semibold flex items-center gap-1 transition-colors"
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-amber-600/20 hover:from-amber-500/30 hover:to-amber-600/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Submit for Review</span>
@@ -1014,7 +1070,7 @@ function ActionItemCard({
         {isFounder && action.status === 'submitted_for_review' && (
           <button
             onClick={onFounderReview}
-            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 animate-bounce"
+            className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 border border-white/20 animate-pulse cursor-pointer"
           >
             <Shield className="w-3.5 h-3.5" />
             <span>Founder Review</span>
@@ -1024,7 +1080,7 @@ function ActionItemCard({
         {/* Audit & Feedback Log Modal Button */}
         <button
           onClick={onOpenLogs}
-          className="p-2 rounded-xl glass-pill hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+          className="p-2 rounded-xl glass-pill hover:bg-white/10 text-slate-400 hover:text-white transition-all cursor-pointer border border-white/10 shadow-sm"
           title="Threaded Feedback Log"
         >
           <MessageSquare className="w-4 h-4" />
@@ -1034,10 +1090,10 @@ function ActionItemCard({
         {(isAssignedToMe || isFounder) && (
           <button
             onClick={onDeleteTask}
-            className="p-2 rounded-xl glass-pill hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 transition-colors"
+            className="p-2 rounded-xl glass-pill hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 transition-all cursor-pointer border border-white/10"
             title="Delete Action Item"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-4 h-4" />
           </button>
         )}
       </div>

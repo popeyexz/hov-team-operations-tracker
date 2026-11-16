@@ -21,10 +21,12 @@ import {
   Users,
   Target,
   Layers,
-  ArrowUpRight,
-  Shield,
   Activity,
   AlertCircle,
+  Compass,
+  ArrowUpRight,
+  Shield,
+  Zap,
 } from 'lucide-react';
 
 interface ProgressAnalyticsDashboardProps {
@@ -62,190 +64,204 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 glass-panel p-5 rounded-3xl border border-white/10">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-800/40">
-              Tab 3 · Progress Analytics Suite
-            </span>
-            <span className="text-xs text-slate-400">Live View across 13 Ventures & Team</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white mt-1 tracking-tight">
-            Portfolio Health & Executive Scorecards
-          </h1>
-        </div>
+      {/* Luxury Command Center Header */}
+      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/[0.12] shadow-2xl relative overflow-hidden">
+        {/* Ambient Glows */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-600/[0.08] rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-600/[0.06] rounded-full blur-3xl pointer-events-none -ml-16 -mb-16" />
 
-        <div className="flex items-center gap-2 text-xs text-slate-400 bg-white/5 px-3 py-1.5 rounded-2xl border border-white/10">
-          <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
-          <span>Real-time calculation engine active</span>
-        </div>
-      </div>
-
-      {/* 1 · Portfolio Snapshot (KPI Cards) */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-          <BarChart3 className="w-4 h-4 text-sky-400" />
-          <span>1 · Portfolio Snapshot</span>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4">
-          {/* Objectives Done */}
-          <div className="p-4 sm:p-5 rounded-3xl glass-panel border border-white/10 hover:border-white/20 transition-all">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-              <span>Objectives Completed</span>
-              <Target className="w-4 h-4 text-indigo-400" />
-            </div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
-              {snapshot.objectivesCompleted} / {snapshot.objectivesTotal}
-            </div>
-            <div className="text-xs text-indigo-400 font-semibold mt-1">
-              {snapshot.objectivesPercent}% completed
-            </div>
-          </div>
-
-          {/* Key Results Done */}
-          <div className="p-4 sm:p-5 rounded-3xl glass-panel border border-white/10 hover:border-white/20 transition-all">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-              <span>Key Results Completed</span>
-              <Layers className="w-4 h-4 text-teal-400" />
-            </div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
-              {snapshot.krsCompleted} / {snapshot.krsTotal}
-            </div>
-            <div className="text-xs text-teal-400 font-semibold mt-1">
-              {snapshot.krsTotal > 0 ? `${snapshot.krsPercent}% completed` : 'Awaiting KR assignments'}
-            </div>
-          </div>
-
-          {/* Open Blockers */}
-          <div className="p-4 sm:p-5 rounded-3xl glass-panel border border-white/10 hover:border-white/20 transition-all">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-              <span>Open Blockers</span>
-              <AlertTriangle className="w-4 h-4 text-red-400" />
-            </div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
-              {snapshot.openBlockers}
-            </div>
-            <div className="text-xs text-red-400 font-semibold mt-1">
-              KRs + active actions
-            </div>
-          </div>
-
-          {/* Overdue Items */}
-          <div className="p-4 sm:p-5 rounded-3xl glass-panel border border-white/10 hover:border-white/20 transition-all">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-              <span>Overdue Items</span>
-              <Clock className="w-4 h-4 text-amber-400" />
-            </div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
-              {snapshot.overdueItems}
-            </div>
-            <div className="text-xs text-amber-400 font-semibold mt-1">
-              Obj/KRs + actions
-            </div>
-          </div>
-
-          {/* Today's Actions */}
-          <div className="p-4 sm:p-5 rounded-3xl glass-panel border border-white/10 hover:border-white/20 transition-all">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-              <span>Today's Actions</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
-              {snapshot.todayActionsDone} / {snapshot.todayActionsTotal}
-            </div>
-            <div className="text-xs text-slate-400 font-medium mt-1">
-              done / planned today
-            </div>
-          </div>
-
-          {/* This Week's Actions */}
-          <div className="p-4 sm:p-5 rounded-3xl glass-panel border border-white/10 hover:border-white/20 transition-all">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-              <span>This Week's Actions</span>
-              <Calendar className="w-4 h-4 text-sky-400" />
-            </div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
-              {snapshot.thisWeekActionsDone} / {snapshot.thisWeekActionsTotal}
-            </div>
-            <div className="text-xs text-slate-400 font-medium mt-1">
-              done / planned this week
-            </div>
-          </div>
-
-          {/* Ventures in Red */}
-          <div className="p-4 sm:p-5 rounded-3xl glass-panel border border-white/10 hover:border-white/20 transition-all">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-              <span>Ventures in Red</span>
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
-            </div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
-              {snapshot.venturesInRed}
-            </div>
-            <div className="text-xs text-slate-400 font-medium mt-1">
-              of {snapshot.venturesTotal} active ventures
-            </div>
-          </div>
-
-          {/* Planning Gaps */}
-          <div className="p-4 sm:p-5 rounded-3xl glass-panel border border-white/10 hover:border-white/20 transition-all">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-              <span>Planning Gaps</span>
-              <AlertCircle className="w-4 h-4 text-purple-400" />
-            </div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
-              {snapshot.planningGapsTotal}
-            </div>
-            <div className="text-xs text-purple-400 font-semibold mt-1">
-              see section 4 audit
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Focus Scorecard Selector */}
-      <div className="glass-panel p-5 sm:p-6 rounded-3xl border border-white/10 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
-              Interactive Drill-Down
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-emerald-400 bg-emerald-950/70 px-3 py-1 rounded-full border border-emerald-800/50 shadow-[0_0_12px_rgba(16,185,129,0.2)] flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse led-emerald" />
+                TAB 3 · EXECUTIVE TELEMETRY
+              </span>
+              <span className="text-xs text-slate-400 font-medium">Real-Time Portfolio Analytics</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight text-gradient-silver">
+              Portfolio Health & Performance Matrix
+            </h1>
+
+            <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl">
+              Live executive rollups across 13 ventures, automated Red/Amber/Green health calculations, planning gap audits, and team velocity.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 text-xs text-emerald-300 bg-emerald-950/40 px-3.5 py-2 rounded-2xl border border-emerald-500/30 shadow-sm font-medium">
+            <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
+            <span>Deterministic Rollup Engine Active</span>
+          </div>
+        </div>
+
+        {/* 1 · Portfolio Snapshot (8 Luxury Bento Metric Cards) */}
+        <div className="mt-8 pt-6 border-t border-white/[0.08] space-y-3">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
+            <BarChart3 className="w-4 h-4 text-sky-400" />
+            <span>1 · Portfolio Snapshot</span>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4">
+            {/* Objectives Done */}
+            <div className="p-4 sm:p-5 rounded-3xl glass-card border border-white/[0.08] hover:border-indigo-500/30 transition-all duration-300 group shadow-md">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                <span className="font-medium">Objectives Done</span>
+                <Target className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-white font-mono">
+                {snapshot.objectivesCompleted} <span className="text-slate-500 text-lg">/ {snapshot.objectivesTotal}</span>
+              </div>
+              <div className="text-xs text-indigo-300 font-semibold mt-1.5 flex items-center gap-1">
+                <span>{snapshot.objectivesPercent}% completed</span>
+              </div>
+            </div>
+
+            {/* Key Results Done */}
+            <div className="p-4 sm:p-5 rounded-3xl glass-card border border-white/[0.08] hover:border-teal-500/30 transition-all duration-300 group shadow-md">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                <span className="font-medium">Key Results Done</span>
+                <Layers className="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-white font-mono">
+                {snapshot.krsCompleted} <span className="text-slate-500 text-lg">/ {snapshot.krsTotal}</span>
+              </div>
+              <div className="text-xs text-teal-300 font-semibold mt-1.5">
+                {snapshot.krsTotal > 0 ? `${snapshot.krsPercent}% completed` : 'Awaiting KR assignments'}
+              </div>
+            </div>
+
+            {/* Open Blockers */}
+            <div className="p-4 sm:p-5 rounded-3xl glass-card border border-white/[0.08] hover:border-rose-500/30 transition-all duration-300 group shadow-md">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                <span className="font-medium">Open Blockers</span>
+                <AlertTriangle className="w-4 h-4 text-rose-400 group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-rose-400 font-mono">
+                {snapshot.openBlockers}
+              </div>
+              <div className="text-xs text-rose-300 font-medium mt-1.5">
+                Critical bottlenecks
+              </div>
+            </div>
+
+            {/* Overdue Items */}
+            <div className="p-4 sm:p-5 rounded-3xl glass-card border border-white/[0.08] hover:border-amber-500/30 transition-all duration-300 group shadow-md">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                <span className="font-medium">Overdue Items</span>
+                <Clock className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-amber-400 font-mono">
+                {snapshot.overdueItems}
+              </div>
+              <div className="text-xs text-amber-300 font-medium mt-1.5">
+                Past scheduled deadline
+              </div>
+            </div>
+
+            {/* Today's Actions */}
+            <div className="p-4 sm:p-5 rounded-3xl glass-card border border-white/[0.08] hover:border-emerald-500/30 transition-all duration-300 group shadow-md">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                <span className="font-medium">Today's Actions</span>
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-white font-mono">
+                {snapshot.todayActionsDone} <span className="text-slate-500 text-lg">/ {snapshot.todayActionsTotal}</span>
+              </div>
+              <div className="text-xs text-slate-400 font-medium mt-1.5">
+                done / planned today
+              </div>
+            </div>
+
+            {/* This Week's Actions */}
+            <div className="p-4 sm:p-5 rounded-3xl glass-card border border-white/[0.08] hover:border-sky-500/30 transition-all duration-300 group shadow-md">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                <span className="font-medium">This Week's Actions</span>
+                <Calendar className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-white font-mono">
+                {snapshot.thisWeekActionsDone} <span className="text-slate-500 text-lg">/ {snapshot.thisWeekActionsTotal}</span>
+              </div>
+              <div className="text-xs text-slate-400 font-medium mt-1.5">
+                done / planned this week
+              </div>
+            </div>
+
+            {/* Ventures in Red */}
+            <div className="p-4 sm:p-5 rounded-3xl glass-card border border-white/[0.08] hover:border-rose-500/30 transition-all duration-300 group shadow-md">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                <span className="font-medium">Ventures in Red</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-rose-400 font-mono">
+                {snapshot.venturesInRed}
+              </div>
+              <div className="text-xs text-slate-400 font-medium mt-1.5">
+                of {snapshot.venturesTotal} active ventures
+              </div>
+            </div>
+
+            {/* Planning Gaps */}
+            <div className="p-4 sm:p-5 rounded-3xl glass-card border border-white/[0.08] hover:border-violet-500/30 transition-all duration-300 group shadow-md">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                <span className="font-medium">Planning Gaps</span>
+                <AlertCircle className="w-4 h-4 text-violet-400 group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-violet-300 font-mono">
+                {snapshot.planningGapsTotal}
+              </div>
+              <div className="text-xs text-violet-400 font-semibold mt-1.5">
+                audit section 4
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2 · Interactive Focus Scorecard */}
+      <div className="glass-panel p-6 sm:p-7 rounded-3xl border border-white/[0.12] space-y-5 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span className="text-[10px] font-mono font-bold tracking-widest text-amber-400 uppercase">
+              ISOLATED TELEMETRY DRILL-DOWN
             </span>
-            <h3 className="text-lg font-bold text-white">Focus Scorecard</h3>
+            <h3 className="text-xl font-bold text-white tracking-tight mt-0.5">Focus Scorecard</h3>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                setFocusType('venture');
-                setSelectedFocusId(ventureRows[0]?.id || '');
-              }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                focusType === 'venture'
-                  ? 'bg-amber-600 text-white shadow-md'
-                  : 'glass-pill text-slate-400 hover:text-white'
-              }`}
-            >
-              Focus Venture
-            </button>
-            <button
-              onClick={() => {
-                setFocusType('member');
-                setSelectedFocusId(memberRows[0]?.id || '');
-              }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                focusType === 'member'
-                  ? 'bg-amber-600 text-white shadow-md'
-                  : 'glass-pill text-slate-400 hover:text-white'
-              }`}
-            >
-              Focus Member
-            </button>
+            <div className="flex items-center bg-black/40 p-1 rounded-2xl border border-white/10 shadow-inner">
+              <button
+                onClick={() => {
+                  setFocusType('venture');
+                  setSelectedFocusId(ventureRows[0]?.id || '');
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  focusType === 'venture'
+                    ? 'bg-amber-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Focus Venture
+              </button>
+              <button
+                onClick={() => {
+                  setFocusType('member');
+                  setSelectedFocusId(memberRows[0]?.id || '');
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  focusType === 'member'
+                    ? 'bg-amber-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Focus Member
+              </button>
+            </div>
 
             <select
               value={selectedFocusId}
               onChange={(e) => setSelectedFocusId(e.target.value)}
-              className="glass-input text-xs font-semibold px-3 py-1.5 rounded-xl text-slate-200 bg-slate-900/90"
+              className="glass-input text-xs font-semibold px-3 py-2 rounded-2xl text-slate-200 bg-slate-900/90 border-white/10 hover:border-amber-400/40 cursor-pointer shadow-sm"
             >
               {focusType === 'venture'
                 ? ventureRows.map((v) => (
@@ -262,40 +278,41 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
           </div>
         </div>
 
-        {/* Focused Card */}
+        {/* Focused Card Display */}
         {focusedVenture && (
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+          <div className="p-5 rounded-2xl bg-black/40 border border-white/10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 shadow-inner">
             <div>
-              <span className="text-[10px] text-slate-400 block">Lead</span>
-              <span className="text-sm font-bold text-white">{focusedVenture.leadName}</span>
+              <span className="text-[10px] text-slate-400 block font-medium">Venture Lead</span>
+              <span className="text-sm font-bold text-white mt-1 block">{focusedVenture.leadName}</span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block">Objectives</span>
-              <span className="text-sm font-bold text-white">
+              <span className="text-[10px] text-slate-400 block font-medium">Objectives Done</span>
+              <span className="text-sm font-bold text-white font-mono mt-1 block">
                 {focusedVenture.completedObjectives} / {focusedVenture.totalObjectives} ({focusedVenture.objectivePercent}%)
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block">KRs (Done/Total)</span>
-              <span className="text-sm font-bold text-white">
+              <span className="text-[10px] text-slate-400 block font-medium">KRs (Done/Total)</span>
+              <span className="text-sm font-bold text-white font-mono mt-1 block">
                 {focusedVenture.krsCompleted} / {focusedVenture.krsTotal}
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block">Overdue (Obj+KR)</span>
-              <span className="text-sm font-bold text-amber-400">{focusedVenture.overdueCount}</span>
+              <span className="text-[10px] text-slate-400 block font-medium">Overdue (Obj+KR)</span>
+              <span className="text-sm font-bold text-amber-400 font-mono mt-1 block">{focusedVenture.overdueCount}</span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block">Blocked KRs</span>
-              <span className="text-sm font-bold text-rose-400">{focusedVenture.blockedKrs}</span>
+              <span className="text-[10px] text-slate-400 block font-medium">Blocked KRs</span>
+              <span className="text-sm font-bold text-rose-400 font-mono mt-1 block">{focusedVenture.blockedKrs}</span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block">Automated Health</span>
+              <span className="text-[10px] text-slate-400 block font-medium">Automated Health</span>
               <span
-                className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold capitalize ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold capitalize mt-1 border shadow-sm ${
                   getHealthBadge(focusedVenture.health).badgeClass
                 }`}
               >
+                <span className={`w-1.5 h-1.5 rounded-full ${getHealthBadge(focusedVenture.health).dotClass}`} />
                 {focusedVenture.health}
               </span>
             </div>
@@ -303,66 +320,66 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
         )}
 
         {focusedMember && (
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+          <div className="p-5 rounded-2xl bg-black/40 border border-white/10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 shadow-inner">
             <div>
-              <span className="text-[10px] text-slate-400 block">Status</span>
-              <span className="text-sm font-bold text-emerald-400">{focusedMember.status}</span>
+              <span className="text-[10px] text-slate-400 block font-medium">Status</span>
+              <span className="text-sm font-bold text-emerald-400 mt-1 block">{focusedMember.status}</span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block">Objectives Owned</span>
-              <span className="text-sm font-bold text-white">
+              <span className="text-[10px] text-slate-400 block font-medium">Objectives Owned</span>
+              <span className="text-sm font-bold text-white font-mono mt-1 block">
                 {focusedMember.objectivesDone} / {focusedMember.objectivesOwned}
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block">KRs Open / Done</span>
-              <span className="text-sm font-bold text-white">
+              <span className="text-[10px] text-slate-400 block font-medium">KRs Open / Done</span>
+              <span className="text-sm font-bold text-white font-mono mt-1 block">
                 {focusedMember.krsOpen} / {focusedMember.krsDone}
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block">Actions This Week</span>
-              <span className="text-sm font-bold text-white">
+              <span className="text-[10px] text-slate-400 block font-medium">Actions This Week</span>
+              <span className="text-sm font-bold text-white font-mono mt-1 block">
                 {focusedMember.actionsWeekDone} / {focusedMember.actionsWeekTotal}
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block">% Completed</span>
-              <span className="text-sm font-bold text-sky-400">
+              <span className="text-[10px] text-slate-400 block font-medium">% Actions Done</span>
+              <span className="text-sm font-bold text-sky-400 font-mono mt-1 block">
                 {focusedMember.percentActionsCompleted}%
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block">Active Days</span>
-              <span className="text-sm font-bold text-indigo-400">{focusedMember.activeDays} days</span>
+              <span className="text-[10px] text-slate-400 block font-medium">Active Consistency</span>
+              <span className="text-sm font-bold text-indigo-400 font-mono mt-1 block">{focusedMember.activeDays} days</span>
             </div>
           </div>
         )}
       </div>
 
-      {/* 2 · Progress by Venture Table */}
+      {/* 3 · Progress by Venture Table */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
           <Building2 className="w-4 h-4 text-sky-400" />
-          <span>2 · Progress by Venture (13 Ventures)</span>
+          <span>2 · Progress by Venture (13 Ventures Portfolio)</span>
         </div>
 
-        <div className="overflow-x-auto rounded-3xl glass-panel border border-white/10 shadow-lg">
+        <div className="overflow-x-auto rounded-3xl glass-panel border border-white/10 shadow-xl">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-white/10 bg-white/[0.03] text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                <th className="p-3.5">Venture</th>
-                <th className="p-3.5">Lead</th>
-                <th className="p-3.5 text-center">Total Objs</th>
-                <th className="p-3.5 text-center">Done</th>
-                <th className="p-3.5 text-center">Pending</th>
-                <th className="p-3.5 text-center">On-Hold</th>
-                <th className="p-3.5 text-center">Blocker</th>
-                <th className="p-3.5 text-center">Obj % Done</th>
-                <th className="p-3.5 text-center">KRs Done/Total</th>
-                <th className="p-3.5 text-center">KR %</th>
-                <th className="p-3.5 text-center">Overdue</th>
-                <th className="p-3.5 text-center">Health</th>
+                <th className="p-4">Venture</th>
+                <th className="p-4">Lead</th>
+                <th className="p-4 text-center">Total Objs</th>
+                <th className="p-4 text-center">Done</th>
+                <th className="p-4 text-center">Pending</th>
+                <th className="p-4 text-center">On-Hold</th>
+                <th className="p-4 text-center">Blocker</th>
+                <th className="p-4 text-center">Obj % Done</th>
+                <th className="p-4 text-center">KRs Done/Total</th>
+                <th className="p-4 text-center">KR %</th>
+                <th className="p-4 text-center">Overdue</th>
+                <th className="p-4 text-center">Health</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -370,36 +387,36 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
                 const badge = getHealthBadge(v.health);
                 return (
                   <tr key={v.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="p-3.5 font-bold text-white max-w-xs truncate">{v.name}</td>
-                    <td className="p-3.5 text-slate-300 font-medium">{v.leadName}</td>
-                    <td className="p-3.5 text-center font-mono">{v.totalObjectives}</td>
-                    <td className="p-3.5 text-center font-mono text-emerald-400">
+                    <td className="p-4 font-bold text-white max-w-xs truncate">{v.name}</td>
+                    <td className="p-4 text-slate-300 font-medium">{v.leadName}</td>
+                    <td className="p-4 text-center font-mono">{v.totalObjectives}</td>
+                    <td className="p-4 text-center font-mono text-emerald-400 font-semibold">
                       {v.completedObjectives}
                     </td>
-                    <td className="p-3.5 text-center font-mono text-slate-300">
+                    <td className="p-4 text-center font-mono text-slate-300">
                       {v.pendingObjectives}
                     </td>
-                    <td className="p-3.5 text-center font-mono text-amber-400">
+                    <td className="p-4 text-center font-mono text-amber-400">
                       {v.onHoldObjectives}
                     </td>
-                    <td className="p-3.5 text-center font-mono text-rose-400">
+                    <td className="p-4 text-center font-mono text-rose-400">
                       {v.blockerObjectives}
                     </td>
-                    <td className="p-3.5 text-center font-mono font-bold text-sky-400">
+                    <td className="p-4 text-center font-mono font-bold text-sky-400">
                       {v.objectivePercent}%
                     </td>
-                    <td className="p-3.5 text-center font-mono">
+                    <td className="p-4 text-center font-mono">
                       {v.krsCompleted} / {v.krsTotal}
                     </td>
-                    <td className="p-3.5 text-center font-mono font-bold text-teal-400">
+                    <td className="p-4 text-center font-mono font-bold text-teal-400">
                       {v.krPercent}%
                     </td>
-                    <td className="p-3.5 text-center font-mono text-amber-400">
+                    <td className="p-4 text-center font-mono text-amber-400">
                       {v.overdueCount}
                     </td>
-                    <td className="p-3.5 text-center">
+                    <td className="p-4 text-center">
                       <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${badge.badgeClass}`}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shadow-sm ${badge.badgeClass}`}
                       >
                         <span className={`w-1.5 h-1.5 rounded-full ${badge.dotClass}`} />
                         {badge.label}
@@ -413,62 +430,62 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
         </div>
       </div>
 
-      {/* 3 · Progress by Team Member Table */}
+      {/* 4 · Progress by Team Member Table */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
           <Users className="w-4 h-4 text-indigo-400" />
-          <span>3 · Progress by Team Member (founder excluded)</span>
+          <span>3 · Progress by Team Member (Founder Excluded)</span>
         </div>
 
-        <div className="overflow-x-auto rounded-3xl glass-panel border border-white/10 shadow-lg">
+        <div className="overflow-x-auto rounded-3xl glass-panel border border-white/10 shadow-xl">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-white/10 bg-white/[0.03] text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                <th className="p-3.5">Member</th>
-                <th className="p-3.5">Status</th>
-                <th className="p-3.5 text-center">Objs Owned</th>
-                <th className="p-3.5 text-center">Objs Done</th>
-                <th className="p-3.5 text-center">KRs Open</th>
-                <th className="p-3.5 text-center">KRs Done</th>
-                <th className="p-3.5 text-center">KRs Overdue</th>
-                <th className="p-3.5 text-center">Actions Today</th>
-                <th className="p-3.5 text-center">Actions Week</th>
-                <th className="p-3.5 text-center">% Completed</th>
-                <th className="p-3.5 text-center">Active Days</th>
-                <th className="p-3.5 text-center">Flag</th>
+                <th className="p-4">Member</th>
+                <th className="p-4">Status</th>
+                <th className="p-4 text-center">Objs Owned</th>
+                <th className="p-4 text-center">Objs Done</th>
+                <th className="p-4 text-center">KRs Open</th>
+                <th className="p-4 text-center">KRs Done</th>
+                <th className="p-4 text-center">KRs Overdue</th>
+                <th className="p-4 text-center">Actions Today</th>
+                <th className="p-4 text-center">Actions Week</th>
+                <th className="p-4 text-center">% Completed</th>
+                <th className="p-4 text-center">Active Days</th>
+                <th className="p-4 text-center">Flag</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {memberRows.map((m) => (
                 <tr key={m.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="p-3.5 font-bold text-white">{m.name}</td>
-                  <td className="p-3.5">
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20">
+                  <td className="p-4 font-bold text-white">{m.name}</td>
+                  <td className="p-4">
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20">
                       {m.status}
                     </span>
                   </td>
-                  <td className="p-3.5 text-center font-mono">{m.objectivesOwned}</td>
-                  <td className="p-3.5 text-center font-mono text-emerald-400">{m.objectivesDone}</td>
-                  <td className="p-3.5 text-center font-mono text-slate-300">{m.krsOpen}</td>
-                  <td className="p-3.5 text-center font-mono text-teal-400">{m.krsDone}</td>
-                  <td className="p-3.5 text-center font-mono text-amber-400">{m.krsOverdue}</td>
-                  <td className="p-3.5 text-center font-mono">
+                  <td className="p-4 text-center font-mono">{m.objectivesOwned}</td>
+                  <td className="p-4 text-center font-mono text-emerald-400 font-semibold">{m.objectivesDone}</td>
+                  <td className="p-4 text-center font-mono text-slate-300">{m.krsOpen}</td>
+                  <td className="p-4 text-center font-mono text-teal-400 font-semibold">{m.krsDone}</td>
+                  <td className="p-4 text-center font-mono text-amber-400">{m.krsOverdue}</td>
+                  <td className="p-4 text-center font-mono">
                     {m.actionsTodayDone} / {m.actionsTodayTotal}
                   </td>
-                  <td className="p-3.5 text-center font-mono">
+                  <td className="p-4 text-center font-mono">
                     {m.actionsWeekDone} / {m.actionsWeekTotal}
                   </td>
-                  <td className="p-3.5 text-center font-mono font-bold text-sky-400">
+                  <td className="p-4 text-center font-mono font-bold text-sky-400">
                     {m.percentActionsCompleted}%
                   </td>
-                  <td className="p-3.5 text-center font-mono text-indigo-400">{m.activeDays} d</td>
-                  <td className="p-3.5 text-center">
+                  <td className="p-4 text-center font-mono text-indigo-400 font-semibold">{m.activeDays} d</td>
+                  <td className="p-4 text-center">
                     {m.flag === 'attention' ? (
-                      <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[10px] font-bold">
+                      <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[10px] font-bold">
                         Attention
                       </span>
                     ) : (
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-semibold">
+                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-semibold">
                         Normal
                       </span>
                     )}
@@ -480,48 +497,48 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
         </div>
       </div>
 
-      {/* 4 · Planning Gaps Finder Table */}
+      {/* 5 · Planning Gaps Finder Table */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-          <AlertCircle className="w-4 h-4 text-purple-400" />
-          <span>4 · Planning Gaps — fill these first</span>
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
+          <AlertCircle className="w-4 h-4 text-violet-400" />
+          <span>4 · Planning Gaps — Fill These First</span>
         </div>
 
-        <div className="overflow-x-auto rounded-3xl glass-panel border border-white/10 shadow-lg">
+        <div className="overflow-x-auto rounded-3xl glass-panel border border-white/10 shadow-xl">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-white/10 bg-white/[0.03] text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                <th className="p-3.5">Venture</th>
-                <th className="p-3.5 text-center">Objs without owner</th>
-                <th className="p-3.5 text-center">Objs without due date</th>
-                <th className="p-3.5 text-center">Objs without KRs</th>
-                <th className="p-3.5 text-center">KRs without owner</th>
-                <th className="p-3.5 text-center">KRs without due date</th>
-                <th className="p-3.5 text-center font-bold">Total Gaps</th>
+                <th className="p-4">Venture</th>
+                <th className="p-4 text-center">Objs without Owner</th>
+                <th className="p-4 text-center">Objs without Due Date</th>
+                <th className="p-4 text-center">Objs without KRs</th>
+                <th className="p-4 text-center">KRs without Owner</th>
+                <th className="p-4 text-center">KRs without Due Date</th>
+                <th className="p-4 text-center font-bold">Total Gaps</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {planningGaps.map((g) => (
                 <tr key={g.ventureId} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="p-3.5 font-bold text-white max-w-xs truncate">
+                  <td className="p-4 font-bold text-white max-w-xs truncate">
                     {g.ventureName}
                   </td>
-                  <td className="p-3.5 text-center font-mono text-slate-300">
+                  <td className="p-4 text-center font-mono text-slate-300">
                     {g.objsWithoutOwner}
                   </td>
-                  <td className="p-3.5 text-center font-mono text-slate-300">
+                  <td className="p-4 text-center font-mono text-slate-300">
                     {g.objsWithoutDueDate}
                   </td>
-                  <td className="p-3.5 text-center font-mono text-purple-400 font-semibold">
+                  <td className="p-4 text-center font-mono text-violet-300 font-semibold">
                     {g.objsWithoutKrs}
                   </td>
-                  <td className="p-3.5 text-center font-mono text-slate-300">
+                  <td className="p-4 text-center font-mono text-slate-300">
                     {g.krsWithoutOwner}
                   </td>
-                  <td className="p-3.5 text-center font-mono text-slate-300">
+                  <td className="p-4 text-center font-mono text-slate-300">
                     {g.krsWithoutDueDate}
                   </td>
-                  <td className="p-3.5 text-center font-mono font-bold text-amber-400">
+                  <td className="p-4 text-center font-mono font-bold text-amber-400">
                     {g.totalGaps}
                   </td>
                 </tr>
@@ -531,25 +548,25 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
         </div>
       </div>
 
-      {/* 5 · Rolling 8-Week Trend */}
+      {/* 6 · Rolling 8-Week Trend */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
           <TrendingUp className="w-4 h-4 text-emerald-400" />
-          <span>5 · Weekly Trend — last 8 weeks (Mon–Sun)</span>
+          <span>5 · Weekly Trend — Last 8 Weeks (Mon–Sun)</span>
         </div>
 
-        <div className="overflow-x-auto rounded-3xl glass-panel border border-white/10 shadow-lg">
+        <div className="overflow-x-auto rounded-3xl glass-panel border border-white/10 shadow-xl">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-white/10 bg-white/[0.03] text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                <th className="p-3.5">Week Starting</th>
-                <th className="p-3.5 text-center">Actions Planned</th>
-                <th className="p-3.5 text-center">Actions Completed</th>
+                <th className="p-4">Week Starting</th>
+                <th className="p-4 text-center">Actions Planned</th>
+                <th className="p-4 text-center">Actions Completed</th>
                 {rawProfiles
                   .filter((p) => p.role !== 'founder')
                   .slice(0, 6)
                   .map((p) => (
-                    <th key={p.id} className="p-3.5 text-center">
+                    <th key={p.id} className="p-4 text-center">
                       {p.full_name}
                     </th>
                   ))}
@@ -558,20 +575,20 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
             <tbody className="divide-y divide-white/5">
               {weeklyTrend.map((row, idx) => (
                 <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="p-3.5 font-mono text-slate-300">
+                  <td className="p-4 font-mono text-slate-300">
                     {formatDateDDMMYYYY(row.weekStarting)}
                   </td>
-                  <td className="p-3.5 text-center font-mono text-slate-400">
+                  <td className="p-4 text-center font-mono text-slate-400">
                     {row.actionsPlanned}
                   </td>
-                  <td className="p-3.5 text-center font-mono text-emerald-400 font-bold">
+                  <td className="p-4 text-center font-mono text-emerald-400 font-bold">
                     {row.actionsCompleted}
                   </td>
                   {rawProfiles
                     .filter((p) => p.role !== 'founder')
                     .slice(0, 6)
                     .map((p) => (
-                      <td key={p.id} className="p-3.5 text-center font-mono text-slate-300">
+                      <td key={p.id} className="p-4 text-center font-mono text-slate-300">
                         {row.memberCounts[p.full_name] || 0}
                       </td>
                     ))}

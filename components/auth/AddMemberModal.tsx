@@ -8,7 +8,8 @@ import { Profile } from '@/lib/types';
 interface AddMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onMemberAdded: (newProfile: Profile) => void;
+  onMemberAdded?: (newProfile: Profile) => void;
+  onSuccess?: (newProfile: Profile) => void;
 }
 
 const COLOR_OPTIONS = [
@@ -22,7 +23,7 @@ const COLOR_OPTIONS = [
   '#6366f1', // Indigo
 ];
 
-export function AddMemberModal({ isOpen, onClose, onMemberAdded }: AddMemberModalProps) {
+export function AddMemberModal({ isOpen, onClose, onMemberAdded, onSuccess }: AddMemberModalProps) {
   const [fullName, setFullName] = useState('');
   const [role, setRole] = useState<'founder' | 'member'>('member');
   const [leadTitle, setLeadTitle] = useState('Team Member');
@@ -54,7 +55,8 @@ export function AddMemberModal({ isOpen, onClose, onMemberAdded }: AddMemberModa
     setSaving(false);
 
     if (res.success && res.profile) {
-      onMemberAdded(res.profile);
+      if (onMemberAdded) onMemberAdded(res.profile);
+      if (onSuccess) onSuccess(res.profile);
       setFullName('');
       setEmail('');
       onClose();
