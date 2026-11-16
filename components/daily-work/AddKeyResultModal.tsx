@@ -29,6 +29,17 @@ export function AddKeyResultModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  React.useEffect(() => {
+    if (isOpen && objective) {
+      setKrCode(`${objective.sl_no}.1`);
+      setTitle('');
+      setTargetMeasure('');
+      setOwnerId('');
+      setDueDate('');
+      setError(null);
+    }
+  }, [isOpen, objective]);
+
   if (!isOpen || !objective) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {

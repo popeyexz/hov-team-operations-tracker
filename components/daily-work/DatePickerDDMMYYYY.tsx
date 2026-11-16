@@ -40,6 +40,14 @@ export function DatePickerDDMMYYYY({
           required={required}
           value={isoVal}
           onChange={(e) => onChange(e.target.value)}
+          onClick={(e) => e.currentTarget.showPicker?.()}
+          onKeyDown={(e) => {
+            // Strictly prohibit manual string keyboard entry per operational requirements
+            if (e.key !== 'Tab') {
+              e.preventDefault();
+              (e.currentTarget as any).showPicker?.();
+            }
+          }}
           className="w-full glass-input pl-10 pr-4 py-2 rounded-xl text-xs sm:text-sm font-mono text-slate-200 cursor-pointer"
         />
       </div>

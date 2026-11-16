@@ -81,17 +81,22 @@ export async function getWorkData(activeProfileId?: string, impersonatedMemberId
 
       // Check cross-venture visibility for effectiveProfileId
       if (effectiveProfileId) {
-        if (v.lead_id === effectiveProfileId) {
+        const effProfile = profiles.find((p) => p.id === effectiveProfileId);
+        if (effProfile?.role === 'founder' && !impersonatedMemberId) {
           myVentureIds.add(v.id);
-        }
-        if (vObjs.some((o) => o.owner_id === effectiveProfileId)) {
-          myVentureIds.add(v.id);
-        }
-        if (vKrs.some((k) => k.owner_id === effectiveProfileId)) {
-          myVentureIds.add(v.id);
-        }
-        if (vActions.some((a) => a.assigned_to === effectiveProfileId)) {
-          myVentureIds.add(v.id);
+        } else {
+          if (v.lead_id === effectiveProfileId) {
+            myVentureIds.add(v.id);
+          }
+          if (vObjs.some((o) => o.owner_id === effectiveProfileId)) {
+            myVentureIds.add(v.id);
+          }
+          if (vKrs.some((k) => k.owner_id === effectiveProfileId)) {
+            myVentureIds.add(v.id);
+          }
+          if (vActions.some((a) => a.assigned_to === effectiveProfileId)) {
+            myVentureIds.add(v.id);
+          }
         }
       }
 
@@ -132,11 +137,12 @@ export async function getWorkData(activeProfileId?: string, impersonatedMemberId
 
 export async function submitActionItemForReview(params: {
   actionItemId: string;
-  actorId: string;
+  actorId?: string | null;
   outcomeAchieved: string;
   comments?: string;
 }) {
   const { actionItemId, actorId, outcomeAchieved, comments } = params;
+  const cleanActorId = actorId && actorId.trim() ? actorId.trim() : null;
 
   const { data: item, error: fetchErr } = await supabaseAdmin
     .from('action_items')
@@ -164,7 +170,7 @@ export async function submitActionItemForReview(params: {
   // Log activity
   await supabaseAdmin.from('task_activity_log').insert({
     action_item_id: actionItemId,
-    actor_id: actorId,
+    actor_id: cleanActorId,
     action: 'submission',
     content: `Submitted for review: ${outcomeAchieved}`,
   });
@@ -176,18 +182,20 @@ export async function submitActionItemForReview(params: {
     .eq('role', 'founder')
     .single();
 
-  const { data: actor } = await supabaseAdmin
-    .from('profiles')
-    .select('full_name')
-    .eq('id', actorId)
-    .single();
-
-  const actorName = actor?.full_name || 'Team Member';
+  let actorName = 'Team Member';
+  if (cleanActorId) {
+    const { data: actor } = await supabaseAdmin
+      .from('profiles')
+      .select('full_name')
+      .eq('id', cleanActorId)
+      .single();
+    if (actor?.full_name) actorName = actor.full_name;
+  }
 
   if (founder) {
     await supabaseAdmin.from('in_app_notifications').insert({
       recipient_id: founder.id,
-      actor_id: actorId,
+      actor_id: cleanActorId,
       action_item_id: actionItemId,
       type: 'submitted_for_review',
       title: 'Review Required',
@@ -225,11 +233,20 @@ export async function submitActionItemForReview(params: {
 
 export async function founderReviewActionItem(params: {
   actionItemId: string;
-  founderId: string;
+  founderId?: string | null;
   approved: boolean;
   feedback?: string;
 }) {
   const { actionItemId, founderId, approved, feedback } = params;
+  let cleanFounderId = founderId && founderId.trim() ? founderId.trim() : null;
+  if (!cleanFounderId) {
+    const { data: founder } = await supabaseAdmin
+      .from('profiles')
+      .select('id')
+      .eq('role', 'founder')
+      .maybeSingle();
+    cleanFounderId = founder?.id || null;
+  }
 
   const { data: item, error: fetchErr } = await supabaseAdmin
     .from('action_items')
@@ -261,7 +278,7 @@ export async function founderReviewActionItem(params: {
   // Log activity
   await supabaseAdmin.from('task_activity_log').insert({
     action_item_id: actionItemId,
-    actor_id: founderId,
+    actor_id: cleanFounderId,
     action: approved ? 'approval' : 'feedback',
     content: approved
       ? 'Founder approved task as Completed.'
@@ -278,7 +295,7 @@ export async function founderReviewActionItem(params: {
 
     await supabaseAdmin.from('in_app_notifications').insert({
       recipient_id: item.assigned_to,
-      actor_id: founderId,
+      actor_id: cleanFounderId,
       action_item_id: actionItemId,
       type: notifType,
       title: notifTitle,
@@ -530,4 +547,57 @@ export async function updateKeyResult(params: {
   if (error) return { success: false, error: error.message };
   revalidatePath('/daily-work');
   return { success: true };
+}
+
+export async function updateVentureLead(params: {
+  ventureId: string;
+  leadId: string | null;
+  leadTitle?: string;
+}) {
+  const cleanLeadId = params.leadId && params.leadId.trim() ? params.leadId.trim() : null;
+  const payload: any = {
+    lead_id: cleanLeadId,
+    updated_at: new Date().toISOString(),
+  };
+  if (params.leadTitle !== undefined) {
+    payload.lead_title = params.leadTitle.trim() || 'Venture Lead';
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('ventures')
+    .update(payload)
+    .eq('id', params.ventureId)
+    .select('*, lead:lead_id(*)')
+    .single();
+
+  if (error) return { success: false, error: error.message };
+  revalidatePath('/daily-work');
+  revalidatePath('/progress');
+  return { success: true, venture: data as Venture };
+}
+
+export async function addActivityComment(params: {
+  actionItemId: string;
+  actorId?: string | null;
+  content: string;
+}) {
+  const content = params.content?.trim();
+  if (!content) return { success: false, error: 'Comment content cannot be empty' };
+
+  const cleanActorId = params.actorId && params.actorId.trim() ? params.actorId.trim() : null;
+
+  const { data, error } = await supabaseAdmin
+    .from('task_activity_log')
+    .insert({
+      action_item_id: params.actionItemId,
+      actor_id: cleanActorId,
+      action: 'feedback',
+      content,
+    })
+    .select('*, actor:actor_id(*)')
+    .single();
+
+  if (error) return { success: false, error: error.message };
+  revalidatePath('/daily-work');
+  return { success: true, log: data as TaskActivityLog };
 }

@@ -14,8 +14,10 @@ def load_env():
     return env
 
 ENV = load_env()
-TOKEN = os.environ.get('VERCEL_TOKEN') or ENV.get('VERCEL_TOKEN', '')
+TOKEN = ENV.get('VERCEL_TOKEN') or os.environ.get('VERCEL_TOKEN', '')
 PROJECT = 'hov-team-tracker'
+PROJECT_ID = 'prj_Vy6p9QUVhMhKZ7zamfvsACLvsoXs'
+TEAM_ID = 'team_alfUxsgPPcvdqbgUASI5d6WP'
 
 ENV_VARS = [
     {
@@ -63,8 +65,8 @@ ENV_VARS = [
 ]
 
 def main():
-    print(f"Adding environment variables to Vercel project '{PROJECT}'...")
-    url = f"https://api.vercel.com/v10/projects/{PROJECT}/env"
+    print(f"Adding environment variables to Vercel project '{PROJECT}' ({PROJECT_ID})...")
+    url = f"https://api.vercel.com/v10/projects/{PROJECT_ID}/env?teamId={TEAM_ID}"
 
     for item in ENV_VARS:
         req = urllib.request.Request(

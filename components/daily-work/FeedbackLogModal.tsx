@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { X, MessageSquare, Clock, User, CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react';
+import { X, MessageSquare, Clock, User, CheckCircle2, AlertCircle, ArrowUpRight, Send } from 'lucide-react';
 import { TaskActivityLog, ActionItem } from '@/lib/types';
-import { getActionItemLogs } from '@/app/actions/work-actions';
+import { getActionItemLogs, addActivityComment } from '@/app/actions/work-actions';
+import { useActiveProfile } from '@/context/ActiveProfileContext';
 import { formatDateDDMMYYYY } from '@/lib/utils';
 
 interface FeedbackLogModalProps {
@@ -13,8 +14,11 @@ interface FeedbackLogModalProps {
 }
 
 export function FeedbackLogModal({ actionItem, isOpen, onClose }: FeedbackLogModalProps) {
+  const { effectiveProfile } = useActiveProfile();
   const [logs, setLogs] = useState<TaskActivityLog[]>([]);
   const [loading, setLoading] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const [posting, setPosting] = useState(false);
 
   useEffect(() => {
     if (isOpen && actionItem) {
@@ -24,6 +28,22 @@ export function FeedbackLogModal({ actionItem, isOpen, onClose }: FeedbackLogMod
         .finally(() => setLoading(false));
     }
   }, [isOpen, actionItem]);
+
+  const handlePostComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!commentText.trim() || !actionItem) return;
+    setPosting(true);
+    const res = await addActivityComment({
+      actionItemId: actionItem.id,
+      actorId: effectiveProfile?.id || null,
+      content: commentText.trim(),
+    });
+    setPosting(false);
+    if (res.success && res.log) {
+      setLogs((prev) => [...prev, res.log!]);
+      setCommentText('');
+    }
+  };
 
   if (!isOpen || !actionItem) return null;
 
@@ -115,14 +135,31 @@ export function FeedbackLogModal({ actionItem, isOpen, onClose }: FeedbackLogMod
           )}
         </div>
 
-        <div className="pt-4 border-t border-white/10 mt-4 flex justify-end">
+        {/* Live comment input form */}
+        <form onSubmit={handlePostComment} className="pt-3 border-t border-white/10 mt-3 flex items-center gap-2">
+          <input
+            type="text"
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            placeholder="Add update or feedback comment to audit trail..."
+            className="flex-1 glass-input px-3.5 py-2 rounded-xl text-xs placeholder:text-slate-500"
+          />
           <button
+            type="submit"
+            disabled={posting || !commentText.trim()}
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shrink-0"
+          >
+            <Send className="w-3.5 h-3.5" />
+            <span>{posting ? 'Posting...' : 'Post'}</span>
+          </button>
+          <button
+            type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl glass-pill hover:bg-white/10 text-xs font-semibold text-slate-300"
+            className="px-3 py-2 rounded-xl glass-pill hover:bg-white/10 text-xs font-semibold text-slate-300"
           >
             Close
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );

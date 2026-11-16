@@ -36,7 +36,9 @@ import {
   ExternalLink,
   Calendar,
   AlertTriangle,
+  Trash2,
 } from 'lucide-react';
+import { updateVentureLead, deleteActionItem } from '@/app/actions/work-actions';
 import { VentureDocumentsDrawer } from '../venture/VentureDocumentsDrawer';
 import { FeedbackLogModal } from './FeedbackLogModal';
 import { SubmitReviewModal } from './SubmitReviewModal';
@@ -137,12 +139,48 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
     return true;
   });
 
-  // Grouping by Venture Lead
-  const leads = [
-    { name: 'Atharav', title: 'Venture Lead (5 Ventures)', slug: 'atharav' },
-    { name: 'Sharuk', title: 'Venture Lead (5 Ventures)', slug: 'sharuk' },
-    { name: 'Rufus', title: 'Venture Lead (3 Ventures)', slug: 'rufus' },
-  ];
+  const handleReassignLead = async (ventureId: string, leadId: string) => {
+    const profile = profiles.find((p) => p.id === leadId);
+    await updateVentureLead({
+      ventureId,
+      leadId: leadId || null,
+      leadTitle: profile?.lead_title || 'Venture Lead',
+    });
+    onRefresh();
+  };
+
+  const handleDeleteTask = async (actionItemId: string) => {
+    if (!confirm('Are you sure you want to delete this action item?')) return;
+    await deleteActionItem(actionItemId);
+    onRefresh();
+  };
+
+  // Dynamic Grouping by all active Venture Leads
+  const dynamicLeads = React.useMemo(() => {
+    const map = new Map<
+      string,
+      { id: string; name: string; slug: string; title: string; count: number }
+    >();
+
+    filteredVentures.forEach((v) => {
+      const leadId = v.lead?.id || 'unassigned';
+      const leadName = v.lead?.full_name || 'Unassigned Lead';
+      const leadSlug = v.lead?.slug || 'unassigned';
+      const leadTitle = v.lead_title || 'Venture Lead';
+
+      const curr = map.get(leadId) || {
+        id: leadId,
+        name: leadName,
+        slug: leadSlug,
+        title: leadTitle,
+        count: 0,
+      };
+      curr.count += 1;
+      map.set(leadId, curr);
+    });
+
+    return Array.from(map.values()).sort((a, b) => b.count - a.count);
+  }, [filteredVentures]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
@@ -283,13 +321,33 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
       </div>
 
       {/* Main Content Area */}
-      {viewMode === 'by_venture' ? (
+      {filteredVentures.length === 0 ? (
+        <div className="p-8 sm:p-12 rounded-3xl glass-panel border border-white/10 text-center space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 mx-auto flex items-center justify-center">
+            <Briefcase className="w-7 h-7" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-white">No Assigned Ventures Found</h3>
+            <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+              You currently have no action items, objectives, or key results assigned under this view filter.
+              Switch to viewing all 13 ventures to explore the active portfolio.
+            </p>
+          </div>
+          <button
+            onClick={() => setScopeFilter('all')}
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md"
+          >
+            View All 13 Ventures
+          </button>
+        </div>
+      ) : viewMode === 'by_venture' ? (
         // Standard 13-Venture Board
         <div className="space-y-4">
           {filteredVentures.map((venture) => (
             <VentureSection
               key={venture.id}
               venture={venture}
+              profiles={profiles}
               isExpanded={!!expandedVentures[venture.id]}
               onToggle={() => toggleVenture(venture.id)}
               objectives={objectives.filter((o) => o.venture_id === venture.id)}
@@ -315,29 +373,34 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
               onOpenLogs={(item) => setSelectedLogItem(item)}
               onSubmitReview={(item) => setSelectedSubmitItem(item)}
               onFounderReview={(item) => setSelectedFounderReviewItem(item)}
+              onReassignLead={handleReassignLead}
+              onDeleteTask={handleDeleteTask}
               effectiveProfile={effectiveProfile}
               isFounder={isFounder}
             />
           ))}
         </div>
       ) : (
-        // Grouped by Venture Lead
+        // Dynamic Grouping by Venture Lead
         <div className="space-y-8">
-          {leads.map((lead) => {
-            const leadVentures = filteredVentures.filter(
-              (v) => v.lead?.slug === lead.slug || v.lead_title.includes(lead.name)
+          {dynamicLeads.map((lead) => {
+            const leadVentures = filteredVentures.filter((v) =>
+              lead.id === 'unassigned' ? !v.lead_id : v.lead_id === lead.id
             );
             if (leadVentures.length === 0) return null;
 
             return (
-              <div key={lead.slug} className="space-y-4">
+              <div key={lead.id} className="space-y-4">
                 <div className="flex items-center gap-3 pb-2 border-b border-white/10">
                   <div className="w-8 h-8 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs">
                     {lead.name.charAt(0)}
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-white">{lead.name}</h2>
-                    <p className="text-xs text-slate-400">{lead.title}</p>
+                    <p className="text-xs text-slate-400">
+                      {lead.title} ({leadVentures.length}{' '}
+                      {leadVentures.length === 1 ? 'Venture' : 'Ventures'})
+                    </p>
                   </div>
                 </div>
 
@@ -346,6 +409,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
                     <VentureSection
                       key={venture.id}
                       venture={venture}
+                      profiles={profiles}
                       isExpanded={!!expandedVentures[venture.id]}
                       onToggle={() => toggleVenture(venture.id)}
                       objectives={objectives.filter((o) => o.venture_id === venture.id)}
@@ -371,6 +435,8 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
                       onOpenLogs={(item) => setSelectedLogItem(item)}
                       onSubmitReview={(item) => setSelectedSubmitItem(item)}
                       onFounderReview={(item) => setSelectedFounderReviewItem(item)}
+                      onReassignLead={handleReassignLead}
+                      onDeleteTask={handleDeleteTask}
                       effectiveProfile={effectiveProfile}
                       isFounder={isFounder}
                     />
@@ -448,6 +514,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
 // ----------------------------------------------------
 function VentureSection({
   venture,
+  profiles,
   isExpanded,
   onToggle,
   objectives,
@@ -464,10 +531,13 @@ function VentureSection({
   onOpenLogs,
   onSubmitReview,
   onFounderReview,
+  onReassignLead,
+  onDeleteTask,
   effectiveProfile,
   isFounder,
 }: {
   venture: Venture;
+  profiles: Profile[];
   isExpanded: boolean;
   onToggle: () => void;
   objectives: Objective[];
@@ -484,6 +554,8 @@ function VentureSection({
   onOpenLogs: (item: ActionItem) => void;
   onSubmitReview: (item: ActionItem) => void;
   onFounderReview: (item: ActionItem) => void;
+  onReassignLead: (ventureId: string, leadId: string) => void;
+  onDeleteTask: (id: string) => void;
   effectiveProfile: Profile | null;
   isFounder: boolean;
 }) {
@@ -537,10 +609,32 @@ function VentureSection({
               </span>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-slate-400 mt-1">
-              <span>
-                Lead: <strong className="text-slate-200">{venture.lead?.full_name || 'Unassigned'}</strong>
-              </span>
+            <div className="flex items-center gap-3 text-xs text-slate-400 mt-1 flex-wrap">
+              {isFounder ? (
+                <div
+                  className="inline-flex items-center gap-1.5"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="text-slate-400 font-medium">Lead:</span>
+                  <select
+                    value={venture.lead_id || ''}
+                    onChange={(e) => onReassignLead(venture.id, e.target.value)}
+                    className="glass-input text-[11px] font-semibold px-2 py-0.5 rounded-lg text-sky-300 bg-slate-900 border-sky-500/30 cursor-pointer"
+                    title="Founder: Reassign Venture Lead"
+                  >
+                    <option value="">Unassigned</option>
+                    {profiles.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.full_name} ({p.role === 'founder' ? 'Founder' : p.lead_title || 'Member'})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <span>
+                  Lead: <strong className="text-slate-200">{venture.lead?.full_name || 'Unassigned'}</strong>
+                </span>
+              )}
               <span>•</span>
               <span>{objectives.length} Objectives</span>
               <span>•</span>
@@ -721,6 +815,7 @@ function VentureSection({
                                 onOpenLogs={() => onOpenLogs(action)}
                                 onSubmitReview={() => onSubmitReview(action)}
                                 onFounderReview={() => onFounderReview(action)}
+                                onDeleteTask={() => onDeleteTask(action.id)}
                                 effectiveProfile={effectiveProfile}
                                 isFounder={isFounder}
                               />
@@ -757,6 +852,7 @@ function VentureSection({
                     onOpenLogs={() => onOpenLogs(action)}
                     onSubmitReview={() => onSubmitReview(action)}
                     onFounderReview={() => onFounderReview(action)}
+                    onDeleteTask={() => onDeleteTask(action.id)}
                     effectiveProfile={effectiveProfile}
                     isFounder={isFounder}
                   />
@@ -778,6 +874,7 @@ function ActionItemCard({
   onOpenLogs,
   onSubmitReview,
   onFounderReview,
+  onDeleteTask,
   effectiveProfile,
   isFounder,
 }: {
@@ -785,6 +882,7 @@ function ActionItemCard({
   onOpenLogs: () => void;
   onSubmitReview: () => void;
   onFounderReview: () => void;
+  onDeleteTask: () => void;
   effectiveProfile: Profile | null;
   isFounder: boolean;
 }) {
@@ -931,6 +1029,17 @@ function ActionItemCard({
         >
           <MessageSquare className="w-4 h-4" />
         </button>
+
+        {/* Delete Action Item Button (for owner or Founder) */}
+        {(isAssignedToMe || isFounder) && (
+          <button
+            onClick={onDeleteTask}
+            className="p-2 rounded-xl glass-pill hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 transition-colors"
+            title="Delete Action Item"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
     </div>
   );

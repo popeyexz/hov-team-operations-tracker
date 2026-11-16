@@ -31,6 +31,17 @@ export function AddObjectiveModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  React.useEffect(() => {
+    if (isOpen) {
+      if (preselectedVentureId) {
+        setVentureId(preselectedVentureId);
+      } else if (ventures.length > 0 && !ventureId) {
+        setVentureId(ventures[0].id);
+      }
+      setError(null);
+    }
+  }, [isOpen, preselectedVentureId, ventures]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {

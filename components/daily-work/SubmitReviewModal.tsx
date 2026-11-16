@@ -20,10 +20,18 @@ export function SubmitReviewModal({
   onClose,
   onSuccess,
 }: SubmitReviewModalProps) {
-  const [outcome, setOutcome] = useState('');
+  const [outcome, setOutcome] = useState(actionItem?.outcome_achieved || '');
   const [comments, setComments] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (actionItem && isOpen) {
+      setOutcome(actionItem.outcome_achieved || '');
+      setComments('');
+      setError(null);
+    }
+  }, [actionItem, isOpen]);
 
   if (!isOpen || !actionItem) return null;
 

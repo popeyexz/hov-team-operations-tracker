@@ -15,7 +15,7 @@ def load_env():
 
 def main():
     env = load_env()
-    token = os.environ.get('SUPABASE_ACCESS_TOKEN') or env.get('SUPABASE_ACCESS_TOKEN', '')
+    token = env.get('SUPABASE_ACCESS_TOKEN') or os.environ.get('SUPABASE_ACCESS_TOKEN', '')
     project_ref = 'qglghldegdikwjzileno'
     url = f'https://api.supabase.com/v1/projects/{project_ref}/database/query'
 

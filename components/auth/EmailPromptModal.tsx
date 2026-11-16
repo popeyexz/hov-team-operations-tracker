@@ -17,7 +17,19 @@ export function EmailPromptModal({ profile, isOpen, onClose, onSuccess }: EmailP
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  React.useEffect(() => {
+    if (profile && isOpen) {
+      setEmail(profile.email || '');
+      setError(null);
+    }
+  }, [profile, isOpen]);
+
   if (!isOpen || !profile) return null;
+
+  const handleSkip = () => {
+    onSuccess(profile);
+    onClose();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +106,7 @@ export function EmailPromptModal({ profile, isOpen, onClose, onSuccess }: EmailP
           <div className="flex items-center justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleSkip}
               className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-xl"
             >
               Skip for now

@@ -291,6 +291,46 @@ export function Navbar() {
                 </select>
               </div>
             )}
+
+            {/* Quick Profile Actions in Mobile Menu */}
+            <div className="pt-2 border-t border-white/10 space-y-1">
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsAddMemberModalOpen(true);
+                }}
+                className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-emerald-400 hover:bg-white/5 rounded-xl text-left"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span>+ Add Team Member</span>
+              </button>
+              {activeProfile && (
+                <>
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsEmailModalOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-sky-400 hover:bg-white/5 rounded-xl text-left"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>Update Alert Email</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setActiveProfile(null);
+                      setImpersonatedMember(null);
+                      router.push('/');
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl text-left"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Switch Profile</span>
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         )}
       </header>

@@ -40,6 +40,21 @@ export function AddActionItemModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  React.useEffect(() => {
+    if (isOpen) {
+      if (preselectedVentureId) {
+        setVentureId(preselectedVentureId);
+      } else if (ventures.length > 0 && !ventureId) {
+        setVentureId(ventures[0].id);
+      }
+      if (preselectedObjectiveId !== undefined) {
+        setObjectiveId(preselectedObjectiveId || '');
+      }
+      setKeyResultId('');
+      setError(null);
+    }
+  }, [isOpen, preselectedVentureId, preselectedObjectiveId, ventures]);
+
   if (!isOpen) return null;
 
   const currentObjectives = objectives.filter((o) => o.venture_id === ventureId);
