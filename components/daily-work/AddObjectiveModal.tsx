@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Target } from 'lucide-react';
+import { X, Target, Crown, ShieldAlert } from 'lucide-react';
 import { Profile, Venture } from '@/lib/types';
 import { createObjective } from '@/app/actions/work-actions';
 import { DatePickerDDMMYYYY } from './DatePickerDDMMYYYY';
@@ -10,6 +10,7 @@ interface AddObjectiveModalProps {
   ventures: Venture[];
   profiles: Profile[];
   preselectedVentureId?: string;
+  founderId?: string;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
@@ -19,17 +20,19 @@ export function AddObjectiveModal({
   ventures,
   profiles,
   preselectedVentureId,
+  founderId,
   isOpen,
   onClose,
   onSuccess,
 }: AddObjectiveModalProps) {
   const [ventureId, setVentureId] = useState(preselectedVentureId || ventures[0]?.id || '');
   const [title, setTitle] = useState('');
-  const [ownerId, setOwnerId] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [comments, setComments] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const founder = profiles.find((p) => p.role === 'founder');
 
   React.useEffect(() => {
     if (isOpen) {
@@ -61,9 +64,9 @@ export function AddObjectiveModal({
     const res = await createObjective({
       ventureId,
       title: title.trim(),
-      ownerId: ownerId || null,
       dueDate: dueDate || null,
       comments: comments.trim() || undefined,
+      actorId: founderId || founder?.id,
     });
 
     setSaving(false);
@@ -79,80 +82,75 @@ export function AddObjectiveModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg rounded-3xl glass-panel p-6 sm:p-8 border border-white/20 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+      <div className="relative w-full max-w-lg rounded-xl bg-zinc-900 border border-zinc-800 p-6 shadow-2xl">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full glass-pill hover:bg-white/10 text-slate-400 hover:text-white"
+          className="absolute top-4 right-4 p-1.5 rounded-md text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-3.5 mb-5">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-            <Target className="w-6 h-6" />
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <Target className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-indigo-400">
-              Strategic Goal
-            </span>
-            <h3 className="text-base sm:text-lg font-bold text-white">Add New Objective</h3>
+            <div className="flex items-center gap-1.5">
+              <h3 className="text-sm font-semibold text-zinc-100">Define Strategic Objective</h3>
+              <span className="font-mono text-[10px] px-1.5 py-0.2 rounded border border-amber-500/30 bg-amber-500/10 text-amber-300">
+                FOUNDER ONLY
+              </span>
+            </div>
+            <p className="text-xs text-zinc-500 font-mono">Strategic objectives can only be defined by the Founder</p>
           </div>
         </div>
 
         {error && (
-          <div className="p-3 mb-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">
+          <div className="p-2.5 mb-4 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-mono">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Venture</label>
+            <label className="block text-xs font-medium text-zinc-400 mb-1 font-mono">VENTURE</label>
             <select
               value={ventureId}
               onChange={(e) => setVentureId(e.target.value)}
-              className="w-full glass-input px-3 py-2 rounded-xl text-xs bg-slate-900 text-slate-200"
+              className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 text-zinc-100 px-3 py-2 rounded-lg text-xs focus:outline-none transition-colors"
             >
               {ventures.map((v) => (
                 <option key={v.id} value={v.id}>
-                  {v.name}
+                  {v.name} ({v.code})
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Objective Title <span className="text-rose-400">*</span>
+            <label className="block text-xs font-medium text-zinc-400 mb-1 font-mono">
+              OBJECTIVE TITLE <span className="text-rose-400">*</span>
             </label>
             <textarea
               required
               rows={2}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Expand outreach pipeline to 50 prospective partners"
-              className="w-full glass-input px-3.5 py-2 rounded-xl text-xs sm:text-sm placeholder:text-slate-500"
+              placeholder="e.g. Finalise the Content Buckets of PS.HOV"
+              className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 text-zinc-100 px-3 py-2 rounded-lg text-xs placeholder:text-zinc-600 focus:outline-none transition-colors"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Owner (optional)
+              <label className="block text-xs font-medium text-zinc-400 mb-1 font-mono">
+                AUTHORITY / ISSUER
               </label>
-              <select
-                value={ownerId}
-                onChange={(e) => setOwnerId(e.target.value)}
-                className="w-full glass-input px-3 py-2 rounded-xl text-xs bg-slate-900 text-slate-200"
-              >
-                <option value="">Unassigned</option>
-                {profiles.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.full_name}
-                  </option>
-                ))}
-              </select>
+              <div className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 px-3 py-2 rounded-lg text-xs font-mono flex items-center justify-between">
+                <span>{founder?.full_name || 'Pratap'} (Founder)</span>
+                <Crown className="w-3 h-3 text-amber-400" />
+              </div>
             </div>
 
             <DatePickerDDMMYYYY
@@ -163,30 +161,30 @@ export function AddObjectiveModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Comments</label>
+            <label className="block text-xs font-medium text-zinc-400 mb-1 font-mono">STRATEGIC NOTES</label>
             <input
               type="text"
               value={comments}
               onChange={(e) => setComments(e.target.value)}
-              placeholder="Strategic rationale or notes"
-              className="w-full glass-input px-3 py-2 rounded-xl text-xs placeholder:text-slate-500"
+              placeholder="Key strategic context or rationale"
+              className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 text-zinc-100 px-3 py-2 rounded-lg text-xs placeholder:text-zinc-600 focus:outline-none transition-colors"
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-zinc-800">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-xl"
+              className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200 transition-colors font-medium cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-semibold text-xs shadow-lg shadow-indigo-500/20 flex items-center gap-2"
+              className="px-4 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs shadow-sm transition-all cursor-pointer disabled:opacity-50"
             >
-              {saving ? 'Saving...' : 'Add Objective'}
+              {saving ? 'Creating...' : 'Create Objective'}
             </button>
           </div>
         </form>

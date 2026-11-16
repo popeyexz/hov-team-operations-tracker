@@ -88,11 +88,19 @@ def test_venture_lead_reassignment():
     print("  -> Passed! Dynamic lead reassignment and restoration verified.")
 
 def test_objectives():
-    print("[TEST 5] Verifying 73 Seeded Objectives...")
+    print("[TEST 5] Verifying 73 Seeded Objectives & Founder Ownership...")
     res = run_query("SELECT count(*) FROM public.objectives;")
     count = res[0]['count']
     assert count == 73, f"Expected 73 objectives, found {count}"
-    print(f"  -> Passed! Exactly {count} objectives verified across all 13 ventures.")
+
+    # Verify all objectives are owned by the Founder (Pratap)
+    founder_objs = run_query("""
+    SELECT count(*) FROM public.objectives o
+    JOIN public.profiles p ON o.owner_id = p.id
+    WHERE p.role = 'founder';
+    """)
+    assert founder_objs[0]['count'] == 73, f"All 73 objectives must be owned by the Founder, found {founder_objs[0]['count']}"
+    print(f"  -> Passed! Exactly {count} objectives verified, all 100% issued by Founder (Pratap).")
 
 def test_two_stage_review_workflow():
     print("[TEST 6] Verifying Two-Stage Review Protocol & Correction Loop (Non-polluting)...")
@@ -152,8 +160,13 @@ def test_two_stage_review_workflow():
 
 def test_threaded_feedback_log():
     print("[TEST 7] Verifying Threaded Feedback Log & Auditing (Non-polluting)...")
-    items = run_query("SELECT id FROM public.action_items LIMIT 1;")
-    item_id = items[0]['id']
+    v_id = run_query("SELECT id FROM public.ventures LIMIT 1;")[0]['id']
+    temp_item = run_query(f"""
+    INSERT INTO public.action_items (venture_id, title, status, is_planned)
+    VALUES ('{v_id}', 'Temp Item for Feedback Test', 'in_progress', false)
+    RETURNING id;
+    """)[0]
+    item_id = temp_item['id']
 
     pratap = run_query("SELECT id FROM public.profiles WHERE slug = 'pratap';")[0]
     log_msg = f"Audit test log entry from E2E suite - {datetime.now().isoformat()}"
@@ -171,6 +184,7 @@ def test_threaded_feedback_log():
         print("  -> Passed! Task activity audit log insertion, retrieval, and cleanup verified.")
     finally:
         run_query(f"DELETE FROM public.task_activity_log WHERE id = '{log_id}';")
+        run_query(f"DELETE FROM public.action_items WHERE id = '{item_id}';")
 
 def test_forward_planning_and_promotion():
     print("[TEST 8] Verifying Forward Planning & 1-Click Daily Work Promotion...")

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Profile } from '@/lib/types';
-import { Mail, Crown, Compass, ArrowRight, ShieldCheck, Layers } from 'lucide-react';
+import { Mail, Crown, ArrowRight, Layers } from 'lucide-react';
 
 interface ProfileCardProps {
   profile: Profile;
@@ -14,7 +14,7 @@ export function ProfileCard({ profile, onClick, assignedVentures = [] }: Profile
   const isFounder = profile.role === 'founder';
   const isVentureLead = assignedVentures.length > 0 || (profile.lead_title?.toLowerCase().includes('lead') ?? false);
 
-  // Derive crisp initials (e.g. "Pratap" -> "P", "Atharav Kumar" -> "AK")
+  // Derive initials
   const getInitials = (name: string) => {
     const parts = name.trim().split(/\s+/);
     if (parts.length >= 2) {
@@ -35,7 +35,7 @@ export function ProfileCard({ profile, onClick, assignedVentures = [] }: Profile
       {/* Top Header Row */}
       <div>
         <div className="flex items-center justify-between gap-2 mb-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             {/* Monogram Badge */}
             <div
               className={`w-9 h-9 rounded-lg flex items-center justify-center font-mono font-bold text-xs tracking-wider border ${
@@ -55,7 +55,7 @@ export function ProfileCard({ profile, onClick, assignedVentures = [] }: Profile
                 {isFounder && <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />}
               </div>
               <div className="text-[11px] text-zinc-400 font-mono">
-                {profile.lead_title || (isFounder ? 'Founder & Managing Partner' : 'Team Member')}
+                {profile.lead_title || (isFounder ? 'Founder' : 'Member')}
               </div>
             </div>
           </div>
@@ -72,25 +72,18 @@ export function ProfileCard({ profile, onClick, assignedVentures = [] }: Profile
               </span>
             ) : (
               <span className="font-mono text-[10px] px-2 py-0.5 rounded border border-zinc-700/60 bg-zinc-800/60 text-zinc-400 font-medium">
-                SPECIALIST
+                MEMBER
               </span>
             )}
           </div>
         </div>
 
-        {/* Founder Context / Description */}
-        {isFounder && (
-          <p className="text-xs text-zinc-400 mb-4 leading-relaxed font-normal">
-            Direct operational oversight across all 13 portfolio companies. Authorizes Tier 1/2 OKR submissions, signs off on weekly reviews, and directs strategic capital allocations.
-          </p>
-        )}
-
-        {/* Assigned Ventures (Real Domain Data) */}
+        {/* Real Assigned Ventures (No Mock/Fabricated Tags) */}
         {assignedVentures.length > 0 && (
           <div className="mb-4">
             <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
               <Layers className="w-3 h-3 text-zinc-500" />
-              <span>Assigned Portfolio Ventures ({assignedVentures.length})</span>
+              <span>{isFounder ? 'Portfolio Ventures' : 'Assigned Ventures'} ({assignedVentures.length})</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {assignedVentures.map((v) => (
@@ -101,22 +94,6 @@ export function ProfileCard({ profile, onClick, assignedVentures = [] }: Profile
                   {v.name.replace('PS.HOV - ', '').replace('House_of_', '')}
                 </span>
               ))}
-            </div>
-          </div>
-        )}
-
-        {!isFounder && assignedVentures.length === 0 && (
-          <div className="mb-4">
-            <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5">
-              Domain Scope
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-zinc-400">
-                Cross-Venture Execution
-              </span>
-              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-zinc-400">
-                Operations & Growth
-              </span>
             </div>
           </div>
         )}

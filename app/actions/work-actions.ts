@@ -432,7 +432,29 @@ export async function createObjective(params: {
   ownerId?: string | null;
   dueDate?: string | null;
   comments?: string;
+  actorId?: string | null;
 }) {
+  // Founder Privilege Enforcement: Objectives can only be created by Founder
+  const { data: founder } = await supabaseAdmin
+    .from('profiles')
+    .select('id, role')
+    .eq('role', 'founder')
+    .maybeSingle();
+
+  if (params.actorId) {
+    const { data: actor } = await supabaseAdmin
+      .from('profiles')
+      .select('role')
+      .eq('id', params.actorId)
+      .maybeSingle();
+    if (!actor || actor.role !== 'founder') {
+      return { success: false, error: 'Strategic objectives can only be defined or created by the Founder.' };
+    }
+  }
+
+  // Objectives are ALWAYS authored/owned by the Founder
+  const effectiveOwnerId = founder?.id || params.ownerId || null;
+
   // calculate next sl_no
   const { data: existing } = await supabaseAdmin
     .from('objectives')
@@ -450,7 +472,7 @@ export async function createObjective(params: {
       sl_no: nextSl,
       title: params.title.trim(),
       status: 'no_krs',
-      owner_id: params.ownerId || null,
+      owner_id: effectiveOwnerId,
       due_date: params.dueDate || null,
       comments: params.comments?.trim() || '',
     })
@@ -469,7 +491,20 @@ export async function updateObjective(params: {
   ownerId?: string | null;
   dueDate?: string | null;
   comments?: string;
+  actorId?: string | null;
 }) {
+  // Founder Privilege Enforcement: Objectives can only be modified by Founder
+  if (params.actorId) {
+    const { data: actor } = await supabaseAdmin
+      .from('profiles')
+      .select('role')
+      .eq('id', params.actorId)
+      .maybeSingle();
+    if (!actor || actor.role !== 'founder') {
+      return { success: false, error: 'Strategic objectives can only be modified by the Founder.' };
+    }
+  }
+
   const payload: any = { updated_at: new Date().toISOString() };
   if (params.title !== undefined) payload.title = params.title.trim();
   if (params.status !== undefined) payload.status = params.status;
@@ -602,11 +637,25 @@ export async function addActivityComment(params: {
   return { success: true, log: data as TaskActivityLog };
 }
 
+export async function getGatewayData() {
+  const [{ data: venturesData }, { count: objectivesCount }] = await Promise.all([
+    supabaseAdmin
+      .from('ventures')
+      .select('id, name, code, lead_id')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true }),
+    supabaseAdmin
+      .from('objectives')
+      .select('*', { count: 'exact', head: true }),
+  ]);
+
+  return {
+    ventures: (venturesData || []) as { id: string; name: string; code: string; lead_id: string }[],
+    objectivesCount: objectivesCount || 0,
+  };
+}
+
 export async function getVenturesForGateway() {
-  const { data } = await supabaseAdmin
-    .from('ventures')
-    .select('id, name, code, lead_id')
-    .eq('is_active', true)
-    .order('display_order', { ascending: true });
-  return (data || []) as { id: string; name: string; code: string; lead_id: string }[];
+  const res = await getGatewayData();
+  return res.ventures;
 }

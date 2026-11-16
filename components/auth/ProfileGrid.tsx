@@ -8,7 +8,7 @@ import { EmailPromptModal } from './EmailPromptModal';
 import { AddMemberModal } from './AddMemberModal';
 import { Profile } from '@/lib/types';
 import { Plus, Shield, Layers, Building2, CheckCircle2 } from 'lucide-react';
-import { getVenturesForGateway } from '@/app/actions/work-actions';
+import { getGatewayData } from '@/app/actions/work-actions';
 
 interface BasicVenture {
   id: string;
@@ -21,13 +21,15 @@ export function ProfileGrid() {
   const router = useRouter();
   const { profiles, setActiveProfile, refreshProfiles } = useActiveProfile();
   const [ventures, setVentures] = useState<BasicVenture[]>([]);
+  const [objectiveCount, setObjectiveCount] = useState<number>(73);
   const [selectedForEmail, setSelectedForEmail] = useState<Profile | null>(null);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
-    getVenturesForGateway().then((data) => {
-      setVentures(data as BasicVenture[]);
+    getGatewayData().then((data) => {
+      setVentures(data.ventures as BasicVenture[]);
+      setObjectiveCount(data.objectivesCount);
     });
   }, []);
 
@@ -84,11 +86,11 @@ export function ProfileGrid() {
         <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs">
           <div className="px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300">
             <span className="text-zinc-500 mr-2">VENTURES</span>
-            <span className="font-semibold text-zinc-100">13</span>
+            <span className="font-semibold text-zinc-100">{ventures.length || 13}</span>
           </div>
           <div className="px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300">
             <span className="text-zinc-500 mr-2">OBJECTIVES</span>
-            <span className="font-semibold text-zinc-100">73</span>
+            <span className="font-semibold text-zinc-100">{objectiveCount || 73}</span>
           </div>
           <div className="px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-emerald-400 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />

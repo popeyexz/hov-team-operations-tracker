@@ -50,19 +50,19 @@ def main():
 
     # 2. Seed Ventures (13 Ventures)
     ventures_meta = [
-        ('PS.HOV', 'HOV', 'atharav', 'Venture Lead', 'Core holding company and central operations hub', 1),
-        ('PS.HOV - House_of_Business_Markering (HBM)', 'HBM', 'rufus', 'Venture Lead', 'B2B marketing, growth hacking, and business development wing', 2),
-        ('PS.HOV - House_of_AI_Solutions (HAIS)', 'HAIS', 'sharuk', 'Venture Lead', 'Artificial Intelligence solutions, automation systems, and applied AI labs', 3),
-        ('XARM MARSERV', 'XARM', 'atharav', 'Venture Lead', 'Marketing services, performance marketing, and creative production', 4),
-        ('Impactshaala', 'IMP', 'atharav', 'Venture Lead', 'Social impact education, youth empowerment, and career acceleration', 5),
-        ('GUIDESHAALA', 'GUIDE', 'sharuk', 'Venture Lead', 'Mentorship platform, career guidance, and executive coaching network', 6),
-        ('PulseEvents', 'PULSE', 'sharuk', 'Venture Lead', 'Corporate summits, tech conferences, and networking events production', 7),
-        ('NxtGen Impact', 'NXT', 'atharav', 'NGO Lead', 'Next generation community development, CSR partnerships, and non-profit initiatives', 8),
-        ('CreativeTech', 'CRTECH', 'sharuk', 'Tool Lead', 'Creative design technology tools, templates, and UI/UX assets', 9),
-        ('LeadTech', 'LDTECH', 'atharav', 'Tool Lead', 'Lead generation intelligence, outreach automation, and sales tech tools', 10),
-        ('Law Offices of Mary Kennedy', 'LOMK', 'rufus', 'Venture Lead', 'Legal advisory, contract scaffolding, and cross-border compliance', 11),
-        ('Point Square Realty', 'PSR', 'sharuk', 'Venture Lead', 'Commercial real estate advisory, property acquisition, and leasing', 12),
-        ('PS.HOV Investments & Funding', 'HIF', 'rufus', 'Program Lead', 'Angel investor syndicates, venture capital outreach, and startup funding programs', 13),
+        ('PS.HOV', 'HOV', 'atharav', 'Venture Lead', None, 1),
+        ('PS.HOV - House_of_Business_Markering (HBM)', 'HBM', 'rufus', 'Venture Lead', None, 2),
+        ('PS.HOV - House_of_AI_Solutions (HAIS)', 'HAIS', 'sharuk', 'Venture Lead', None, 3),
+        ('XARM MARSERV', 'XARM', 'atharav', 'Venture Lead', None, 4),
+        ('Impactshaala', 'IMP', 'atharav', 'Venture Lead', None, 5),
+        ('GUIDESHAALA', 'GUIDE', 'sharuk', 'Venture Lead', None, 6),
+        ('PulseEvents', 'PULSE', 'sharuk', 'Venture Lead', None, 7),
+        ('NxtGen Impact', 'NXT', 'atharav', 'NGO Lead', None, 8),
+        ('CreativeTech', 'CRTECH', 'sharuk', 'Tool Lead', None, 9),
+        ('LeadTech', 'LDTECH', 'atharav', 'Tool Lead', None, 10),
+        ('Law Offices of Mary Kennedy', 'LOMK', 'rufus', 'Venture Lead', None, 11),
+        ('Point Square Realty', 'PSR', 'sharuk', 'Venture Lead', None, 12),
+        ('PS.HOV Investments & Funding', 'HIF', 'rufus', 'Program Lead', None, 13),
     ]
 
     venture_sqls = []
@@ -121,10 +121,8 @@ def main():
                         elif 'dropped' in s_lower:
                             status_clean = 'dropped'
 
-                    owner_id = None
-                    if owner_raw:
-                        owner_clean = str(owner_raw).strip().lower()
-                        owner_id = profile_by_name.get(owner_clean)
+                    # Objectives can ONLY be issued/owned by the Founder
+                    owner_id = profile_by_slug.get('pratap')
 
                     due_date = None
                     if due_raw:
@@ -149,64 +147,7 @@ def main():
         run_query(batch_insert_sql)
 
     print(f"Objectives seeded: {total_objs_seeded}", flush=True)
-
-    # 4. Seed Initial Key Results & Action Items
-    hov_v_id = venture_map.get('PS.HOV')
-    objs_res = run_query(f"SELECT id, venture_id, sl_no, title FROM public.objectives WHERE venture_id = '{hov_v_id}' ORDER BY sl_no LIMIT 2;")
-    if objs_res:
-        first_obj = objs_res[0]
-        atharav_id = profile_by_slug.get('atharav')
-        sharuk_id = profile_by_slug.get('sharuk')
-        rufus_id = profile_by_slug.get('rufus')
-        pratap_id = profile_by_slug.get('pratap')
-
-        kr_sql = f"""
-        INSERT INTO public.key_results (objective_id, venture_id, kr_code, title, target_measure, status, owner_id, due_date)
-        VALUES 
-        ('{first_obj['id']}', '{first_obj['venture_id']}', '1.1', 'Complete Next.js frontend and admin panel', '100% features deployed', 'pending', '{atharav_id}', '2026-11-30'),
-        ('{first_obj['id']}', '{first_obj['venture_id']}', '1.2', 'Connect domain and SSL certificate', 'Live HTTPS URL verified', 'completed', '{sharuk_id}', '2026-11-20')
-        RETURNING id, kr_code;
-        """
-        krs = run_query(kr_sql)
-        kr1_id = next(k['id'] for k in krs if k['kr_code'] == '1.1')
-        kr2_id = next(k['id'] for k in krs if k['kr_code'] == '1.2')
-
-        run_query(f"UPDATE public.objectives SET status = 'pending' WHERE id = '{first_obj['id']}';")
-
-        action_sql = f"""
-        INSERT INTO public.action_items (venture_id, objective_id, key_result_id, title, assigned_to, date, status, is_member_completed, is_founder_confirmed, outcome_achieved, is_planned, comments)
-        VALUES 
-        ('{first_obj['venture_id']}', '{first_obj['id']}', '{kr1_id}', 'Develop responsive liquid glass profile switcher and global navigation', '{atharav_id}', '2026-11-16', 'submitted_for_review', true, false, 'Profile selector screen built with passwordless switcher, glass styling, and modal email collection.', false, 'Ready for Founder review.'),
-        ('{first_obj['venture_id']}', '{first_obj['id']}', '{kr1_id}', 'Configure multi-channel email alerts via transactional Resend / SMTP API', '{rufus_id}', '2026-11-17', 'needs_work', true, false, 'Setup email template for task reviews.', false, 'Founder requested fallback SMTP credentials verification.'),
-        ('{first_obj['venture_id']}', '{first_obj['id']}', '{kr1_id}', 'Verify cross-venture visibility and seed all 73 objectives from Excel', '{sharuk_id}', '2026-11-18', 'in_progress', false, false, '', false, ''),
-        ('{first_obj['venture_id']}', '{first_obj['id']}', '{kr2_id}', 'Deploy database schema and verify Supabase storage bucket', '{sharuk_id}', '2026-11-16', 'completed', true, true, 'Tables and RLS policies created, venture-documents bucket active.', false, ''),
-        ('{first_obj['venture_id']}', '{first_obj['id']}', NULL, 'Conduct quarterly cross-venture retrospective and review OKR completion targets', '{atharav_id}', '2026-12-05', 'not_started', false, false, '', true, 'Scheduled forward initiative for December.')
-        RETURNING id, title;
-        """
-        created_actions = run_query(action_sql)
-        ai1_id = next(a['id'] for a in created_actions if 'Develop responsive' in a['title'])
-        ai2_id = next(a['id'] for a in created_actions if 'Configure multi-channel' in a['title'])
-
-        logs_sql = f"""
-        INSERT INTO public.task_activity_log (action_item_id, actor_id, action, content)
-        VALUES 
-        ('{ai1_id}', '{atharav_id}', 'submission', 'Marked complete and submitted for Founder review: Profile selector screen built with passwordless switcher.'),
-        ('{ai2_id}', '{rufus_id}', 'submission', 'Submitted review request for email template configuration.'),
-        ('{ai2_id}', '{pratap_id}', 'feedback', 'Please verify fallback SMTP credentials and test with test@example.com before final approval.');
-        """
-        run_query(logs_sql)
-
-        # In-app notifications
-        notifs_sql = f"""
-        INSERT INTO public.in_app_notifications (recipient_id, actor_id, action_item_id, type, title, message)
-        VALUES
-        ('{pratap_id}', '{atharav_id}', '{ai1_id}', 'submitted_for_review', 'Task Submitted for Review', 'Atharav submitted: Develop responsive liquid glass profile switcher'),
-        ('{rufus_id}', '{pratap_id}', '{ai2_id}', 'needs_work', 'Changes Requested', 'Pratap requested revisions: Configure multi-channel email alerts');
-        """
-        run_query(notifs_sql)
-
-    print("Sample KRs, Action Items, Activity Log, and Notifications seeded.", flush=True)
-    print("Database seeding completed successfully!", flush=True)
+    print("Database seeding from Excel completed successfully! (Zero mock data seeded)", flush=True)
 
 if __name__ == '__main__':
     main()

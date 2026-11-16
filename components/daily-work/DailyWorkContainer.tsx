@@ -543,6 +543,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
         ventures={ventures}
         profiles={profiles}
         preselectedVentureId={selectedVentureForObjective}
+        founderId={activeProfile?.id}
         isOpen={isAddObjectiveModalOpen}
         onClose={() => setIsAddObjectiveModalOpen(false)}
         onSuccess={() => onRefresh()}
@@ -699,24 +700,27 @@ function VentureSection({
         <div className="flex items-center gap-2 pl-9 md:pl-0">
           <button
             onClick={onOpenDocs}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-pill hover:bg-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer border border-white/10 shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-medium text-zinc-300 transition-all cursor-pointer border border-zinc-700/60"
             title="Open Venture Documents"
           >
-            <Paperclip className="w-3.5 h-3.5 text-sky-400" />
+            <Paperclip className="w-3.5 h-3.5 text-zinc-400" />
             <span>Documents</span>
           </button>
 
-          <button
-            onClick={onAddObjective}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-pill hover:bg-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer border border-white/10 shadow-sm"
-          >
-            <Plus className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Add Obj</span>
-          </button>
+          {isFounder && (
+            <button
+              onClick={onAddObjective}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-xs font-medium text-amber-300 transition-all cursor-pointer border border-amber-500/30"
+              title="Founder Privilege: Add Strategic Objective"
+            >
+              <Plus className="w-3.5 h-3.5 text-amber-400" />
+              <span>Add Objective</span>
+            </button>
+          )}
 
           <button
             onClick={onAddTask}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-bold shadow-md shadow-indigo-500/20 transition-all cursor-pointer border border-white/20"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm transition-all cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Task</span>
@@ -791,8 +795,8 @@ function VentureSection({
                         </span>
 
                         {obj.owner && (
-                          <span className="hidden sm:inline-block text-[11px] text-slate-400">
-                            Owner: <span className="text-slate-200 font-medium">{obj.owner.full_name}</span>
+                          <span className="hidden sm:inline-block text-[11px] text-zinc-400 font-mono">
+                            By: <span className="text-zinc-200 font-medium">{obj.owner.full_name} (Founder)</span>
                           </span>
                         )}
 
