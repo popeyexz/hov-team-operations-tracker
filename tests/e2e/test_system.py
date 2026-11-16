@@ -1,9 +1,11 @@
 import sys
 import os
+import json
+import urllib.request
 from datetime import datetime, timedelta
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'scripts'))
-from db import run_query
+from db import run_query, load_env
 
 def test_profiles():
     print("[TEST 1] Verifying Core Profiles...")
@@ -93,73 +95,86 @@ def test_objectives():
     print(f"  -> Passed! Exactly {count} objectives verified across all 13 ventures.")
 
 def test_two_stage_review_workflow():
-    print("[TEST 6] Verifying Two-Stage Review Protocol & Correction Loop...")
-    # Find test action item
-    items = run_query("SELECT id, status, is_member_completed, is_founder_confirmed FROM public.action_items LIMIT 1;")
-    assert len(items) > 0, "No action items found"
-    item_id = items[0]['id']
-
-    # Step 1: Member submit
-    run_query(f"""
-    UPDATE public.action_items 
-    SET status = 'submitted_for_review', is_member_completed = true, outcome_achieved = 'Deliverable v1 completed' 
-    WHERE id = '{item_id}';
+    print("[TEST 6] Verifying Two-Stage Review Protocol & Correction Loop (Non-polluting)...")
+    # Create an isolated temporary test action item so seeded showcase items remain intact
+    v_id = run_query("SELECT id FROM public.ventures LIMIT 1;")[0]['id']
+    atharav_id = run_query("SELECT id FROM public.profiles WHERE slug = 'atharav';")[0]['id']
+    
+    insert_res = run_query(f"""
+    INSERT INTO public.action_items (venture_id, title, assigned_to, date, status, is_member_completed, is_founder_confirmed, outcome_achieved, is_planned)
+    VALUES ('{v_id}', 'E2E Isolated Two-Stage Review Test Item', '{atharav_id}', '2026-11-16', 'in_progress', false, false, '', false)
+    RETURNING id;
     """)
-    check1 = run_query(f"SELECT status, is_member_completed, outcome_achieved FROM public.action_items WHERE id = '{item_id}';")[0]
-    assert check1['status'] == 'submitted_for_review', "Status should be submitted_for_review"
-    assert check1['is_member_completed'] is True, "is_member_completed should be True"
+    item_id = insert_res[0]['id']
 
-    # Step 2: Founder requests changes (Needs Work)
-    run_query(f"""
-    UPDATE public.action_items 
-    SET status = 'needs_work', is_founder_confirmed = false, comments = 'Please revise section 2' 
-    WHERE id = '{item_id}';
-    """)
-    check2 = run_query(f"SELECT status, is_founder_confirmed, comments FROM public.action_items WHERE id = '{item_id}';")[0]
-    assert check2['status'] == 'needs_work', "Status should be needs_work"
-    assert check2['is_founder_confirmed'] is False, "is_founder_confirmed should be False"
+    try:
+        # Step 1: Member submit
+        run_query(f"""
+        UPDATE public.action_items 
+        SET status = 'submitted_for_review', is_member_completed = true, outcome_achieved = 'Deliverable v1 completed' 
+        WHERE id = '{item_id}';
+        """)
+        check1 = run_query(f"SELECT status, is_member_completed, outcome_achieved FROM public.action_items WHERE id = '{item_id}';")[0]
+        assert check1['status'] == 'submitted_for_review', "Status should be submitted_for_review"
+        assert check1['is_member_completed'] is True, "is_member_completed should be True"
 
-    # Step 3: Member updates deliverable and resubmits
-    run_query(f"""
-    UPDATE public.action_items 
-    SET status = 'submitted_for_review', is_member_completed = true, outcome_achieved = 'Deliverable v2 revised with section 2 updates' 
-    WHERE id = '{item_id}';
-    """)
-    check3 = run_query(f"SELECT status, outcome_achieved FROM public.action_items WHERE id = '{item_id}';")[0]
-    assert check3['status'] == 'submitted_for_review'
+        # Step 2: Founder requests changes (Needs Work)
+        run_query(f"""
+        UPDATE public.action_items 
+        SET status = 'needs_work', is_founder_confirmed = false, comments = 'Please revise section 2' 
+        WHERE id = '{item_id}';
+        """)
+        check2 = run_query(f"SELECT status, is_founder_confirmed, comments FROM public.action_items WHERE id = '{item_id}';")[0]
+        assert check2['status'] == 'needs_work', "Status should be needs_work"
+        assert check2['is_founder_confirmed'] is False, "is_founder_confirmed should be False"
 
-    # Step 4: Founder final approval
-    run_query(f"""
-    UPDATE public.action_items 
-    SET status = 'completed', is_founder_confirmed = true 
-    WHERE id = '{item_id}';
-    """)
-    check4 = run_query(f"SELECT status, is_founder_confirmed FROM public.action_items WHERE id = '{item_id}';")[0]
-    assert check4['status'] == 'completed', "Status should be completed"
-    assert check4['is_founder_confirmed'] is True, "is_founder_confirmed should be True"
-    print("  -> Passed! Full two-stage review and correction loop verified.")
+        # Step 3: Member updates deliverable and resubmits
+        run_query(f"""
+        UPDATE public.action_items 
+        SET status = 'submitted_for_review', is_member_completed = true, outcome_achieved = 'Deliverable v2 revised with section 2 updates' 
+        WHERE id = '{item_id}';
+        """)
+        check3 = run_query(f"SELECT status, outcome_achieved FROM public.action_items WHERE id = '{item_id}';")[0]
+        assert check3['status'] == 'submitted_for_review'
+
+        # Step 4: Founder final approval
+        run_query(f"""
+        UPDATE public.action_items 
+        SET status = 'completed', is_founder_confirmed = true 
+        WHERE id = '{item_id}';
+        """)
+        check4 = run_query(f"SELECT status, is_founder_confirmed FROM public.action_items WHERE id = '{item_id}';")[0]
+        assert check4['status'] == 'completed', "Status should be completed"
+        assert check4['is_founder_confirmed'] is True, "is_founder_confirmed should be True"
+        print("  -> Passed! Full two-stage review and correction loop verified with zero data pollution.")
+    finally:
+        run_query(f"DELETE FROM public.action_items WHERE id = '{item_id}';")
 
 def test_threaded_feedback_log():
-    print("[TEST 7] Verifying Threaded Feedback Log & Auditing...")
+    print("[TEST 7] Verifying Threaded Feedback Log & Auditing (Non-polluting)...")
     items = run_query("SELECT id FROM public.action_items LIMIT 1;")
     item_id = items[0]['id']
 
     pratap = run_query("SELECT id FROM public.profiles WHERE slug = 'pratap';")[0]
-    log_msg = "Audit test log entry from E2E suite"
+    log_msg = f"Audit test log entry from E2E suite - {datetime.now().isoformat()}"
 
-    run_query(f"""
+    res = run_query(f"""
     INSERT INTO public.task_activity_log (action_item_id, actor_id, action, content)
-    VALUES ('{item_id}', '{pratap['id']}', 'feedback', '{log_msg}');
+    VALUES ('{item_id}', '{pratap['id']}', 'feedback', '{log_msg}')
+    RETURNING id;
     """)
+    log_id = res[0]['id']
 
-    logs = run_query(f"SELECT content FROM public.task_activity_log WHERE action_item_id = '{item_id}' AND content = '{log_msg}';")
-    assert len(logs) >= 1, "Log entry not found"
-    print("  -> Passed! Task activity audit log insertion and retrieval verified.")
+    try:
+        logs = run_query(f"SELECT content FROM public.task_activity_log WHERE id = '{log_id}';")
+        assert len(logs) == 1 and logs[0]['content'] == log_msg, "Log entry not found"
+        print("  -> Passed! Task activity audit log insertion, retrieval, and cleanup verified.")
+    finally:
+        run_query(f"DELETE FROM public.task_activity_log WHERE id = '{log_id}';")
 
 def test_forward_planning_and_promotion():
     print("[TEST 8] Verifying Forward Planning & 1-Click Daily Work Promotion...")
     v_id = run_query("SELECT id FROM public.ventures LIMIT 1;")[0]['id']
-    pratap_id = run_query("SELECT id FROM public.profiles WHERE slug = 'pratap';")[0]['id']
 
     # Insert planned item
     item = run_query(f"""
@@ -184,15 +199,52 @@ def test_forward_planning_and_promotion():
     print("  -> Passed! Forward planning creation, promotion, and cleanup verified.")
 
 def test_supabase_storage():
-    print("[TEST 9] Verifying Supabase Storage Bucket...")
+    print("[TEST 9] Verifying Supabase Storage Bucket & Live Storage API...")
     res = run_query("SELECT id, name, public FROM storage.buckets WHERE id = 'venture-documents';")
     assert len(res) == 1, "Storage bucket 'venture-documents' not found"
     assert res[0]['public'] is True, "Bucket 'venture-documents' must be public"
-    print("  -> Passed! Bucket 'venture-documents' is online and public.")
+
+    # Live HTTP Storage API upload and download verification
+    env = load_env()
+    url = env.get('NEXT_PUBLIC_SUPABASE_URL', '')
+    service = env.get('SUPABASE_SERVICE_ROLE_KEY', '')
+
+    test_file_name = f"e2e-verify-{int(datetime.now().timestamp())}.txt"
+    test_content = b"HOV Operations Storage Verification Payload"
+    upload_url = f"{url}/storage/v1/object/venture-documents/{test_file_name}"
+    
+    # Upload
+    req = urllib.request.Request(
+        upload_url,
+        data=test_content,
+        headers={'Authorization': f'Bearer {service}', 'Content-Type': 'text/plain'},
+        method='POST'
+    )
+    with urllib.request.urlopen(req) as upload_resp:
+        assert upload_resp.status in (200, 201), "Upload failed"
+
+    # Public download
+    public_url = f"{url}/storage/v1/object/public/venture-documents/{test_file_name}"
+    dl_req = urllib.request.Request(public_url)
+    with urllib.request.urlopen(dl_req) as dl_resp:
+        dl_body = dl_resp.read()
+        assert dl_body == test_content, "Downloaded content mismatch"
+
+    # Delete
+    del_url = f"{url}/storage/v1/object/venture-documents"
+    del_req = urllib.request.Request(
+        del_url,
+        data=json.dumps({'prefixes': [test_file_name]}).encode('utf-8'),
+        headers={'Authorization': f'Bearer {service}', 'Content-Type': 'application/json'},
+        method='DELETE'
+    )
+    with urllib.request.urlopen(del_req) as del_resp:
+        assert del_resp.status == 200, "Deletion failed"
+
+    print("  -> Passed! Bucket 'venture-documents' is online, public, and live Storage API verified.")
 
 def test_venture_health_logic():
     print("[TEST 10] Verifying Automated Venture Health Logic (Red / Amber / Green)...")
-    # Local health test
     def calc_health(has_blocker, has_overdue, has_due_soon, has_on_hold):
         if has_blocker or has_overdue:
             return 'red'
@@ -207,9 +259,19 @@ def test_venture_health_logic():
     assert calc_health(False, False, False, False) == 'green', "Clear must be Green"
     print("  -> Passed! All 5 health state conditions verified.")
 
+def test_live_production_deployment():
+    print("[TEST 11] Verifying Live Production Vercel Deployment Health...")
+    prod_url = 'https://hov-team-tracker.vercel.app'
+    req = urllib.request.Request(prod_url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req) as resp:
+        assert resp.status == 200, f"Expected 200 from live site, got {resp.status}"
+        body = resp.read().decode('utf-8')
+        assert len(body) > 1000, "Live page content too small"
+    print("  -> Passed! Live production deployment https://hov-team-tracker.vercel.app is healthy and online.")
+
 def main():
     print("==========================================================")
-    print("HOV TEAM OPERATIONS & OKR OS — 10-POINT DEEP VERIFICATION")
+    print("HOV TEAM OPERATIONS & OKR OS — DEEP VERIFICATION SUITE")
     print("==========================================================")
     try:
         test_profiles()
@@ -222,8 +284,9 @@ def main():
         test_forward_planning_and_promotion()
         test_supabase_storage()
         test_venture_health_logic()
+        test_live_production_deployment()
         print("\n==========================================================")
-        print("ALL 10 TESTS PASSED WITH 100% HEALTH AND REGRESSION INTEGRITY!")
+        print("ALL VERIFICATION TESTS PASSED WITH 100% INTEGRITY & ZERO POLLUTION!")
         print("==========================================================")
     except Exception as e:
         print(f"\nTEST FAILURE: {e}", file=sys.stderr)

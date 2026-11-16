@@ -30,13 +30,13 @@ def get_connection():
             _con = None
 
     env = load_env()
-    supabase_url = env.get('NEXT_PUBLIC_SUPABASE_URL', '')
+    supabase_url = env.get('NEXT_PUBLIC_SUPABASE_URL') or os.environ.get('NEXT_PUBLIC_SUPABASE_URL', '')
     if '//' in supabase_url:
         project_ref = supabase_url.split('//')[1].split('.')[0]
     else:
         project_ref = 'cjmdzulucwuvzybvtgdz'
 
-    db_pass = env.get('SUPABASE_DB_PASSWORD', 'HovTracker2026!SecureDb#Pass')
+    db_pass = env.get('SUPABASE_DB_PASSWORD') or os.environ.get('SUPABASE_DB_PASSWORD', 'HovTracker2026!SecureDb#Pass')
 
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
