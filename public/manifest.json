@@ -1,0 +1,21 @@
+{
+  "name": "HOV Team Operations & OKR Tracker",
+  "short_name": "HOV Tracker",
+  "description": "Team operations, OKR tracking and venture management for House of Ventures",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#1e293b",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
