@@ -147,6 +147,14 @@ def main():
         run_query(batch_insert_sql)
 
     print(f"Objectives seeded: {total_objs_seeded}", flush=True)
+
+    # Seed baseline KRs across all 13 ventures
+    try:
+        from seed_baseline_krs import main as seed_krs_main
+        seed_krs_main()
+    except Exception as e:
+        print(f"Notice: seed_baseline_krs: {e}")
+
     print("Database seeding from Excel completed successfully! (Zero mock data seeded)", flush=True)
 
 if __name__ == '__main__':

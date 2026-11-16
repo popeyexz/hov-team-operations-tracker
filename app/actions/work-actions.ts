@@ -41,10 +41,10 @@ export async function getWorkData(activeProfileId?: string, impersonatedMemberId
       .order('kr_code', { ascending: true });
     const keyResults = (krsData || []) as KeyResult[];
 
-    // Fetch action items (active daily work, not planned)
+    // Fetch action items (active daily work, not planned) with linked relations
     const { data: actionsData } = await supabaseAdmin
       .from('action_items')
-      .select('*, assignee:assigned_to(*)')
+      .select('*, assignee:assigned_to(*), venture:venture_id(*), objective:objective_id(*), key_result:key_result_id(*)')
       .eq('is_planned', false)
       .order('date', { ascending: false, nullsFirst: false });
     const actionItems = (actionsData || []) as ActionItem[];
@@ -363,12 +363,29 @@ export async function createActionItem(params: {
   comments?: string;
   isPlanned?: boolean;
 }) {
+  let objectiveId = params.objectiveId || null;
+  let ventureId = params.ventureId;
+  const keyResultId = params.keyResultId || null;
+
+  // Auto-resolve objective and venture if keyResultId is provided without objectiveId
+  if (keyResultId && !objectiveId) {
+    const { data: kr } = await supabaseAdmin
+      .from('key_results')
+      .select('objective_id, venture_id')
+      .eq('id', keyResultId)
+      .maybeSingle();
+    if (kr) {
+      objectiveId = kr.objective_id;
+      if (!ventureId) ventureId = kr.venture_id;
+    }
+  }
+
   const { data, error } = await supabaseAdmin
     .from('action_items')
     .insert({
-      venture_id: params.ventureId,
-      objective_id: params.objectiveId || null,
-      key_result_id: params.keyResultId || null,
+      venture_id: ventureId,
+      objective_id: objectiveId,
+      key_result_id: keyResultId,
       title: params.title.trim(),
       assigned_to: params.assignedTo || null,
       date: params.date || null,
@@ -376,7 +393,7 @@ export async function createActionItem(params: {
       comments: params.comments?.trim() || '',
       is_planned: params.isPlanned || false,
     })
-    .select()
+    .select('*, assignee:assigned_to(*), venture:venture_id(*), objective:objective_id(*), key_result:key_result_id(*)')
     .single();
 
   if (error) return { success: false, error: error.message };
@@ -476,7 +493,7 @@ export async function createObjective(params: {
       due_date: params.dueDate || null,
       comments: params.comments?.trim() || '',
     })
-    .select()
+    .select('*, owner:owner_id(*)')
     .single();
 
   if (error) return { success: false, error: error.message };
@@ -524,26 +541,58 @@ export async function updateObjective(params: {
 
 export async function createKeyResult(params: {
   objectiveId: string;
-  ventureId: string;
-  krCode: string;
+  ventureId?: string;
+  krCode?: string;
   title: string;
   targetMeasure?: string;
   ownerId?: string | null;
   dueDate?: string | null;
 }) {
+  let ventureId = params.ventureId;
+  let ownerId = params.ownerId || null;
+
+  // Auto-resolve ventureId and ownerId if not supplied
+  if ((!ventureId || !ownerId) && params.objectiveId) {
+    const { data: obj } = await supabaseAdmin
+      .from('objectives')
+      .select('venture_id, owner_id')
+      .eq('id', params.objectiveId)
+      .maybeSingle();
+    if (obj) {
+      if (!ventureId) ventureId = obj.venture_id;
+      if (!ownerId && obj.owner_id) ownerId = obj.owner_id;
+    }
+  }
+
+  let krCode = params.krCode?.trim();
+  if (!krCode && params.objectiveId) {
+    const { data: existingKrs } = await supabaseAdmin
+      .from('key_results')
+      .select('kr_code')
+      .eq('objective_id', params.objectiveId);
+    const count = existingKrs?.length || 0;
+    const { data: obj } = await supabaseAdmin
+      .from('objectives')
+      .select('sl_no')
+      .eq('id', params.objectiveId)
+      .maybeSingle();
+    const slNo = obj?.sl_no || 1;
+    krCode = `${slNo}.${count + 1}`;
+  }
+
   const { data, error } = await supabaseAdmin
     .from('key_results')
     .insert({
       objective_id: params.objectiveId,
-      venture_id: params.ventureId,
-      kr_code: params.krCode.trim(),
+      venture_id: ventureId,
+      kr_code: krCode || '1.1',
       title: params.title.trim(),
       target_measure: params.targetMeasure?.trim() || '',
       status: 'pending',
-      owner_id: params.ownerId || null,
+      owner_id: ownerId,
       due_date: params.dueDate || null,
     })
-    .select()
+    .select('*, owner:owner_id(*)')
     .single();
 
   if (error) return { success: false, error: error.message };

@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import { X, Layers } from 'lucide-react';
-import { Objective, Profile } from '@/lib/types';
+import { Objective, Profile, KeyResult } from '@/lib/types';
 import { createKeyResult } from '@/app/actions/work-actions';
 import { DatePickerDDMMYYYY } from './DatePickerDDMMYYYY';
 
 interface AddKeyResultModalProps {
   objective: Objective | null;
   profiles: Profile[];
+  keyResults?: KeyResult[];
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
@@ -17,6 +18,7 @@ interface AddKeyResultModalProps {
 export function AddKeyResultModal({
   objective,
   profiles,
+  keyResults = [],
   isOpen,
   onClose,
   onSuccess,
@@ -31,14 +33,24 @@ export function AddKeyResultModal({
 
   React.useEffect(() => {
     if (isOpen && objective) {
-      setKrCode(`${objective.sl_no}.1`);
+      const existingForObj = keyResults.filter((k) => k.objective_id === objective.id);
+      let maxSuffix = 0;
+      for (const kr of existingForObj) {
+        const parts = kr.kr_code.split('.');
+        if (parts.length >= 2) {
+          const num = parseInt(parts[parts.length - 1], 10);
+          if (!isNaN(num) && num > maxSuffix) maxSuffix = num;
+        }
+      }
+      const nextNum = maxSuffix > 0 ? maxSuffix + 1 : existingForObj.length + 1;
+      setKrCode(`${objective.sl_no}.${nextNum}`);
       setTitle('');
       setTargetMeasure('');
-      setOwnerId('');
+      setOwnerId(objective.owner_id || objective.owner?.id || profiles[0]?.id || '');
       setDueDate('');
       setError(null);
     }
-  }, [isOpen, objective]);
+  }, [isOpen, objective, keyResults, profiles]);
 
   if (!isOpen || !objective) return null;
 

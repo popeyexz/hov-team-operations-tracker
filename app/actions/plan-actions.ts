@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache';
 export async function getPlannedItems(): Promise<ActionItem[]> {
   const { data, error } = await supabaseAdmin
     .from('action_items')
-    .select('*, assignee:assigned_to(*), venture:venture_id(*), objective:objective_id(*)')
+    .select('*, assignee:assigned_to(*), venture:venture_id(*), objective:objective_id(*), key_result:key_result_id(*)')
     .eq('is_planned', true)
     .order('date', { ascending: true, nullsFirst: false });
 

@@ -129,6 +129,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
   const [isAddActionModalOpen, setIsAddActionModalOpen] = useState(false);
   const [selectedVentureForTask, setSelectedVentureForTask] = useState<string>('');
   const [selectedObjectiveForTask, setSelectedObjectiveForTask] = useState<string>('');
+  const [selectedKeyResultForTask, setSelectedKeyResultForTask] = useState<string>('');
 
   const [isAddObjectiveModalOpen, setIsAddObjectiveModalOpen] = useState(false);
   const [selectedVentureForObjective, setSelectedVentureForObjective] = useState<string>('');
@@ -277,6 +278,8 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
             <button
               onClick={() => {
                 setSelectedVentureForTask(ventures[0]?.id || '');
+                setSelectedObjectiveForTask('');
+                setSelectedKeyResultForTask('');
                 setIsAddActionModalOpen(true);
               }}
               className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
@@ -426,8 +429,10 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
               statusFilter={statusFilter}
               searchQuery={searchQuery}
               onOpenDocs={() => setDocsVenture(venture)}
-              onAddTask={() => {
+              onAddTask={(objId?: string, krId?: string) => {
                 setSelectedVentureForTask(venture.id);
+                setSelectedObjectiveForTask(objId || '');
+                setSelectedKeyResultForTask(krId || '');
                 setIsAddActionModalOpen(true);
               }}
               onAddObjective={() => {
@@ -490,8 +495,10 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
                       statusFilter={statusFilter}
                       searchQuery={searchQuery}
                       onOpenDocs={() => setDocsVenture(venture)}
-                      onAddTask={() => {
+                      onAddTask={(objId?: string, krId?: string) => {
                         setSelectedVentureForTask(venture.id);
+                        setSelectedObjectiveForTask(objId || '');
+                        setSelectedKeyResultForTask(krId || '');
                         setIsAddActionModalOpen(true);
                       }}
                       onAddObjective={() => {
@@ -554,6 +561,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
         keyResults={keyResults}
         preselectedVentureId={selectedVentureForTask}
         preselectedObjectiveId={selectedObjectiveForTask}
+        preselectedKeyResultId={selectedKeyResultForTask}
         isOpen={isAddActionModalOpen}
         onClose={() => setIsAddActionModalOpen(false)}
         onSuccess={() => onRefresh()}
@@ -572,6 +580,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
       <AddKeyResultModal
         objective={selectedObjectiveForKr}
         profiles={profiles}
+        keyResults={keyResults}
         isOpen={isAddKrModalOpen}
         onClose={() => setIsAddKrModalOpen(false)}
         onSuccess={() => onRefresh()}
@@ -619,7 +628,7 @@ function VentureSection({
   statusFilter: string;
   searchQuery: string;
   onOpenDocs: () => void;
-  onAddTask: () => void;
+  onAddTask: (objId?: string, krId?: string) => void;
   onAddObjective: () => void;
   onAddKr: (obj: Objective) => void;
   onOpenLogs: (item: ActionItem) => void;
@@ -739,7 +748,7 @@ function VentureSection({
           )}
 
           <button
-            onClick={onAddTask}
+            onClick={() => onAddTask()}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm transition-all cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -767,7 +776,7 @@ function VentureSection({
             ) : (
               objectives.map((obj) => {
                 const objKrs = keyResults.filter((k) => k.objective_id === obj.id);
-                const objActions = actionItems.filter((a) => a.objective_id === obj.id);
+                const objActions = visibleActions.filter((a) => a.objective_id === obj.id);
                 const isObjExpanded = !!expandedObjectives[obj.id];
 
                 return (
@@ -823,9 +832,22 @@ function VentureSection({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
+                            onAddTask(obj.id);
+                          }}
+                          className="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-[10px] font-mono text-zinc-300 flex items-center gap-1 cursor-pointer border border-zinc-800 transition-colors"
+                          title="Add task for this objective"
+                        >
+                          <Plus className="w-2.5 h-2.5" />
+                          <span>Task</span>
+                        </button>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
                             onAddKr(obj);
                           }}
                           className="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-[10px] font-mono text-zinc-300 flex items-center gap-1 cursor-pointer border border-zinc-800 transition-colors"
+                          title="Add Key Result for this objective"
                         >
                           <Plus className="w-2.5 h-2.5" />
                           <span>KR</span>
@@ -836,46 +858,106 @@ function VentureSection({
                     {/* Collapsible Key Results & Child Tasks */}
                     {isObjExpanded && (
                       <div className="p-3.5 bg-zinc-950/80 border-t border-zinc-800/80 space-y-3">
-                        {/* Key Results */}
-                        {objKrs.length > 0 && (
-                          <div className="space-y-2">
-                            <div className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 flex items-center gap-1.5">
+                        {/* Key Results Section */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between text-[10px] uppercase font-mono tracking-wider text-zinc-400">
+                            <span className="flex items-center gap-1.5">
                               <Compass className="w-3 h-3 text-zinc-400" />
                               Key Results ({objKrs.length})
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                              {objKrs.map((kr) => (
-                                <div
-                                  key={kr.id}
-                                  className="p-3 rounded-lg bg-zinc-900/60 border border-zinc-800 text-xs flex items-start justify-between gap-2 shadow-sm"
-                                >
-                                  <div>
-                                    <div className="font-mono text-[10px] font-semibold text-zinc-400">
-                                      KR {kr.kr_code}
-                                    </div>
-                                    <div className="font-medium text-zinc-200 mt-1 leading-snug">
-                                      {kr.title}
-                                    </div>
-                                    {kr.target_measure && (
-                                      <div className="text-[11px] text-zinc-500 mt-1 font-mono">
-                                        Target: {kr.target_measure}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <span
-                                    className={`px-2 py-0.5 rounded text-[9px] font-mono uppercase border ${
-                                      kr.status === 'completed'
-                                        ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                                        : 'text-zinc-400 bg-zinc-800 border-zinc-700'
-                                    }`}
-                                  >
-                                    {kr.status}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onAddKr(obj);
+                              }}
+                              className="text-[10px] text-teal-400 hover:text-teal-300 flex items-center gap-1 transition-colors cursor-pointer"
+                              title="Add Key Result to this objective"
+                            >
+                              <Plus className="w-2.5 h-2.5" />
+                              <span>Add KR</span>
+                            </button>
                           </div>
-                        )}
+
+                          {objKrs.length === 0 ? (
+                            <div className="p-3 rounded-lg bg-zinc-900/30 border border-dashed border-zinc-800 text-xs text-zinc-400 font-mono flex items-center justify-between gap-3">
+                              <span>No Key Results defined yet for Objective #{obj.sl_no}.</span>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onAddKr(obj);
+                                  }}
+                                  className="px-2.5 py-1 rounded bg-teal-500/10 hover:bg-teal-500/20 text-[10px] font-mono text-teal-300 border border-teal-500/30 flex items-center gap-1 transition-colors cursor-pointer"
+                                >
+                                  <Plus className="w-2.5 h-2.5" />
+                                  <span>Create KR</span>
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onAddTask(obj.id);
+                                  }}
+                                  className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-[10px] font-mono text-zinc-200 border border-zinc-700 flex items-center gap-1 transition-colors cursor-pointer"
+                                >
+                                  <Plus className="w-2.5 h-2.5" />
+                                  <span>Add Task</span>
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                              {objKrs.map((kr) => {
+                                const krTaskCount = actionItems.filter((a) => a.key_result_id === kr.id).length;
+                                return (
+                                  <div
+                                    key={kr.id}
+                                    className="p-3 rounded-lg bg-zinc-900/60 border border-zinc-800 text-xs flex items-start justify-between gap-2 shadow-sm"
+                                  >
+                                    <div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-mono text-[10px] font-semibold text-zinc-400">
+                                          KR {kr.kr_code}
+                                        </span>
+                                        {krTaskCount > 0 && (
+                                          <span className="text-[9px] font-mono text-teal-400 bg-teal-500/10 px-1.5 py-0.2 rounded border border-teal-500/20">
+                                            {krTaskCount} {krTaskCount === 1 ? 'task' : 'tasks'}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="font-medium text-zinc-200 mt-1 leading-snug">
+                                        {kr.title}
+                                      </div>
+                                      {kr.target_measure && (
+                                        <div className="text-[11px] text-zinc-500 mt-1 font-mono">
+                                          Target: {kr.target_measure}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-1.5 shrink-0">
+                                      <span
+                                        className={`px-2 py-0.5 rounded text-[9px] font-mono uppercase border ${
+                                          kr.status === 'completed'
+                                            ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                                            : 'text-zinc-400 bg-zinc-800 border-zinc-700'
+                                        }`}
+                                      >
+                                        {kr.status}
+                                      </span>
+                                      <button
+                                        onClick={() => onAddTask(obj.id, kr.id)}
+                                        className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-[10px] font-mono text-zinc-300 flex items-center gap-1 cursor-pointer border border-zinc-700/60 transition-colors"
+                                        title="Add task for this Key Result"
+                                      >
+                                        <Plus className="w-2.5 h-2.5" />
+                                        <span>Task</span>
+                                      </button>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
 
                         {/* Associated Actions */}
                         {objActions.length > 0 && (
@@ -887,6 +969,8 @@ function VentureSection({
                               <ActionItemCard
                                 key={action.id}
                                 action={action}
+                                objectives={objectives}
+                                keyResults={keyResults}
                                 onOpenLogs={() => onOpenLogs(action)}
                                 onSubmitReview={() => onSubmitReview(action)}
                                 onFounderReview={() => onFounderReview(action)}
@@ -924,6 +1008,8 @@ function VentureSection({
                   <ActionItemCard
                     key={action.id}
                     action={action}
+                    objectives={objectives}
+                    keyResults={keyResults}
                     onOpenLogs={() => onOpenLogs(action)}
                     onSubmitReview={() => onSubmitReview(action)}
                     onFounderReview={() => onFounderReview(action)}
@@ -946,6 +1032,8 @@ function VentureSection({
 // ----------------------------------------------------
 function ActionItemCard({
   action,
+  objectives = [],
+  keyResults = [],
   onOpenLogs,
   onSubmitReview,
   onFounderReview,
@@ -954,6 +1042,8 @@ function ActionItemCard({
   isFounder,
 }: {
   action: ActionItem;
+  objectives?: Objective[];
+  keyResults?: KeyResult[];
   onOpenLogs: () => void;
   onSubmitReview: () => void;
   onFounderReview: () => void;
@@ -963,6 +1053,13 @@ function ActionItemCard({
 }) {
   const isAssignedToMe = effectiveProfile && action.assigned_to === effectiveProfile.id;
   const overdue = action.status !== 'completed' && action.status !== 'dropped' && isOverdue(action.date);
+
+  // Resolve parent Objective and Key Result
+  const matchedKr = action.key_result || keyResults.find((k) => k.id === action.key_result_id);
+  const matchedObj =
+    action.objective ||
+    objectives.find((o) => o.id === action.objective_id) ||
+    (matchedKr ? objectives.find((o) => o.id === matchedKr.objective_id) : undefined);
 
   const getStatusDisplay = () => {
     switch (action.status) {
@@ -1019,6 +1116,26 @@ function ActionItemCard({
             <StatusIcon className="w-3 h-3" />
             <span>{statusInfo.label}</span>
           </span>
+
+          {matchedObj && (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-sky-500/10 text-sky-400 border border-sky-500/20"
+              title={`Objective #${matchedObj.sl_no}: ${matchedObj.title}`}
+            >
+              <Target className="w-2.5 h-2.5" />
+              <span>Obj #{matchedObj.sl_no}</span>
+            </span>
+          )}
+
+          {matchedKr && (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-teal-500/10 text-teal-400 border border-teal-500/20"
+              title={`Key Result: KR ${matchedKr.kr_code} - ${matchedKr.title}`}
+            >
+              <Compass className="w-2.5 h-2.5" />
+              <span>KR {matchedKr.kr_code}</span>
+            </span>
+          )}
 
           {action.is_founder_confirmed && (
             <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">

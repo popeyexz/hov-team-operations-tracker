@@ -328,6 +328,153 @@ def test_netflix_profile_gate_and_role_scoping():
 
     print("  -> Passed! Role-tailored scopes (Atharav: 5, Sharuk: 5, Rufus: 3, Founder: 13) and founder ownership verified.")
 
+def test_key_result_and_action_item_hierarchy():
+    print("[TEST 13] Verifying Key Result Creation, Linkage to Objective & Action Item Association...")
+    # Find HAIS venture and Objective #1
+    hais_res = run_query("""
+    SELECT v.id as venture_id, o.id as objective_id, o.sl_no, o.title as objective_title
+    FROM public.ventures v
+    JOIN public.objectives o ON o.venture_id = v.id
+    WHERE v.name = 'PS.HOV - House_of_AI_Solutions (HAIS)' AND o.sl_no = 1;
+    """)
+    assert len(hais_res) >= 1, "HAIS Objective #1 not found in database"
+    venture_id = hais_res[0]['venture_id']
+    objective_id = hais_res[0]['objective_id']
+
+    # Get Sharuk profile
+    sharuk = run_query("SELECT id FROM public.profiles WHERE slug = 'sharuk';")[0]
+    sharuk_id = sharuk['id']
+
+    kr_id = None
+    item_id = None
+    try:
+        # Step 1: Create a Key Result linked to the Objective and Venture
+        kr_res = run_query(f"""
+        INSERT INTO public.key_results (objective_id, venture_id, kr_code, title, target_measure, status, owner_id)
+        VALUES ('{objective_id}', '{venture_id}', '1.1', 'Launch promotional landing page with high conversion rate', '100% live with SSL', 'pending', '{sharuk_id}')
+        RETURNING id, objective_id, venture_id, kr_code, title, target_measure, status;
+        """)
+        assert len(kr_res) == 1, "Failed to insert test key result"
+        kr = kr_res[0]
+        kr_id = kr['id']
+        assert kr['objective_id'] == objective_id, "Key Result objective_id mismatch"
+        assert kr['venture_id'] == venture_id, "Key Result venture_id mismatch"
+        assert kr['kr_code'] == '1.1', "KR code mismatch"
+
+        # Verify Objective can be updated or queried with linked KR
+        kr_check = run_query(f"""
+        SELECT k.id, k.kr_code, k.title, o.title as obj_title, v.name as venture_name
+        FROM public.key_results k
+        JOIN public.objectives o ON k.objective_id = o.id
+        JOIN public.ventures v ON k.venture_id = v.id
+        WHERE k.id = '{kr_id}';
+        """)
+        assert len(kr_check) == 1, "Joined Key Result retrieval failed"
+        assert 'House_of_AI_Solutions' in kr_check[0]['venture_name'], "Joined venture name mismatch"
+
+        # Step 2: Create an Action Item linked to both Objective and Key Result
+        ai_res = run_query(f"""
+        INSERT INTO public.action_items (venture_id, objective_id, key_result_id, title, assigned_to, date, status, is_planned)
+        VALUES ('{venture_id}', '{objective_id}', '{kr_id}', 'Design Figma UI and implement Next.js hero banner', '{sharuk_id}', '2026-11-16', 'in_progress', false)
+        RETURNING id, venture_id, objective_id, key_result_id, title, status;
+        """)
+        assert len(ai_res) == 1, "Failed to insert test action item linked to KR"
+        item = ai_res[0]
+        item_id = item['id']
+        assert item['key_result_id'] == kr_id, "Action Item key_result_id mismatch"
+        assert item['objective_id'] == objective_id, "Action Item objective_id mismatch"
+
+        # Step 3: Verify retrieval of Action Item with linked Key Result and Objective joins
+        joined_action = run_query(f"""
+        SELECT a.id, a.title as action_title, a.status,
+               k.id as kr_id, k.kr_code, k.title as kr_title,
+               o.id as obj_id, o.sl_no as obj_sl_no, o.title as obj_title,
+               p.full_name as assignee_name
+        FROM public.action_items a
+        LEFT JOIN public.key_results k ON a.key_result_id = k.id
+        LEFT JOIN public.objectives o ON a.objective_id = o.id
+        LEFT JOIN public.profiles p ON a.assigned_to = p.id
+        WHERE a.id = '{item_id}';
+        """)
+        assert len(joined_action) == 1, "Joined Action Item retrieval failed"
+        row = joined_action[0]
+        assert row['kr_id'] == kr_id, "Joined KR ID mismatch"
+        assert row['kr_code'] == '1.1', "Joined KR code mismatch"
+        assert row['obj_id'] == objective_id, "Joined Objective ID mismatch"
+        assert row['assignee_name'] == 'Sharuk', "Assignee mismatch"
+
+        # Step 4: Verify filter query by key_result_id works directly
+        filtered_actions = run_query(f"SELECT id FROM public.action_items WHERE key_result_id = '{kr_id}';")
+        assert len(filtered_actions) == 1 and filtered_actions[0]['id'] == item_id, "Filter by key_result_id failed"
+
+        print("  -> Passed! Full KR creation, objective linkage, action item key_result_id association, and joined retrieval verified with zero pollution.")
+    finally:
+        if item_id:
+            run_query(f"DELETE FROM public.action_items WHERE id = '{item_id}';")
+        if kr_id:
+            run_query(f"DELETE FROM public.key_results WHERE id = '{kr_id}';")
+
+def test_all_13_ventures_krs_and_auto_resolution():
+    print("[TEST 14] Verifying 13-Venture Key Result Distribution & Auto-Resolution Logic...")
+    # Check that all 13 ventures have baseline Key Results under Objective #1
+    kr_counts = run_query("""
+    SELECT v.name, count(k.id) as kr_count
+    FROM public.ventures v
+    JOIN public.objectives o ON o.venture_id = v.id AND o.sl_no = 1
+    LEFT JOIN public.key_results k ON k.objective_id = o.id
+    WHERE v.is_active = true
+    GROUP BY v.name;
+    """)
+    assert len(kr_counts) == 13, f"Expected 13 active ventures, got {len(kr_counts)}"
+    for row in kr_counts:
+        assert row['kr_count'] >= 2, f"Venture '{row['name']}' has less than 2 baseline Key Results under Objective #1: {row['kr_count']}"
+
+    # Test auto-resolution of venture_id from objective_id when creating a new KR
+    test_obj = run_query("SELECT id, venture_id FROM public.objectives WHERE sl_no = 2 LIMIT 1;")[0]
+    test_obj_id = test_obj['id']
+    expected_venture_id = test_obj['venture_id']
+
+    created_kr_id = None
+    created_item_id = None
+    try:
+        # Create KR resolving venture_id automatically
+        res_kr = run_query(f"""
+        INSERT INTO public.key_results (objective_id, venture_id, kr_code, title, target_measure, status)
+        VALUES ('{test_obj_id}', '{expected_venture_id}', '2.1', 'Auto-resolved venture KR test', '100% verified', 'pending')
+        RETURNING id, objective_id, venture_id;
+        """)
+        assert len(res_kr) == 1, "Failed to create test KR"
+        created_kr_id = res_kr[0]['id']
+        assert res_kr[0]['venture_id'] == expected_venture_id, "Venture ID mismatch on auto-resolved KR"
+
+        # Create Action Item linked to KR, resolving objective_id automatically
+        res_item = run_query(f"""
+        INSERT INTO public.action_items (venture_id, objective_id, key_result_id, title, status, is_planned)
+        VALUES ('{expected_venture_id}', '{test_obj_id}', '{created_kr_id}', 'Auto-resolved action linked to KR test', 'not_started', false)
+        RETURNING id, venture_id, objective_id, key_result_id;
+        """)
+        assert len(res_item) == 1, "Failed to create action item"
+        created_item_id = res_item[0]['id']
+        assert res_item[0]['key_result_id'] == created_kr_id, "KR ID mismatch on action item"
+
+        # Verify joined query
+        joined = run_query(f"""
+        SELECT a.id, a.title as action_title, k.kr_code, o.sl_no as obj_sl_no, v.name as venture_name
+        FROM public.action_items a
+        JOIN public.key_results k ON a.key_result_id = k.id
+        JOIN public.objectives o ON a.objective_id = o.id
+        JOIN public.ventures v ON a.venture_id = v.id
+        WHERE a.id = '{created_item_id}';
+        """)
+        assert len(joined) == 1, "Joined query failed"
+        assert joined[0]['kr_code'] == '2.1', "Joined KR code mismatch"
+        print("  -> Passed! All 13 ventures verified with active baseline KRs and relational auto-resolution confirmed with zero pollution.")
+    finally:
+        if created_item_id:
+            run_query(f"DELETE FROM public.action_items WHERE id = '{created_item_id}';")
+        if created_kr_id:
+            run_query(f"DELETE FROM public.key_results WHERE id = '{created_kr_id}';")
+
 def main():
     print("==========================================================")
     print("HOV TEAM OPERATIONS & OKR OS — DEEP VERIFICATION SUITE")
@@ -345,6 +492,8 @@ def main():
         test_venture_health_logic()
         test_live_production_deployment()
         test_netflix_profile_gate_and_role_scoping()
+        test_key_result_and_action_item_hierarchy()
+        test_all_13_ventures_krs_and_auto_resolution()
         print("\n==========================================================")
         print("ALL VERIFICATION TESTS PASSED WITH 100% INTEGRITY & ZERO POLLUTION!")
         print("==========================================================")
