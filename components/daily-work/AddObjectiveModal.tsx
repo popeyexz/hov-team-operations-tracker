@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Target, Crown, ShieldAlert } from 'lucide-react';
+import { X, Target, ShieldAlert } from 'lucide-react';
 import { Profile, Venture } from '@/lib/types';
 import { createObjective } from '@/app/actions/work-actions';
 import { DatePickerDDMMYYYY } from './DatePickerDDMMYYYY';
@@ -149,7 +149,7 @@ export function AddObjectiveModal({
               </label>
               <div className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 px-3 py-2 rounded-lg text-xs font-mono flex items-center justify-between">
                 <span>{founder?.full_name || 'Pratap'} (Founder)</span>
-                <Crown className="w-3 h-3 text-amber-400" />
+                <span className="text-[10px] text-[#F4AEBE] font-bold font-mono">FOUNDER</span>
               </div>
             </div>
 

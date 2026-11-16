@@ -82,3 +82,33 @@ export async function addMember(params: {
   revalidatePath('/daily-work');
   return { success: true, profile: data as Profile };
 }
+
+export async function updateProfileAvatar(params: {
+  profileId: string;
+  avatarUrl?: string;
+  avatarColor?: string;
+}) {
+  const payload: Record<string, any> = {
+    updated_at: new Date().toISOString(),
+  };
+  if (params.avatarUrl !== undefined) payload.avatar_url = params.avatarUrl;
+  if (params.avatarColor !== undefined) payload.avatar_color = params.avatarColor;
+
+  const { data, error } = await supabaseAdmin
+    .from('profiles')
+    .update(payload)
+    .eq('id', params.profileId)
+    .select()
+    .single();
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath('/');
+  revalidatePath('/daily-work');
+  revalidatePath('/next-plans');
+  revalidatePath('/progress');
+  return { success: true, profile: data as Profile };
+}
+

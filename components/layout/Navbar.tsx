@@ -19,7 +19,6 @@ import {
   Eye,
   Menu,
   X,
-  Crown,
   Bell,
 } from 'lucide-react';
 
@@ -54,23 +53,23 @@ export function Navbar() {
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-200 ${
           isHomePage
-            ? 'bg-[#141414]/95 border-b border-zinc-800/40 backdrop-blur-md'
-            : 'bg-[#0b0c14]/85 border-b border-white/[0.06] backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.6)]'
+            ? 'bg-[#020B20]/95 border-b border-[#F4AEBE]/20 backdrop-blur-md'
+            : 'bg-[#03153D]/90 border-b border-[#F4AEBE]/20 backdrop-blur-2xl shadow-[0_4px_30px_rgba(2,11,32,0.8)]'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           {/* Logo & Brand Identity */}
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2.5 group cursor-pointer">
-              {/* Netflix-styled bold red HOV mark */}
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-600 to-rose-700 text-white flex items-center justify-center font-mono font-black text-xs tracking-wider shadow-lg shadow-red-600/30 transition-transform group-hover:scale-105">
+              {/* Rose Silk & Blue Velvet Logo Mark */}
+              <div className="w-8 h-8 rounded-lg bg-[#F4AEBE] text-[#03153D] flex items-center justify-center font-mono font-black text-xs tracking-wider shadow-lg shadow-[#F4AEBE]/25 transition-transform group-hover:scale-105">
                 HOV
               </div>
               <div>
-                <div className="text-xs font-bold text-white tracking-tight leading-none group-hover:text-zinc-200 transition-colors">
+                <div className="text-xs font-bold text-white tracking-tight leading-none group-hover:text-[#F4AEBE] transition-colors font-display">
                   House of Ventures
                 </div>
-                <div className="text-[9px] text-zinc-400 font-mono tracking-widest mt-0.5">
+                <div className="text-[9px] text-[#F4AEBE]/80 font-mono tracking-widest mt-0.5">
                   OPERATIONS OS
                 </div>
               </div>
@@ -78,12 +77,12 @@ export function Navbar() {
 
             {/* Impersonation Indicator Pill */}
             {!isHomePage && impersonatedMember && (
-              <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs font-mono">
+              <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#F4AEBE]/40 bg-[#F4AEBE]/10 text-[#F4AEBE] text-xs font-mono">
                 <Eye className="w-3.5 h-3.5" />
                 <span>VIEWING: {impersonatedMember.full_name}</span>
                 <button
                   onClick={() => setImpersonatedMember(null)}
-                  className="ml-1 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                  className="ml-1 text-zinc-300 hover:text-white transition-colors cursor-pointer"
                   title="Clear View As"
                 >
                   <X className="w-3 h-3" />
@@ -92,9 +91,9 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Desktop Navigation Tabs (Liquid Segmented Control) */}
+          {/* Desktop Navigation Tabs (Liquid Segmented Control in Rose Silk & Blue Velvet) */}
           {!isHomePage && activeProfile && (
-            <nav className="hidden md:flex items-center bg-[#13141f]/90 p-1 rounded-2xl border border-white/[0.08] shadow-inner">
+            <nav className="hidden md:flex items-center bg-[#020B20]/90 p-1 rounded-2xl border border-[#F4AEBE]/20 shadow-inner">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = pathname.startsWith(link.href);
@@ -104,8 +103,8 @@ export function Navbar() {
                     href={link.href}
                     className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-[0_2px_12px_rgba(124,58,237,0.4)] border border-violet-400/30'
-                        : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
+                        ? 'bg-gradient-to-r from-[#F4AEBE] to-[#e895a9] text-[#03153D] font-bold shadow-[0_2px_14px_rgba(244,174,190,0.4)] border border-white/30'
+                        : 'text-[#F4AEBE]/80 hover:text-white hover:bg-white/[0.06]'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -132,7 +131,7 @@ export function Navbar() {
                       setImpersonatedMember(member || null);
                     }
                   }}
-                  className="text-[11px] font-mono px-3 py-1.5 rounded-xl text-zinc-200 cursor-pointer bg-[#141624] border border-white/[0.08] hover:border-violet-500/50 focus:outline-none transition-colors shadow-sm"
+                  className="text-[11px] font-mono px-3 py-1.5 rounded-xl text-zinc-200 cursor-pointer bg-[#020B20] border border-[#F4AEBE]/25 hover:border-[#F4AEBE] focus:outline-none transition-colors shadow-sm"
                 >
                   <option value="master">Founder Mode (All 13)</option>
                   <optgroup label="View As Member">
@@ -156,22 +155,22 @@ export function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-[#141624]/90 hover:bg-[#1a1d30] border border-white/[0.08] hover:border-white/20 transition-all focus:outline-none cursor-pointer group shadow-sm"
+                  className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-[#071D49] hover:bg-[#0c2a68] border border-[#F4AEBE]/25 hover:border-[#F4AEBE]/50 transition-all focus:outline-none cursor-pointer group shadow-sm"
                 >
                   <NetflixAvatar
                     name={activeProfile.full_name}
                     role={activeProfile.role}
                     avatarColor={activeProfile.avatar_color}
+                    avatarUrl={activeProfile.avatar_url}
                     size="sm"
                     className="!w-6 !h-6 rounded-md shadow"
                   />
                   <div className="hidden sm:block text-left">
-                    <div className="text-xs font-medium text-zinc-100 flex items-center gap-1">
+                    <div className="text-xs font-semibold text-white font-display flex items-center gap-1">
                       {activeProfile.full_name}
-                      {isFounder && <Crown className="w-2.5 h-2.5 text-amber-400" />}
                     </div>
                   </div>
-                  <ChevronDown className="w-3 h-3 text-zinc-400 group-hover:text-white transition-colors" />
+                  <ChevronDown className="w-3 h-3 text-[#F4AEBE] group-hover:text-white transition-colors" />
                 </button>
 
                 {isDropdownOpen && (
@@ -180,17 +179,17 @@ export function Navbar() {
                       className="fixed inset-0 z-40"
                       onClick={() => setIsDropdownOpen(false)}
                     />
-                    <div className="absolute right-0 mt-3 w-60 rounded-2xl bg-[#12131d]/95 backdrop-blur-2xl border border-white/[0.1] p-2 shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.12)] z-50 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-3 py-2.5 border-b border-zinc-800/80 mb-1">
-                        <div className="text-xs font-semibold text-zinc-100 flex items-center justify-between">
+                    <div className="absolute right-0 mt-3 w-60 rounded-2xl bg-[#03153D]/95 backdrop-blur-2xl border border-[#F4AEBE]/30 p-2 shadow-[0_20px_50px_rgba(2,11,32,0.9),inset_0_1px_1px_rgba(244,174,190,0.3)] z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-2.5 border-b border-[#F4AEBE]/20 mb-1">
+                        <div className="text-xs font-semibold text-white flex items-center justify-between font-display">
                           <span>{activeProfile.full_name}</span>
                           {isFounder && (
-                            <span className="text-[10px] font-mono bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded-full border border-amber-500/20">
+                            <span className="text-[10px] font-mono bg-[#F4AEBE]/20 text-[#F4AEBE] px-2 py-0.5 rounded-full border border-[#F4AEBE]/30 font-bold">
                               FOUNDER
                             </span>
                           )}
                         </div>
-                        <div className="text-[11px] text-zinc-400 truncate mt-0.5 font-mono">
+                        <div className="text-[11px] text-zinc-300 truncate mt-0.5 font-mono">
                           {activeProfile.email || 'No email configured'}
                         </div>
                       </div>
@@ -200,9 +199,9 @@ export function Navbar() {
                           setIsDropdownOpen(false);
                           setIsEmailModalOpen(true);
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800/80 rounded-xl transition-colors text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-zinc-200 hover:text-white hover:bg-white/[0.08] rounded-xl transition-colors text-left cursor-pointer"
                       >
-                        <Mail className="w-3.5 h-3.5 text-zinc-400" />
+                        <Mail className="w-3.5 h-3.5 text-[#F4AEBE]" />
                         <span>Update Alert Email</span>
                       </button>
 
@@ -211,13 +210,13 @@ export function Navbar() {
                           setIsDropdownOpen(false);
                           setIsAddMemberModalOpen(true);
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800/80 rounded-xl transition-colors text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-zinc-200 hover:text-white hover:bg-white/[0.08] rounded-xl transition-colors text-left cursor-pointer"
                       >
-                        <UserPlus className="w-3.5 h-3.5 text-zinc-400" />
+                        <UserPlus className="w-3.5 h-3.5 text-[#F4AEBE]" />
                         <span>Add Team Member</span>
                       </button>
 
-                      <div className="border-t border-zinc-800/80 my-1" />
+                      <div className="border-t border-[#F4AEBE]/20 my-1" />
 
                       <button
                         onClick={() => {
@@ -226,10 +225,10 @@ export function Navbar() {
                           setImpersonatedMember(null);
                           router.push('/');
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors text-left cursor-pointer font-medium"
+                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[#F4AEBE] hover:bg-[#F4AEBE]/10 rounded-xl transition-colors text-left cursor-pointer font-bold font-display"
                       >
                         <LogOut className="w-3.5 h-3.5" />
-                        <span>Switch Profile (Netflix Picker)</span>
+                        <span>Switch Profile</span>
                       </button>
                     </div>
                   </>
@@ -238,7 +237,7 @@ export function Navbar() {
             ) : (
               <Link
                 href="/"
-                className="px-4 py-1.5 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                className="px-4 py-1.5 rounded-xl bg-[#F4AEBE] hover:bg-[#f7bac8] text-[#03153D] text-xs font-bold shadow-md transition-all cursor-pointer font-display"
               >
                 Select Profile
               </Link>
@@ -248,7 +247,7 @@ export function Navbar() {
             {!isHomePage && (
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 rounded-xl bg-[#141624] border border-white/[0.08] text-zinc-400 hover:text-white cursor-pointer"
+                className="md:hidden p-2 rounded-xl bg-[#071D49] border border-[#F4AEBE]/25 text-[#F4AEBE] hover:text-white cursor-pointer"
               >
                 {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
               </button>
@@ -258,7 +257,7 @@ export function Navbar() {
 
         {/* Mobile menu drawer */}
         {!isHomePage && isMobileMenuOpen && (
-          <div className="md:hidden border-t border-zinc-800 px-4 py-3 bg-[#0b0c14] space-y-2">
+          <div className="md:hidden border-t border-[#F4AEBE]/20 px-4 py-3 bg-[#020B20] space-y-2">
             {activeProfile ? (
               <>
                 {navLinks.map((link) => {
@@ -271,8 +270,8 @@ export function Navbar() {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-medium ${
                         isActive
-                          ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white'
-                          : 'text-zinc-400 hover:bg-zinc-900'
+                          ? 'bg-gradient-to-r from-[#F4AEBE] to-[#e895a9] text-[#03153D] font-bold'
+                          : 'text-zinc-300 hover:bg-white/[0.06]'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -281,15 +280,15 @@ export function Navbar() {
                   );
                 })}
 
-                <div className="border-t border-zinc-800 pt-2 mt-2 space-y-1">
+                <div className="border-t border-[#F4AEBE]/20 pt-2 mt-2 space-y-1">
                   <button
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       setIsAddMemberModalOpen(true);
                     }}
-                    className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-zinc-300 hover:bg-zinc-900 rounded-xl text-left"
+                    className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] rounded-xl text-left"
                   >
-                    <UserPlus className="w-4 h-4 text-zinc-400" />
+                    <UserPlus className="w-4 h-4 text-[#F4AEBE]" />
                     <span>Add Team Member</span>
                   </button>
 
@@ -298,9 +297,9 @@ export function Navbar() {
                       setIsMobileMenuOpen(false);
                       setIsEmailModalOpen(true);
                     }}
-                    className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-zinc-300 hover:bg-zinc-900 rounded-xl text-left"
+                    className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] rounded-xl text-left"
                   >
-                    <Mail className="w-4 h-4 text-zinc-400" />
+                    <Mail className="w-4 h-4 text-[#F4AEBE]" />
                     <span>Update Alert Email</span>
                   </button>
 
@@ -311,7 +310,7 @@ export function Navbar() {
                       setImpersonatedMember(null);
                       router.push('/');
                     }}
-                    className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-rose-400 hover:bg-rose-500/10 rounded-xl text-left"
+                    className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-[#F4AEBE] hover:bg-[#F4AEBE]/10 rounded-xl text-left font-bold"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Switch Profile</span>
@@ -323,7 +322,7 @@ export function Navbar() {
                 <Link
                   href="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="inline-block w-full py-2.5 rounded-xl bg-white text-black font-semibold text-xs"
+                  className="inline-block w-full py-2.5 rounded-xl bg-[#F4AEBE] text-[#03153D] font-bold text-xs font-display uppercase tracking-wider"
                 >
                   Select Operator Profile
                 </Link>
@@ -333,10 +332,10 @@ export function Navbar() {
         )}
       </header>
 
-      {/* Mobile Floating Bottom Dock (For quick thumb navigation on mobile phones) */}
+      {/* Mobile Floating Bottom Dock (Blue Velvet & Rose Silk) */}
       {!isHomePage && activeProfile && (
         <div className="md:hidden fixed bottom-3 inset-x-3 z-50 pointer-events-auto">
-          <div className="liquid-card !rounded-2xl p-1.5 flex items-center justify-around shadow-[0_10px_35px_rgba(0,0,0,0.8)] border border-white/[0.12] bg-[#0e101a]/95 backdrop-blur-2xl">
+          <div className="liquid-card !rounded-2xl p-1.5 flex items-center justify-around shadow-[0_10px_35px_rgba(2,11,32,0.9)] border border-[#F4AEBE]/30 bg-[#020B20]/95 backdrop-blur-2xl">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname.startsWith(link.href);
@@ -346,8 +345,8 @@ export function Navbar() {
                   href={link.href}
                   className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-[10px] font-medium transition-all min-h-[44px] ${
                     isActive
-                      ? 'text-white bg-violet-600/30 border border-violet-500/40 shadow-sm'
-                      : 'text-zinc-400 hover:text-zinc-200'
+                      ? 'text-[#03153D] bg-[#F4AEBE] font-bold shadow-md'
+                      : 'text-[#F4AEBE]/80 hover:text-white'
                   }`}
                 >
                   <Icon className="w-4 h-4 mb-0.5" />
@@ -359,12 +358,13 @@ export function Navbar() {
             {/* Profile avatar link to switch profile */}
             <Link
               href="/"
-              className="flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-[10px] font-medium text-zinc-400 hover:text-white transition-all min-h-[44px]"
+              className="flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-[10px] font-medium text-[#F4AEBE]/80 hover:text-white transition-all min-h-[44px]"
             >
               <NetflixAvatar
                 name={activeProfile.full_name}
                 role={activeProfile.role}
                 avatarColor={activeProfile.avatar_color}
+                avatarUrl={activeProfile.avatar_url}
                 size="sm"
                 className="!w-4 !h-4 rounded-sm mb-0.5"
               />

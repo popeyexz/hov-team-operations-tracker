@@ -54,14 +54,14 @@ export function NextPlansBoard({
       <div className="liquid-card !rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-2 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <div className="flex items-center gap-2 mb-2 font-mono text-[11px] text-[#F4AEBE] uppercase tracking-widest">
+              <span className="w-2 h-2 rounded-full bg-[#F4AEBE] shadow-[0_0_8px_rgba(244,174,190,0.8)]" />
               <span>TAB 2 // FORWARD ROADMAP</span>
               <span className="text-zinc-600">•</span>
               <span>Milestone Pipeline</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight font-display">
               Next Plans & Milestone Roadmapping
             </h1>
 
@@ -74,7 +74,7 @@ export function NextPlansBoard({
             <select
               value={selectedVenture}
               onChange={(e) => setSelectedVenture(e.target.value)}
-              className="text-xs font-mono px-3.5 py-2 rounded-xl text-zinc-200 bg-[#12131f] border border-white/[0.1] hover:border-violet-500/40 cursor-pointer focus:outline-none shadow-sm"
+              className="text-xs font-mono px-3.5 py-2 rounded-xl text-zinc-200 bg-[#03153D]/60 border border-[#F4AEBE]/25 hover:border-[#F4AEBE]/50 cursor-pointer focus:outline-none shadow-sm"
             >
               <option value="all">All Ventures ({ventures.length})</option>
               {ventures.map((v) => (
@@ -86,7 +86,7 @@ export function NextPlansBoard({
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="px-4 py-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-[0_4px_20px_rgba(124,58,237,0.45)] border border-violet-400/40 flex items-center gap-2 transition-all cursor-pointer transform active:scale-95"
+              className="px-4 py-2 rounded-xl bg-[#F4AEBE] hover:bg-[#f7bac8] text-[#03153D] text-xs font-bold shadow-md border border-[#F4AEBE]/40 flex items-center gap-2 transition-all cursor-pointer transform active:scale-95 font-display uppercase tracking-wider"
             >
               <Plus className="w-4 h-4" />
               <span>Schedule Next Plan</span>
@@ -97,7 +97,7 @@ export function NextPlansBoard({
         {/* Liquid Plan Metrics Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6 pt-6 border-t border-white/[0.08]">
           <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
-            <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.25)] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#F4AEBE]/10 border border-[#F4AEBE]/30 flex items-center justify-center text-[#F4AEBE] shadow-[0_0_15px_rgba(244,174,190,0.25)] shrink-0">
               <Calendar className="w-5 h-5" />
             </div>
             <div>
@@ -107,7 +107,7 @@ export function NextPlansBoard({
           </div>
 
           <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.25)] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#F4AEBE]/10 border border-[#F4AEBE]/30 flex items-center justify-center text-[#F4AEBE] shadow-[0_0_15px_rgba(244,174,190,0.25)] shrink-0">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
@@ -152,21 +152,21 @@ export function NextPlansBoard({
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className="liquid-card !rounded-2xl p-5 hover:border-violet-500/40 hover:shadow-xl flex flex-col justify-between group transition-all"
+              className="liquid-card !rounded-2xl p-5 hover:border-[#F4AEBE]/40 hover:shadow-xl flex flex-col justify-between group transition-all"
             >
               <div>
                 {/* Venture Code & Target Date */}
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="font-mono text-xs font-bold text-violet-300 bg-violet-500/15 px-2.5 py-0.5 rounded-lg border border-violet-500/30">
+                  <span className="font-mono text-xs font-bold text-[#03153D] bg-[#F4AEBE] px-2.5 py-0.5 rounded-lg shadow-sm">
                     {item.venture?.code || 'HOV'}
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-300 bg-[#0e0f18] px-2.5 py-0.5 rounded-full border border-white/[0.08]">
-                    <Clock className="w-3.5 h-3.5 text-zinc-400" />
+                  <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-300 bg-[#03153D]/80 px-2.5 py-0.5 rounded-full border border-white/[0.08]">
+                    <Clock className="w-3.5 h-3.5 text-[#F4AEBE]" />
                     <span>Target: {formatDateDDMMYYYY(item.date)}</span>
                   </div>
                 </div>
 
-                <h4 className="text-sm font-semibold text-white leading-snug group-hover:text-zinc-100 transition-colors">
+                <h4 className="text-sm font-semibold text-white leading-snug group-hover:text-zinc-100 transition-colors font-display">
                   {item.title}
                 </h4>
 
@@ -175,8 +175,8 @@ export function NextPlansBoard({
                 </p>
 
                 {item.objective && (
-                  <div className="mt-3.5 p-2.5 rounded-xl bg-[#0e101a] border border-white/[0.06] text-[11px] text-zinc-300 flex items-start gap-2">
-                    <span className="font-mono font-semibold text-violet-300 shrink-0">Obj #{item.objective.sl_no}</span>
+                  <div className="mt-3.5 p-2.5 rounded-xl bg-[#03153D]/60 border border-[#F4AEBE]/20 text-[11px] text-zinc-300 flex items-start gap-2">
+                    <span className="font-mono font-semibold text-[#F4AEBE] shrink-0">Obj #{item.objective.sl_no}</span>
                     <span className="truncate">{item.objective.title}</span>
                   </div>
                 )}
@@ -200,7 +200,7 @@ export function NextPlansBoard({
                 <button
                   onClick={() => handlePromote(item)}
                   disabled={promotingId === item.id}
-                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-md disabled:opacity-50"
+                  className="px-3.5 py-1.5 rounded-xl bg-[#F4AEBE] hover:bg-[#f7bac8] text-[#03153D] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md disabled:opacity-50 font-display uppercase tracking-wider"
                   title="Move to Tab 1 (Daily Work)"
                 >
                   <Send className="w-3 h-3" />

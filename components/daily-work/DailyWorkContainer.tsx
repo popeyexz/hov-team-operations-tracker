@@ -35,7 +35,6 @@ import {
   Activity,
   CheckCheck,
   Compass,
-  Crown,
 } from 'lucide-react';
 import { updateVentureLead, deleteActionItem } from '@/app/actions/work-actions';
 import { VentureDocumentsDrawer } from '../venture/VentureDocumentsDrawer';
@@ -209,18 +208,18 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
       <div className="liquid-card !rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-2 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <div className="flex items-center gap-2 mb-2 font-mono text-[11px] text-[#F4AEBE] uppercase tracking-widest font-bold">
+              <span className="w-2 h-2 rounded-full bg-[#F4AEBE] shadow-[0_0_8px_rgba(244,174,190,0.8)]" />
               <span>TAB 1 // DAILY OPERATIONS</span>
-              <span className="text-zinc-600">•</span>
+              <span className="text-zinc-500">•</span>
               <span>13 Ventures</span>
             </div>
             
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight font-display">
               Daily Work & OKR Hierarchy
             </h1>
             
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
+            <p className="text-xs sm:text-sm text-zinc-300 mt-1.5 max-w-xl font-normal leading-relaxed">
               Track portfolio execution, review approvals, and real-time Key Result progress across all 13 ventures.
             </p>
           </div>
@@ -228,23 +227,23 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
           {/* Controls & Creation CTA */}
           <div className="flex flex-wrap items-center gap-3">
             {/* Dual View Mode Toggle */}
-            <div className="flex items-center bg-[#0d0f1a] p-1 rounded-2xl border border-white/[0.08] shadow-inner">
+            <div className="flex items-center bg-[#020B20] p-1 rounded-2xl border border-[#F4AEBE]/25 shadow-inner">
               <button
                 onClick={() => setViewMode('by_venture')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   viewMode === 'by_venture'
                     ? 'liquid-pill-active shadow-md'
-                    : 'text-zinc-400 hover:text-white'
+                    : 'text-[#F4AEBE]/80 hover:text-white'
                 }`}
               >
                 By Venture (13)
               </button>
               <button
                 onClick={() => setViewMode('by_lead')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   viewMode === 'by_lead'
                     ? 'liquid-pill-active shadow-md'
-                    : 'text-zinc-400 hover:text-white'
+                    : 'text-[#F4AEBE]/80 hover:text-white'
                 }`}
               >
                 By Lead
@@ -252,30 +251,30 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
             </div>
 
             {/* Scope Filter */}
-            <div className="flex items-center bg-[#0d0f1a] p-1 rounded-2xl border border-white/[0.08] shadow-inner">
+            <div className="flex items-center bg-[#020B20] p-1 rounded-2xl border border-[#F4AEBE]/25 shadow-inner">
               <button
                 onClick={() => setScopeFilter('all')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   scopeFilter === 'all'
                     ? 'liquid-pill-active shadow-md'
-                    : 'text-zinc-400 hover:text-white'
+                    : 'text-[#F4AEBE]/80 hover:text-white'
                 }`}
               >
                 All 13
               </button>
               <button
                 onClick={() => setScopeFilter('my_ventures')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   scopeFilter === 'my_ventures'
                     ? 'liquid-pill-active shadow-md'
-                    : 'text-zinc-400 hover:text-white'
+                    : 'text-[#F4AEBE]/80 hover:text-white'
                 }`}
               >
                 My Ventures ({myVentureIds.length})
               </button>
             </div>
 
-            {/* New Task Button (Vibrant Liquid Gradient) */}
+            {/* New Task Button (Rose Silk Luxury CTA) */}
             <button
               onClick={() => {
                 setSelectedVentureForTask(ventures[0]?.id || '');
@@ -283,53 +282,53 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
                 setSelectedKeyResultForTask('');
                 setIsAddActionModalOpen(true);
               }}
-              className="px-4 py-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-[0_4px_20px_rgba(124,58,237,0.45)] border border-violet-400/40 flex items-center gap-2 transition-all cursor-pointer transform active:scale-95"
+              className="px-4 py-2 rounded-2xl bg-[#F4AEBE] hover:bg-[#f7bac8] text-[#03153D] text-xs font-bold shadow-[0_4px_20px_rgba(244,174,190,0.4)] border border-white/40 flex items-center gap-2 transition-all cursor-pointer transform active:scale-95 font-display uppercase tracking-wider"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 text-[#03153D]" />
               <span>New Action Item</span>
             </button>
           </div>
         </div>
 
-        {/* Liquid Mini-Metrics Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-white/[0.08]">
+        {/* Liquid Mini-Metrics Strip (Rose Silk & Blue Velvet) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-[#F4AEBE]/20">
           <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
-            <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.25)] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#F4AEBE]/15 border border-[#F4AEBE]/35 flex items-center justify-center text-[#F4AEBE] shadow-[0_0_15px_rgba(244,174,190,0.25)] shrink-0">
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
               <div className="text-base font-bold text-white font-mono">{ventures.length}</div>
-              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">Ventures Portfolio</div>
+              <div className="text-[10px] text-[#F4AEBE]/80 font-mono uppercase tracking-wider font-semibold">Ventures Portfolio</div>
             </div>
           </div>
 
           <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.25)] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#072468] border border-[#F4AEBE]/35 flex items-center justify-center text-[#F4AEBE] shadow-[0_0_15px_rgba(7,36,104,0.4)] shrink-0">
               <Target className="w-5 h-5" />
             </div>
             <div>
               <div className="text-base font-bold text-white font-mono">{objectives.length}</div>
-              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">Seeded Objectives</div>
+              <div className="text-[10px] text-[#F4AEBE]/80 font-mono uppercase tracking-wider font-semibold">Seeded Objectives</div>
             </div>
           </div>
 
           <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.25)] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/35 flex items-center justify-center text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.25)] shrink-0">
               <CheckCheck className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-base font-bold text-emerald-400 font-mono">{completedCount}</div>
-              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">Completed Items</div>
+              <div className="text-base font-bold text-emerald-300 font-mono">{completedCount}</div>
+              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider font-semibold">Completed Items</div>
             </div>
           </div>
 
           <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.25)] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#F4AEBE]/20 border border-[#F4AEBE]/40 flex items-center justify-center text-[#F4AEBE] shadow-[0_0_15px_rgba(244,174,190,0.3)] shrink-0">
               <Clock className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-base font-bold text-amber-400 font-mono">{submittedCount + needsWorkCount}</div>
-              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">Review Pipeline</div>
+              <div className="text-base font-bold text-[#F4AEBE] font-mono">{submittedCount + needsWorkCount}</div>
+              <div className="text-[10px] text-[#F4AEBE]/80 font-mono uppercase tracking-wider font-semibold">Review Pipeline</div>
             </div>
           </div>
         </div>
@@ -360,10 +359,10 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
             <button
               key={pill.id}
               onClick={() => setStatusFilter(pill.id)}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
                 statusFilter === pill.id
-                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-violet-400/50 shadow-[0_2px_12px_rgba(124,58,237,0.4)]'
-                  : 'bg-[#121422]/70 text-zinc-400 border-white/[0.08] hover:text-white hover:border-white/20'
+                  ? 'bg-[#F4AEBE] text-[#03153D] border-[#F4AEBE] shadow-[0_2px_14px_rgba(244,174,190,0.4)] font-bold'
+                  : 'bg-[#020B20]/80 text-[#F4AEBE]/80 border-[#F4AEBE]/20 hover:text-white hover:border-[#F4AEBE]/40'
               }`}
             >
               <span>{pill.label}</span>
@@ -382,13 +381,13 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
 
         {/* Search Input */}
         <div className="relative min-w-[280px]">
-          <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-zinc-400" />
+          <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-[#F4AEBE]/70" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search tasks, OKRs, assignees..."
-            className="w-full liquid-input pl-10 pr-4 py-2 text-xs placeholder:text-zinc-500"
+            className="w-full liquid-input pl-10 pr-4 py-2 text-xs placeholder:text-zinc-400"
           />
         </div>
       </div>
@@ -678,10 +677,10 @@ function VentureSection({
 
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="font-mono text-xs font-bold text-violet-300 bg-violet-500/15 px-2.5 py-0.5 rounded-lg border border-violet-500/30">
+              <span className="font-mono text-xs font-bold text-[#03153D] bg-[#F4AEBE] px-2.5 py-0.5 rounded-lg shadow-sm">
                 {venture.code}
               </span>
-              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">{venture.name}</h3>
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight font-display">{venture.name}</h3>
 
               {/* Automated Health Badge */}
               <span
@@ -732,27 +731,27 @@ function VentureSection({
         <div className="flex items-center gap-2 pl-9 md:pl-0 flex-wrap">
           <button
             onClick={onOpenDocs}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-xs font-medium text-zinc-200 transition-all cursor-pointer border border-white/[0.08] shadow-sm min-h-[36px]"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#03153D]/80 hover:bg-[#F4AEBE]/10 text-xs font-medium text-[#F4AEBE] transition-all cursor-pointer border border-[#F4AEBE]/25 shadow-sm min-h-[36px]"
             title="Open Venture Documents"
           >
-            <Paperclip className="w-3.5 h-3.5 text-zinc-400" />
+            <Paperclip className="w-3.5 h-3.5 text-[#F4AEBE]" />
             <span>Documents</span>
           </button>
 
           {isFounder && (
             <button
               onClick={onAddObjective}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-xs font-medium text-amber-300 transition-all cursor-pointer border border-amber-500/30 shadow-sm min-h-[36px]"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#F4AEBE]/15 hover:bg-[#F4AEBE]/25 text-xs font-medium text-[#F4AEBE] transition-all cursor-pointer border border-[#F4AEBE]/30 shadow-sm min-h-[36px]"
               title="Founder Privilege: Add Strategic Objective"
             >
-              <Plus className="w-3.5 h-3.5 text-amber-400" />
+              <Plus className="w-3.5 h-3.5 text-[#F4AEBE]" />
               <span>Add Objective</span>
             </button>
           )}
 
           <button
             onClick={() => onAddTask()}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-semibold shadow-md transition-all cursor-pointer min-h-[36px]"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#F4AEBE] hover:bg-[#f7bac8] text-[#03153D] text-xs font-bold shadow-md transition-all cursor-pointer min-h-[36px] font-display uppercase tracking-wider"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Task</span>
@@ -800,10 +799,10 @@ function VentureSection({
                             <ChevronRight className="w-4 h-4" />
                           )}
                         </button>
-                        <span className="font-mono text-xs font-bold text-violet-300 bg-violet-500/15 px-2 py-0.5 rounded-md border border-violet-500/30 shrink-0">
+                        <span className="font-mono text-xs font-bold text-[#F4AEBE] bg-[#F4AEBE]/15 px-2 py-0.5 rounded-md border border-[#F4AEBE]/30 shrink-0">
                           #{obj.sl_no}
                         </span>
-                        <h4 className="text-xs sm:text-sm font-semibold text-white leading-snug">
+                        <h4 className="text-xs sm:text-sm font-semibold text-white leading-snug font-display">
                           {obj.title}
                         </h4>
                       </div>
@@ -826,9 +825,9 @@ function VentureSection({
                           {obj.status.replace('_', ' ')}
                         </span>
 
-                        {/* Founder Ownership Badge */}
-                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-mono text-amber-300 bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/30">
-                          <Crown className="w-3 h-3 text-amber-400" />
+                        {/* Founder Ownership Badge (Zero Crown) */}
+                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-mono text-[#F4AEBE] bg-[#F4AEBE]/15 px-2.5 py-0.5 rounded-full border border-[#F4AEBE]/30 font-medium">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#F4AEBE]" />
                           <span>By: Pratap (Founder)</span>
                         </span>
 
@@ -1154,7 +1153,7 @@ function ActionItemCard({
           )}
         </div>
 
-        <h5 className="text-xs sm:text-sm font-semibold text-white mt-2 leading-snug group-hover:text-zinc-100 transition-colors">
+        <h5 className="text-xs sm:text-sm font-semibold text-white mt-2 leading-snug group-hover:text-zinc-100 transition-colors font-display">
           {action.title}
         </h5>
 
@@ -1199,7 +1198,7 @@ function ActionItemCard({
           action.status !== 'submitted_for_review' && (
             <button
               onClick={onSubmitReview}
-              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-xs font-semibold flex items-center gap-1.5 shadow-md transition-all cursor-pointer min-h-[36px]"
+              className="px-3.5 py-1.5 rounded-xl bg-[#F4AEBE] hover:bg-[#f7bac8] text-[#03153D] text-xs font-bold flex items-center gap-1.5 shadow-md transition-all cursor-pointer min-h-[36px] font-display uppercase tracking-wider"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Submit for Review</span>
@@ -1210,7 +1209,7 @@ function ActionItemCard({
         {isFounder && action.status === 'submitted_for_review' && (
           <button
             onClick={onFounderReview}
-            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black text-xs font-semibold flex items-center gap-1.5 shadow-md transition-all cursor-pointer min-h-[36px]"
+            className="px-3.5 py-1.5 rounded-xl bg-[#F4AEBE] hover:bg-[#f7bac8] text-[#03153D] text-xs font-bold flex items-center gap-1.5 shadow-md transition-all cursor-pointer min-h-[36px] font-display uppercase tracking-wider"
           >
             <Shield className="w-3.5 h-3.5" />
             <span>Founder Review</span>

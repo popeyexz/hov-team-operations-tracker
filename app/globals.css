@@ -1,108 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --rose-silk: #F4AEBE;
+    --blue-velvet: #03153D;
+    --blue-velvet-deep: #020B20;
+    --blue-velvet-card: #071D49;
+    --background: 224 85% 6%;
+    --foreground: 346 76% 82%;
   }
 }
 
+.font-display {
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  letter-spacing: 0.02em;
+}
+
+.font-serif-luxury {
+  font-family: 'Playfair Display', 'Cinzel', serif;
+}
+
 body {
-  background-color: #09090d;
+  background-color: #03153D;
   background-image: 
-    radial-gradient(at 15% 15%, rgba(124, 58, 237, 0.08) 0px, transparent 40%),
-    radial-gradient(at 85% 10%, rgba(6, 182, 212, 0.07) 0px, transparent 40%),
-    radial-gradient(at 50% 80%, rgba(244, 63, 94, 0.04) 0px, transparent 50%),
-    radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    radial-gradient(at 15% 15%, rgba(244, 174, 190, 0.12) 0px, transparent 45%),
+    radial-gradient(at 85% 10%, rgba(7, 36, 104, 0.8) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(244, 174, 190, 0.06) 0px, transparent 50%),
+    radial-gradient(rgba(244, 174, 190, 0.08) 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px;
   background-attachment: fixed;
-  color: #fafafa;
+  color: #f8fafc;
   min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Helvetica Neue", Arial, sans-serif;
-  letter-spacing: -0.015em;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.012em;
   overflow-x: hidden;
 }
 
 /* =========================================================================
-   LIQUID NEO-SKEUOMORPHIC DARK THEME (REFERENCE-ALIGNED)
+   ROSE SILK (#F4AEBE) & BLUE VELVET (#03153D) LIQUID LUXURY THEME
    ========================================================================= */
 
-/* Soft Pillowy Liquid Card Container */
+/* Soft Pillowy Liquid Card Container (Blue Velvet Surface + Rose Silk Rim) */
 .liquid-card {
-  background: linear-gradient(145deg, rgba(22, 24, 38, 0.8) 0%, rgba(14, 15, 24, 0.9) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, rgba(7, 29, 73, 0.82) 0%, rgba(3, 21, 61, 0.95) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(244, 174, 190, 0.18);
   box-shadow: 
-    0 16px 40px -8px rgba(0, 0, 0, 0.75),
-    0 4px 12px rgba(0, 0, 0, 0.5),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.4);
+    0 16px 40px -8px rgba(1, 10, 30, 0.85),
+    0 4px 14px rgba(2, 11, 32, 0.6),
+    inset 0 1px 1px 0 rgba(244, 174, 190, 0.25),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.5);
   border-radius: 1.25rem;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .liquid-card:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(244, 174, 190, 0.35);
+  box-shadow: 
+    0 20px 48px -8px rgba(1, 10, 30, 0.95),
+    inset 0 1px 1px 0 rgba(244, 174, 190, 0.35);
 }
 
 /* Elevated Liquid Card for Metrics & Highlights */
 .liquid-card-elevated {
-  background: linear-gradient(145deg, rgba(28, 31, 48, 0.85) 0%, rgba(18, 19, 30, 0.95) 100%);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(12, 38, 94, 0.9) 0%, rgba(4, 23, 66, 0.98) 100%);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(244, 174, 190, 0.28);
   box-shadow: 
-    0 20px 48px -10px rgba(0, 0, 0, 0.85),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.16),
-    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.5);
+    0 20px 48px -10px rgba(1, 10, 30, 0.95),
+    inset 0 1px 1.5px 0 rgba(244, 174, 190, 0.35),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.6);
   border-radius: 1.5rem;
 }
 
 /* Liquid Pill Badges & Segmented Controls */
 .liquid-pill {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  background: rgba(3, 21, 61, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(244, 174, 190, 0.16);
+  box-shadow: inset 0 1px 1px rgba(244, 174, 190, 0.15);
   border-radius: 9999px;
 }
 
+/* High-Contrast Active Pill: Rose Silk Background + Blue Velvet Text */
 .liquid-pill-active {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(135deg, #F4AEBE 0%, #e895a9 100%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 
-    0 4px 16px rgba(139, 92, 246, 0.45),
-    inset 0 1px 1px rgba(255, 255, 255, 0.3);
-  color: #ffffff;
+    0 4px 16px rgba(244, 174, 190, 0.45),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  color: #03153D;
+  font-weight: 700;
 }
 
 /* Liquid Neon Accent Glows */
-.liquid-glow-violet {
-  box-shadow: 0 0 24px -4px rgba(139, 92, 246, 0.35);
-}
-
-.liquid-glow-cyan {
-  box-shadow: 0 0 24px -4px rgba(6, 182, 212, 0.35);
-}
-
 .liquid-glow-rose {
-  box-shadow: 0 0 24px -4px rgba(244, 63, 94, 0.35);
+  box-shadow: 0 0 24px -4px rgba(244, 174, 190, 0.45);
 }
 
-.liquid-glow-emerald {
-  box-shadow: 0 0 24px -4px rgba(16, 185, 129, 0.35);
-}
-
-.liquid-glow-amber {
-  box-shadow: 0 0 24px -4px rgba(245, 158, 11, 0.35);
+.liquid-glow-blue {
+  box-shadow: 0 0 24px -4px rgba(7, 36, 104, 0.6);
 }
 
 /* Tactile Liquid Inputs */
 .liquid-input {
-  background: rgba(12, 13, 20, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  background: rgba(2, 11, 32, 0.85);
+  border: 1px solid rgba(244, 174, 190, 0.22);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
   color: #fafafa;
   border-radius: 0.75rem;
   transition: all 0.15s ease;
@@ -110,31 +117,32 @@ body {
 
 .liquid-input:focus {
   outline: none;
-  border-color: rgba(139, 92, 246, 0.6);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  border-color: #F4AEBE;
+  box-shadow: 0 0 0 3px rgba(244, 174, 190, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar in Rose Silk & Blue Velvet */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090d;
+  background: #020B20;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #272733;
+  background: #0A2B6C;
   border-radius: 4px;
+  border: 1px solid rgba(244, 174, 190, 0.15);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f52;
+  background: #F4AEBE;
 }
 
 /* Smooth selection */
 ::selection {
-  background: #7c3aed;
-  color: #ffffff;
+  background: #F4AEBE;
+  color: #03153D;
 }

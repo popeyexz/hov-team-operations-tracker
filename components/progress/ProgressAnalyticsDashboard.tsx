@@ -68,14 +68,14 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
       <div className="liquid-card !rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div>
-            <div className="flex items-center gap-2 mb-2 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <div className="flex items-center gap-2 mb-2 font-mono text-[11px] text-[#F4AEBE] uppercase tracking-widest">
+              <span className="w-2 h-2 rounded-full bg-[#F4AEBE] shadow-[0_0_8px_rgba(244,174,190,0.8)]" />
               <span>TAB 3 // EXECUTIVE TELEMETRY</span>
               <span className="text-zinc-600">•</span>
               <span>13 Ventures</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight font-display">
               Portfolio Health & Performance Matrix
             </h1>
 
@@ -84,8 +84,8 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-[#0c0e18] px-3.5 py-2 rounded-xl border border-emerald-500/30 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+          <div className="flex items-center gap-2 text-xs font-mono text-[#F4AEBE] bg-[#03153D]/80 px-3.5 py-2 rounded-xl border border-[#F4AEBE]/30 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-[#F4AEBE] shadow-[0_0_8px_rgba(244,174,190,0.8)]" />
             <span>DETERMINISTIC ROLLUP ENGINE ACTIVE</span>
           </div>
         </div>
