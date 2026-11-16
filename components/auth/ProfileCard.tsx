@@ -2,95 +2,141 @@
 
 import React from 'react';
 import { Profile } from '@/lib/types';
-import { Shield, Mail, Crown, Compass, Sparkles } from 'lucide-react';
+import { Mail, Crown, Compass, ArrowRight, ShieldCheck, Layers } from 'lucide-react';
 
 interface ProfileCardProps {
   profile: Profile;
   onClick: () => void;
+  assignedVentures?: { id: string; name: string; code: string }[];
 }
 
-export function ProfileCard({ profile, onClick }: ProfileCardProps) {
+export function ProfileCard({ profile, onClick, assignedVentures = [] }: ProfileCardProps) {
   const isFounder = profile.role === 'founder';
-  const isVentureLead = profile.lead_title?.includes('Lead') || profile.lead_title?.includes('Venture');
+  const isVentureLead = assignedVentures.length > 0 || (profile.lead_title?.toLowerCase().includes('lead') ?? false);
 
-  // Gradient themes based on role and custom avatar color
-  const getAvatarGradient = () => {
-    if (isFounder) return 'from-amber-400 via-rose-500 to-indigo-600';
-    if (isVentureLead) return 'from-blue-500 via-indigo-600 to-violet-700';
-    return 'from-emerald-400 via-teal-500 to-sky-600';
+  // Derive crisp initials (e.g. "Pratap" -> "P", "Atharav Kumar" -> "AK")
+  const getInitials = (name: string) => {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
   };
 
   return (
     <button
       onClick={onClick}
-      className="group relative flex flex-col items-center justify-between p-7 rounded-3xl glass-panel glass-panel-hover text-center transition-all duration-300 w-full focus:outline-none cursor-pointer overflow-hidden border border-white/[0.08] hover:border-white/20"
+      className={`group relative flex flex-col justify-between p-5 sm:p-6 rounded-xl text-left transition-all duration-150 cursor-pointer overflow-hidden border focus:outline-none ${
+        isFounder
+          ? 'bg-zinc-900/80 hover:bg-zinc-900 border-amber-500/40 hover:border-amber-500/60 shadow-lg shadow-amber-950/20 md:col-span-2'
+          : 'bg-zinc-900/60 hover:bg-zinc-900/90 border-zinc-800/90 hover:border-zinc-700 shadow-md'
+      }`}
     >
-      {/* Ambient background glow on hover */}
-      <div
-        className="absolute -inset-0.5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl -z-10 pointer-events-none"
-        style={{
-          background: `radial-gradient(circle, ${profile.avatar_color || '#6366f1'}35 0%, transparent 70%)`,
-        }}
-      />
+      {/* Top Header Row */}
+      <div>
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2">
+            {/* Monogram Badge */}
+            <div
+              className={`w-9 h-9 rounded-lg flex items-center justify-center font-mono font-bold text-xs tracking-wider border ${
+                isFounder
+                  ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                  : 'bg-zinc-800 text-zinc-200 border-zinc-700/60'
+              }`}
+            >
+              {getInitials(profile.full_name)}
+            </div>
 
-      {/* Top micro-badge */}
-      <div className="w-full flex items-center justify-between mb-4">
-        <span className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider text-emerald-400/90 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse led-emerald" />
-          ACTIVE
-        </span>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-semibold text-zinc-100 group-hover:text-white transition-colors">
+                  {profile.full_name}
+                </span>
+                {isFounder && <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />}
+              </div>
+              <div className="text-[11px] text-zinc-400 font-mono">
+                {profile.lead_title || (isFounder ? 'Founder & Managing Partner' : 'Team Member')}
+              </div>
+            </div>
+          </div>
 
-        {isFounder ? (
-          <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-rose-500/20 text-amber-300 text-[10px] font-bold tracking-wide border border-amber-500/30 flex items-center gap-1 shadow-sm">
-            <Crown className="w-3 h-3 text-amber-400" />
-            Founder
-          </span>
-        ) : isVentureLead ? (
-          <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-sky-300 text-[10px] font-semibold border border-blue-500/20 flex items-center gap-1">
-            <Compass className="w-3 h-3 text-sky-400" />
-            Lead
-          </span>
-        ) : (
-          <span className="px-2 py-0.5 rounded-full bg-white/5 text-slate-400 text-[10px] font-medium border border-white/10">
-            Team
-          </span>
+          {/* Role Status Tag */}
+          <div>
+            {isFounder ? (
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded border border-amber-500/30 bg-amber-500/10 text-amber-300 font-medium">
+                FOUNDER
+              </span>
+            ) : isVentureLead ? (
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded border border-blue-500/30 bg-blue-500/10 text-sky-300 font-medium">
+                LEAD ({assignedVentures.length})
+              </span>
+            ) : (
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded border border-zinc-700/60 bg-zinc-800/60 text-zinc-400 font-medium">
+                SPECIALIST
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Founder Context / Description */}
+        {isFounder && (
+          <p className="text-xs text-zinc-400 mb-4 leading-relaxed font-normal">
+            Direct operational oversight across all 13 portfolio companies. Authorizes Tier 1/2 OKR submissions, signs off on weekly reviews, and directs strategic capital allocations.
+          </p>
+        )}
+
+        {/* Assigned Ventures (Real Domain Data) */}
+        {assignedVentures.length > 0 && (
+          <div className="mb-4">
+            <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+              <Layers className="w-3 h-3 text-zinc-500" />
+              <span>Assigned Portfolio Ventures ({assignedVentures.length})</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {assignedVentures.map((v) => (
+                <span
+                  key={v.id}
+                  className="font-mono text-[10px] px-2 py-0.5 rounded bg-zinc-800/80 border border-zinc-700/60 text-zinc-300 group-hover:border-zinc-600 transition-colors"
+                >
+                  {v.name.replace('PS.HOV - ', '').replace('House_of_', '')}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!isFounder && assignedVentures.length === 0 && (
+          <div className="mb-4">
+            <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5">
+              Domain Scope
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-zinc-400">
+                Cross-Venture Execution
+              </span>
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-zinc-400">
+                Operations & Growth
+              </span>
+            </div>
+          </div>
         )}
       </div>
 
-      {/* Avatar with Halo Ring */}
-      <div className="relative my-2">
-        <div className="relative">
-          <div
-            className={`w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr ${getAvatarGradient()} flex items-center justify-center text-white text-2xl sm:text-3xl font-black shadow-2xl transform group-hover:scale-105 group-hover:rotate-1 transition-all duration-300 ring-2 ring-white/20 group-hover:ring-white/40 shadow-indigo-500/20`}
-          >
-            {profile.full_name.charAt(0)}
-          </div>
-          {isFounder && (
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center text-slate-950 shadow-lg border border-white/40">
-              <Crown className="w-3.5 h-3.5 fill-current" />
-            </div>
+      {/* Footer Status & Action */}
+      <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between text-xs w-full">
+        <div className="flex items-center gap-1.5 text-zinc-400 font-mono text-[11px] truncate max-w-[200px]">
+          <Mail className="w-3 h-3 text-zinc-500 shrink-0" />
+          {profile.email ? (
+            <span className="truncate text-zinc-400">{profile.email}</span>
+          ) : (
+            <span className="text-amber-400/90 font-sans">Set alert email →</span>
           )}
         </div>
-      </div>
 
-      {/* Name & Title */}
-      <div className="mt-3 w-full">
-        <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:via-sky-200 group-hover:to-indigo-300 transition-all">
-          {profile.full_name}
-        </h3>
-        <p className="text-xs text-slate-400 mt-1 font-medium truncate max-w-full">
-          {profile.lead_title || (isFounder ? 'Founder' : 'Team Member')}
-        </p>
-      </div>
-
-      {/* Alert Email Status Footer */}
-      <div className="mt-4 pt-3 border-t border-white/[0.06] w-full flex items-center justify-center gap-1.5 text-[11px]">
-        <Mail className="w-3 h-3 text-slate-500" />
-        {profile.email ? (
-          <span className="truncate max-w-[150px] text-slate-400 font-mono">{profile.email}</span>
-        ) : (
-          <span className="text-amber-400/90 font-medium">Add alert email →</span>
-        )}
+        <div className="flex items-center gap-1 text-[11px] font-medium text-zinc-400 group-hover:text-zinc-100 transition-colors font-mono">
+          <span>{isFounder ? 'ENTER COCKPIT' : 'ENTER'}</span>
+          <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+        </div>
       </div>
     </button>
   );

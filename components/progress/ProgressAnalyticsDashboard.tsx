@@ -63,51 +63,46 @@ export function ProgressAnalyticsDashboard({ data }: ProgressAnalyticsDashboardP
     focusType === 'member' ? memberRows.find((m) => m.id === selectedFocusId) : null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8">
-      {/* Luxury Command Center Header */}
-      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/[0.12] shadow-2xl relative overflow-hidden">
-        {/* Ambient Glows */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-600/[0.08] rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-600/[0.06] rounded-full blur-3xl pointer-events-none -ml-16 -mb-16" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+      {/* Precision Telemetry Header */}
+      <div className="bg-zinc-900/60 border border-zinc-800 p-5 sm:p-6 rounded-xl shadow-sm relative">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[10px] font-mono font-bold tracking-widest text-emerald-400 bg-emerald-950/70 px-3 py-1 rounded-full border border-emerald-800/50 shadow-[0_0_12px_rgba(16,185,129,0.2)] flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse led-emerald" />
-                TAB 3 · EXECUTIVE TELEMETRY
-              </span>
-              <span className="text-xs text-slate-400 font-medium">Real-Time Portfolio Analytics</span>
+            <div className="flex items-center gap-2 mb-1.5 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span>TAB 3 // EXECUTIVE TELEMETRY</span>
+              <span className="text-zinc-600">•</span>
+              <span>13 Ventures</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight text-gradient-silver">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-zinc-100 tracking-tight">
               Portfolio Health & Performance Matrix
             </h1>
 
-            <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl">
-              Live executive rollups across 13 ventures, automated Red/Amber/Green health calculations, planning gap audits, and team velocity.
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xl font-normal leading-relaxed">
+              Deterministic rollups across 13 portfolio companies, automated Red/Amber/Green health states, planning gap audits, and execution velocity.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 text-xs text-emerald-300 bg-emerald-950/40 px-3.5 py-2 rounded-2xl border border-emerald-500/30 shadow-sm font-medium">
-            <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
-            <span>Deterministic Rollup Engine Active</span>
+          <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span>DETERMINISTIC ROLLUP ENGINE ACTIVE</span>
           </div>
         </div>
 
-        {/* 1 · Portfolio Snapshot (8 Luxury Bento Metric Cards) */}
-        <div className="mt-8 pt-6 border-t border-white/[0.08] space-y-3">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
-            <BarChart3 className="w-4 h-4 text-sky-400" />
-            <span>1 · Portfolio Snapshot</span>
+        {/* 1 · Portfolio Snapshot (8 Precision Metric Tiles) */}
+        <div className="mt-6 pt-5 border-t border-zinc-800/80 space-y-3">
+          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 uppercase tracking-wider">
+            <BarChart3 className="w-3.5 h-3.5 text-zinc-400" />
+            <span>1 // Portfolio Snapshot</span>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
             {/* Objectives Done */}
-            <div className="p-4 sm:p-5 rounded-3xl glass-card border border-white/[0.08] hover:border-indigo-500/30 transition-all duration-300 group shadow-md">
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
-                <span className="font-medium">Objectives Done</span>
-                <Target className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+            <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-950/60 border border-zinc-800 hover:border-zinc-700 transition-all group shadow-sm">
+              <div className="flex items-center justify-between text-xs text-zinc-400 mb-1">
+                <span className="font-mono text-[11px]">Objectives Done</span>
+                <Target className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
               </div>
               <div className="text-2xl sm:text-3xl font-black text-white font-mono">
                 {snapshot.objectivesCompleted} <span className="text-slate-500 text-lg">/ {snapshot.objectivesTotal}</span>

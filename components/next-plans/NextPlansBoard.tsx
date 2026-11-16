@@ -52,37 +52,32 @@ export function NextPlansBoard({
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-7">
-      {/* Luxury Command Header */}
-      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/[0.12] shadow-2xl relative overflow-hidden">
-        {/* Ambient Glows */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-violet-600/[0.08] rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-sky-600/[0.06] rounded-full blur-3xl pointer-events-none -ml-16 -mb-16" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+      {/* Precision Operations Header */}
+      <div className="bg-zinc-900/60 border border-zinc-800 p-5 sm:p-6 rounded-xl shadow-sm relative">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[10px] font-mono font-bold tracking-widest text-violet-400 bg-violet-950/70 px-3 py-1 rounded-full border border-violet-800/50 shadow-[0_0_12px_rgba(139,92,246,0.2)] flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse led-violet" />
-                TAB 2 · FORWARD ROADMAP
-              </span>
-              <span className="text-xs text-slate-400 font-medium">Strategic Pipeline</span>
+            <div className="flex items-center gap-2 mb-1.5 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span>TAB 2 // FORWARD ROADMAP</span>
+              <span className="text-zinc-600">•</span>
+              <span>Milestone Pipeline</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight text-gradient-silver">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-zinc-100 tracking-tight">
               Next Plans & Milestone Roadmapping
             </h1>
 
-            <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl">
-              Draft future OKR initiatives, set milestones, and seamlessly promote items to active daily work in 1 click.
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xl font-normal leading-relaxed">
+              Draft upcoming OKR initiatives, set target milestones, and promote tasks to active daily work in 1 click.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <select
               value={selectedVenture}
               onChange={(e) => setSelectedVenture(e.target.value)}
-              className="glass-input text-xs font-semibold px-3 py-2 rounded-2xl text-slate-200 bg-slate-900/90 border-white/10 hover:border-violet-400/40 cursor-pointer shadow-sm"
+              className="text-xs font-mono px-3 py-1.5 rounded-lg text-zinc-300 bg-zinc-950 border border-zinc-800 hover:border-zinc-700 cursor-pointer focus:outline-none"
             >
               <option value="all">All Ventures ({ventures.length})</option>
               {ventures.map((v) => (
@@ -94,43 +89,43 @@ export function NextPlansBoard({
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="px-4 py-2 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-violet-500/25 border border-white/20 flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
               <span>Schedule Next Plan</span>
             </button>
           </div>
         </div>
 
         {/* Live Plan Metrics Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6 pt-6 border-t border-white/[0.08]">
-          <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
-              <Calendar className="w-4 h-4" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-5 pt-5 border-t border-zinc-800/80">
+          <div className="bg-zinc-950/60 p-3 rounded-lg border border-zinc-800 flex items-center gap-3">
+            <div className="w-7 h-7 rounded-md bg-zinc-800 flex items-center justify-center text-zinc-300">
+              <Calendar className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className="text-base font-bold text-white font-mono">{plannedItems.length}</div>
-              <div className="text-[10px] text-slate-400 font-medium">Scheduled Deliverables</div>
+              <div className="text-base font-semibold text-zinc-100 font-mono">{plannedItems.length}</div>
+              <div className="text-[11px] text-zinc-500 font-mono">Scheduled Deliverables</div>
             </div>
           </div>
 
-          <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-              <Building2 className="w-4 h-4" />
+          <div className="bg-zinc-950/60 p-3 rounded-lg border border-zinc-800 flex items-center gap-3">
+            <div className="w-7 h-7 rounded-md bg-zinc-800 flex items-center justify-center text-zinc-300">
+              <Building2 className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className="text-base font-bold text-white font-mono">{ventures.length}</div>
-              <div className="text-[10px] text-slate-400 font-medium">Participating Ventures</div>
+              <div className="text-base font-semibold text-zinc-100 font-mono">{ventures.length}</div>
+              <div className="text-[11px] text-zinc-500 font-mono">Participating Ventures</div>
             </div>
           </div>
 
-          <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <ArrowRightCircle className="w-4 h-4" />
+          <div className="bg-zinc-950/60 p-3 rounded-lg border border-zinc-800 flex items-center gap-3">
+            <div className="w-7 h-7 rounded-md bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <ArrowRightCircle className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className="text-base font-bold text-emerald-300 font-mono">1-Click</div>
-              <div className="text-[10px] text-slate-400 font-medium">Instant Promotion</div>
+              <div className="text-base font-semibold text-emerald-400 font-mono">1-Click</div>
+              <div className="text-[11px] text-zinc-500 font-mono">Instant Daily Promotion</div>
             </div>
           </div>
         </div>
@@ -138,30 +133,29 @@ export function NextPlansBoard({
 
       {/* Planned Deliverables Grid */}
       {filteredItems.length === 0 ? (
-        <div className="p-12 sm:p-16 rounded-3xl glass-panel border border-white/10 text-center space-y-4 shadow-xl">
-          <div className="w-16 h-16 rounded-3xl bg-violet-500/10 border border-violet-500/20 text-violet-400 mx-auto flex items-center justify-center shadow-lg shadow-violet-500/10">
-            <Calendar className="w-8 h-8" />
+        <div className="p-10 sm:p-14 rounded-xl bg-zinc-900/40 border border-zinc-800 text-center space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-400 mx-auto flex items-center justify-center">
+            <Calendar className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">No Planned Initiatives Found</h3>
-            <p className="text-xs text-slate-400 mt-1.5 max-w-md mx-auto leading-relaxed">
-              No future roadmapped deliverables found for this venture selection.
-              Schedule upcoming tasks and OKRs to plan out future operational velocity.
+            <h3 className="text-sm font-semibold text-zinc-200">No Planned Initiatives Found</h3>
+            <p className="text-xs text-zinc-500 mt-1 max-w-md mx-auto font-normal">
+              No roadmapped deliverables found for this venture selection. Schedule upcoming tasks and OKRs to plan out future velocity.
             </p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-violet-500/25 border border-white/20 transition-all cursor-pointer"
+            className="px-4 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm transition-all cursor-pointer"
           >
             Schedule Your First Plan
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className="p-5 rounded-3xl glass-panel border border-white/[0.08] hover:border-violet-500/30 transition-all duration-300 flex flex-col justify-between group shadow-lg"
+              className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/90 hover:border-zinc-700 flex flex-col justify-between group shadow-sm transition-all"
             >
               <div>
                 {/* Venture Code & Target Date */}

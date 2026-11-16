@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, CheckCircle2, X } from 'lucide-react';
+import { Mail, X } from 'lucide-react';
 import { updateProfileEmail } from '@/app/actions/profile-actions';
 import { Profile } from '@/lib/types';
 
@@ -53,70 +53,67 @@ export function EmailPromptModal({ profile, isOpen, onClose, onSuccess }: EmailP
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md rounded-3xl glass-panel p-6 sm:p-8 border border-white/20 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+      <div className="relative w-full max-w-md rounded-xl bg-zinc-900 border border-zinc-800 p-6 shadow-2xl">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full glass-pill hover:bg-white/10 text-slate-400 hover:text-white"
+          className="absolute top-4 right-4 p-1.5 rounded-md text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-3.5 mb-5">
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg"
-            style={{ backgroundColor: profile.avatar_color || '#3b82f6' }}
-          >
-            {profile.full_name.charAt(0)}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center font-mono font-bold text-xs bg-zinc-800 border border-zinc-700 text-zinc-200">
+            {profile.full_name.slice(0, 2).toUpperCase()}
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Setup Alerts Email</h3>
-            <p className="text-xs text-slate-400">Welcome, {profile.full_name}!</p>
+            <h3 className="text-sm font-semibold text-zinc-100">Setup Notification Email</h3>
+            <p className="text-xs text-zinc-500 font-mono">Operator: {profile.full_name}</p>
           </div>
         </div>
 
-        <p className="text-sm text-slate-300 mb-5 leading-relaxed">
-          Enter your email to receive real-time review alerts, Founder feedback, and task updates.
+        <p className="text-xs text-zinc-400 mb-5 leading-relaxed">
+          Configure an alert email to receive real-time review updates, founder feedback, and task verification notices.
         </p>
 
         {error && (
-          <div className="p-3 mb-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">
+          <div className="p-2.5 mb-4 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-mono">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5">
-              Notification Email
+            <label className="block text-xs font-medium text-zinc-400 mb-1.5 font-mono">
+              EMAIL ADDRESS
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
+              <Mail className="w-4 h-4 absolute left-3 top-2.5 text-zinc-500" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@houseofventures.com"
-                className="w-full glass-input pl-10 pr-4 py-2.5 rounded-xl text-sm placeholder:text-slate-500"
+                className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 text-zinc-100 pl-9 pr-3 py-2 rounded-lg text-xs placeholder:text-zinc-600 focus:outline-none transition-colors"
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-2">
+          <div className="flex items-center justify-end gap-2.5 pt-2">
             <button
               type="button"
               onClick={handleSkip}
-              className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-xl"
+              className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200 transition-colors font-medium cursor-pointer"
             >
-              Skip for now
+              Skip
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-lg shadow-blue-500/20 flex items-center gap-2"
+              className="px-4 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs shadow-sm transition-all cursor-pointer disabled:opacity-50"
             >
-              {saving ? 'Saving...' : 'Save & Continue'}
+              {saving ? 'Saving...' : 'Save Email'}
             </button>
           </div>
         </form>

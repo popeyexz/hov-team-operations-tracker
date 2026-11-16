@@ -16,14 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="min-h-screen flex flex-col bg-[#06080e] text-slate-100 antialiased selection:bg-indigo-600 selection:text-white relative">
-        {/* Ambient Aurora Glow Lights (Fixed, pointer-events-none) */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10" aria-hidden="true">
-          <div className="absolute -top-[25%] -left-[10%] w-[55vw] h-[55vw] max-w-[800px] max-h-[800px] rounded-full bg-indigo-600/[0.09] blur-[140px]" />
-          <div className="absolute top-[35%] -right-[15%] w-[50vw] h-[50vw] max-w-[750px] max-h-[750px] rounded-full bg-violet-600/[0.08] blur-[160px]" />
-          <div className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[60vw] max-w-[900px] max-h-[900px] rounded-full bg-emerald-600/[0.05] blur-[170px]" />
-        </div>
-
+      <body className="min-h-screen flex flex-col bg-[#09090b] text-zinc-100 antialiased selection:bg-zinc-800 selection:text-white relative">
         <ActiveProfileProvider>
           <Navbar />
           <main className="flex-1 pb-16">{children}</main>

@@ -181,76 +181,71 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
   }, [filteredVentures]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-7">
-      {/* Luxury Command Center Header */}
-      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/[0.12] shadow-2xl relative overflow-hidden">
-        {/* Subtle decorative background gradient beam */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/[0.08] rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-violet-500/[0.06] rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+      {/* Precision Operations Header */}
+      <div className="bg-zinc-900/60 border border-zinc-800 p-5 sm:p-6 rounded-xl shadow-sm relative">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[10px] font-mono font-bold tracking-widest text-sky-400 bg-sky-950/70 px-3 py-1 rounded-full border border-sky-800/50 shadow-[0_0_12px_rgba(56,189,248,0.2)] flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse led-cyan" />
-                TAB 1 · OPERATIONS COCKPIT
-              </span>
-              <span className="text-xs text-slate-400 font-medium">13 Portfolio Ventures</span>
+            <div className="flex items-center gap-2 mb-1.5 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span>TAB 1 // DAILY OPERATIONS</span>
+              <span className="text-zinc-600">•</span>
+              <span>13 Ventures</span>
             </div>
             
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight text-gradient-silver">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-zinc-100 tracking-tight">
               Daily Work & OKR Hierarchy
             </h1>
             
-            <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl">
-              Track multi-venture execution, dynamic lead assignments, two-stage review approvals, and real-time Key Result progress.
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xl font-normal leading-relaxed">
+              Track portfolio execution, review approvals, and real-time Key Result progress across all 13 ventures.
             </p>
           </div>
 
           {/* Controls & Creation CTA */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             {/* Dual View Mode Toggle */}
-            <div className="flex items-center bg-black/40 p-1 rounded-2xl border border-white/10 shadow-inner">
+            <div className="flex items-center bg-zinc-950 p-0.5 rounded-lg border border-zinc-800">
               <button
                 onClick={() => setViewMode('by_venture')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
                   viewMode === 'by_venture'
-                    ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25 border border-white/20'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-sm'
+                    : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 By Venture (13)
               </button>
               <button
                 onClick={() => setViewMode('by_lead')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
                   viewMode === 'by_lead'
-                    ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25 border border-white/20'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-sm'
+                    : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
-                By Venture Lead
+                By Lead
               </button>
             </div>
 
-            {/* Scope Filter (Cross-Venture Visibility) */}
-            <div className="flex items-center bg-black/40 p-1 rounded-2xl border border-white/10 shadow-inner">
+            {/* Scope Filter */}
+            <div className="flex items-center bg-zinc-950 p-0.5 rounded-lg border border-zinc-800">
               <button
                 onClick={() => setScopeFilter('all')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
                   scopeFilter === 'all'
-                    ? 'bg-white/15 text-white shadow-sm border border-white/20'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-sm'
+                    : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
-                All 13 Ventures
+                All 13
               </button>
               <button
                 onClick={() => setScopeFilter('my_ventures')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
                   scopeFilter === 'my_ventures'
-                    ? 'bg-white/15 text-white shadow-sm border border-white/20'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-sm'
+                    : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 My Ventures ({myVentureIds.length})
@@ -263,16 +258,16 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
                 setSelectedVentureForTask(ventures[0]?.id || '');
                 setIsAddActionModalOpen(true);
               }}
-              className="px-4 py-2 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-bold shadow-lg shadow-indigo-500/25 border border-white/20 flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
               <span>New Action Item</span>
             </button>
           </div>
         </div>
 
         {/* Live Mini-Metrics Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-white/[0.08]">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-5 border-t border-zinc-800/80">
           <div className="glass-card p-3 rounded-2xl border border-white/5 flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
               <Briefcase className="w-4 h-4" />
@@ -324,33 +319,33 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
             { id: 'active', label: 'Active Work' },
             {
               id: 'submitted_for_review',
-              label: 'Submitted for Review',
+              label: 'In Review',
               badge: submittedCount,
-              badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/40 led-amber',
+              badgeColor: 'bg-amber-500/10 text-amber-300 border-amber-500/30',
             },
             {
               id: 'needs_work',
               label: 'Needs Work',
               badge: needsWorkCount,
-              badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/40 led-rose',
+              badgeColor: 'bg-rose-500/10 text-rose-300 border-rose-500/30',
             },
-            { id: 'completed', label: 'Completed', badge: completedCount, badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
-            { id: 'blocker', label: 'Blockers', badge: blockerCount, badgeColor: 'bg-red-500/25 text-red-300 border-red-500/40 led-rose' },
+            { id: 'completed', label: 'Completed', badge: completedCount, badgeColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' },
+            { id: 'blocker', label: 'Blockers', badge: blockerCount, badgeColor: 'bg-red-500/10 text-red-300 border-red-500/30' },
           ].map((pill) => (
             <button
               key={pill.id}
               onClick={() => setStatusFilter(pill.id)}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all border cursor-pointer ${
                 statusFilter === pill.id
-                  ? 'bg-gradient-to-r from-indigo-600/30 to-violet-600/30 text-white border-indigo-400/40 shadow-sm shadow-indigo-500/20'
-                  : 'glass-pill text-slate-400 border-white/5 hover:text-white hover:border-white/20'
+                  ? 'bg-zinc-800 text-zinc-100 border-zinc-700 shadow-sm'
+                  : 'bg-zinc-900/60 text-zinc-400 border-zinc-800/80 hover:text-zinc-200 hover:border-zinc-700'
               }`}
             >
               <span>{pill.label}</span>
               {pill.badge !== undefined && pill.badge > 0 && (
                 <span
-                  className={`px-2 py-0.2 rounded-full text-[10px] font-bold border ${
-                    pill.badgeColor || 'bg-white/10 text-slate-300 border-white/10'
+                  className={`px-1.5 py-0.2 rounded text-[10px] font-mono border ${
+                    pill.badgeColor || 'bg-zinc-800 text-zinc-300 border-zinc-700'
                   }`}
                 >
                   {pill.badge}
@@ -362,13 +357,13 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
 
         {/* Search Input */}
         <div className="relative min-w-[260px]">
-          <Search className="w-3.5 h-3.5 absolute left-3.5 top-3 text-slate-400" />
+          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search action items, OKRs, assignees..."
-            className="w-full glass-input pl-9 pr-3 py-1.5 rounded-2xl text-xs placeholder:text-slate-500 focus:border-indigo-400"
+            placeholder="Search tasks, OKRs, assignees..."
+            className="w-full bg-zinc-900/80 border border-zinc-800 focus:border-zinc-600 text-zinc-100 pl-8 pr-3 py-1.5 rounded-lg text-xs placeholder:text-zinc-500 focus:outline-none transition-colors"
           />
         </div>
       </div>
@@ -636,11 +631,11 @@ function VentureSection({
   );
 
   return (
-    <div className="rounded-3xl glass-panel border border-white/[0.09] overflow-hidden shadow-xl transition-all duration-300 hover:border-white/20">
+    <div className="rounded-xl bg-zinc-900/60 border border-zinc-800/90 overflow-hidden shadow-sm transition-all hover:border-zinc-700/80">
       {/* Venture Header Bar */}
-      <div className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors">
+      <div className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-zinc-800/20 transition-colors">
         <div className="flex items-center gap-3.5 cursor-pointer" onClick={onToggle}>
-          <button className="p-1.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-colors">
+          <button className="p-1 rounded-md bg-zinc-800 border border-zinc-700/60 text-zinc-400 hover:text-white transition-colors">
             {isExpanded ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
@@ -650,31 +645,31 @@ function VentureSection({
 
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="font-mono text-xs font-bold text-sky-300 bg-sky-950/70 px-2.5 py-0.5 rounded-lg border border-sky-700/40">
+              <span className="font-mono text-xs font-semibold text-zinc-300 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700/70">
                 {venture.code}
               </span>
-              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">{venture.name}</h3>
+              <h3 className="text-sm sm:text-base font-semibold text-zinc-100 tracking-tight">{venture.name}</h3>
 
               {/* Automated Health Badge */}
               <span
-                className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-bold border shadow-sm ${healthBadge.badgeClass}`}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono border ${healthBadge.badgeClass}`}
               >
                 <span className={`w-1.5 h-1.5 rounded-full ${healthBadge.dotClass}`} />
                 {healthBadge.label} Health
               </span>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-slate-400 mt-1.5 flex-wrap font-medium">
+            <div className="flex items-center gap-3 text-xs text-zinc-400 mt-1.5 flex-wrap font-mono">
               {isFounder ? (
                 <div
-                  className="inline-flex items-center gap-1.5"
+                  className="inline-flex items-center gap-1.5 font-sans"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <span className="text-slate-400 text-xs">Lead:</span>
+                  <span className="text-zinc-500 text-xs">Lead:</span>
                   <select
                     value={venture.lead_id || ''}
                     onChange={(e) => onReassignLead(venture.id, e.target.value)}
-                    className="glass-input text-[11px] font-semibold px-2.5 py-0.5 rounded-lg text-sky-300 bg-slate-900 border-sky-500/30 cursor-pointer"
+                    className="bg-zinc-950 text-[11px] font-mono px-2 py-0.5 rounded border border-zinc-800 text-zinc-200 cursor-pointer focus:outline-none"
                     title="Founder: Reassign Venture Lead"
                   >
                     <option value="">Unassigned</option>

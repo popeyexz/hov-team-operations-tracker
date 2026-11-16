@@ -601,3 +601,12 @@ export async function addActivityComment(params: {
   revalidatePath('/daily-work');
   return { success: true, log: data as TaskActivityLog };
 }
+
+export async function getVenturesForGateway() {
+  const { data } = await supabaseAdmin
+    .from('ventures')
+    .select('id, name, code, lead_id')
+    .eq('is_active', true)
+    .order('display_order', { ascending: true });
+  return (data || []) as { id: string; name: string; code: string; lead_id: string }[];
+}

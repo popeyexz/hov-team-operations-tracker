@@ -1,23 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useActiveProfile } from '@/context/ActiveProfileContext';
 import { ProfileCard } from './ProfileCard';
 import { EmailPromptModal } from './EmailPromptModal';
 import { AddMemberModal } from './AddMemberModal';
 import { Profile } from '@/lib/types';
-import { Plus, Sparkles, Building2, Layers, ShieldCheck, Zap } from 'lucide-react';
+import { Plus, Shield, Layers, Building2, CheckCircle2 } from 'lucide-react';
+import { getVenturesForGateway } from '@/app/actions/work-actions';
+
+interface BasicVenture {
+  id: string;
+  name: string;
+  code: string;
+  lead_id: string;
+}
 
 export function ProfileGrid() {
   const router = useRouter();
   const { profiles, setActiveProfile, refreshProfiles } = useActiveProfile();
+  const [ventures, setVentures] = useState<BasicVenture[]>([]);
   const [selectedForEmail, setSelectedForEmail] = useState<Profile | null>(null);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  useEffect(() => {
+    getVenturesForGateway().then((data) => {
+      setVentures(data as BasicVenture[]);
+    });
+  }, []);
+
   const handleProfileClick = (profile: Profile) => {
-    // If profile has no email, prompt for email first
     if (!profile.email) {
       setSelectedForEmail(profile);
       setIsEmailModalOpen(true);
@@ -39,64 +53,99 @@ export function ProfileGrid() {
     router.push('/daily-work');
   };
 
+  // Group profiles logically: Founder, Leads, Collaborators
+  const founder = profiles.find((p) => p.role === 'founder');
+  const nonFounders = profiles.filter((p) => p.role !== 'founder');
+
+  // Helper to find ventures assigned to a profile
+  const getAssignedVentures = (profileId: string) => {
+    return ventures.filter((v) => v.lead_id === profileId);
+  };
+
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-12 sm:py-20 flex flex-col items-center relative">
-      {/* Brand & Hero Header */}
-      <div className="text-center mb-12 sm:mb-16 max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-pill text-xs font-semibold text-sky-300 mb-5 border border-sky-400/20 shadow-[0_0_20px_rgba(56,189,248,0.15)]">
-          <Sparkles className="w-3.5 h-3.5 text-sky-400 animate-spin" style={{ animationDuration: '6s' }} />
-          <span>House of Ventures · Operating System</span>
+    <div className="w-full max-w-6xl mx-auto px-4 py-8 sm:py-14">
+      {/* Precision Header & Telemetry */}
+      <div className="w-full mb-10 pb-8 border-b border-zinc-800/80 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-2 font-mono text-[11px] text-zinc-400 uppercase tracking-widest mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span>Operations Gateway</span>
+            <span className="text-zinc-600">/</span>
+            <span>HOV OS</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-zinc-100">
+            Select Operator Profile
+          </h1>
+          <p className="text-sm text-zinc-400 mt-2 max-w-xl font-normal leading-relaxed">
+            Enter your credential to access portfolio venture dashboards, daily OKRs, and two-stage review pipelines.
+          </p>
         </div>
-        
-        <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none text-gradient-silver">
-          Who is working today?
-        </h1>
-        
-        <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed font-normal">
-          Select your profile to enter your personal command center, manage live OKRs, and drive execution across 13 portfolio ventures.
-        </p>
+
+        <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs">
+          <div className="px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300">
+            <span className="text-zinc-500 mr-2">VENTURES</span>
+            <span className="font-semibold text-zinc-100">13</span>
+          </div>
+          <div className="px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300">
+            <span className="text-zinc-500 mr-2">OBJECTIVES</span>
+            <span className="font-semibold text-zinc-100">73</span>
+          </div>
+          <div className="px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-emerald-400 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span>LIVE SYNC</span>
+          </div>
+        </div>
       </div>
 
       {/* Profiles Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 w-full">
-        {profiles.map((profile) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 w-full">
+        {/* Founder Hero Card (Top Priority) */}
+        {founder && (
+          <ProfileCard
+            key={founder.id}
+            profile={founder}
+            assignedVentures={ventures}
+            onClick={() => handleProfileClick(founder)}
+          />
+        )}
+
+        {/* Dynamic Add Member Tile */}
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="group flex flex-col items-center justify-center p-6 rounded-xl border border-dashed border-zinc-800 hover:border-zinc-600 hover:bg-zinc-900/40 transition-all duration-150 cursor-pointer text-center focus:outline-none min-h-[160px]"
+        >
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-zinc-900 border border-zinc-800 text-zinc-400 group-hover:text-zinc-100 group-hover:border-zinc-700 transition-all mb-3">
+            <Plus className="w-4 h-4" />
+          </div>
+          <div className="text-sm font-semibold text-zinc-200 group-hover:text-white">
+            Provision Operator
+          </div>
+          <div className="text-xs text-zinc-500 mt-1 font-mono">
+            Add team member credential
+          </div>
+        </button>
+
+        {/* Team Members & Venture Leads */}
+        {nonFounders.map((profile) => (
           <ProfileCard
             key={profile.id}
             profile={profile}
+            assignedVentures={getAssignedVentures(profile.id)}
             onClick={() => handleProfileClick(profile)}
           />
         ))}
-
-        {/* Add Member Card */}
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="group flex flex-col items-center justify-center p-7 rounded-3xl glass-card border border-dashed border-white/20 hover:border-indigo-400/50 hover:bg-indigo-500/5 transition-all duration-300 w-full focus:outline-none cursor-pointer"
-        >
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl flex items-center justify-center bg-white/[0.04] border border-white/10 text-slate-400 group-hover:text-white group-hover:scale-105 group-hover:border-indigo-400/40 transition-all duration-300 mb-4 shadow-lg">
-            <Plus className="w-8 h-8 group-hover:rotate-90 transition-transform duration-300 text-indigo-400" />
-          </div>
-          <h3 className="text-base sm:text-lg font-bold text-slate-200 group-hover:text-white">
-            Add Member
-          </h3>
-          <p className="text-xs text-slate-500 mt-1">Create new profile</p>
-        </button>
       </div>
 
-      {/* Trust & Live Architecture Stats Bar */}
-      <div className="mt-16 inline-flex flex-wrap items-center justify-center gap-4 sm:gap-8 px-7 py-3.5 rounded-2xl glass-panel text-xs text-slate-400 border border-white/10 shadow-xl">
+      {/* Architecture & Protocol Strip */}
+      <div className="mt-12 pt-6 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-zinc-500">
         <div className="flex items-center gap-2">
-          <Building2 className="w-4 h-4 text-sky-400" />
-          <span className="font-semibold text-slate-200">13 Active Ventures</span>
+          <Shield className="w-3.5 h-3.5 text-zinc-500" />
+          <span>Frictionless Passwordless Mode Active</span>
         </div>
-        <div className="hidden sm:block w-1 h-1 rounded-full bg-slate-700" />
-        <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-emerald-400" />
-          <span className="font-semibold text-slate-200">73 Seeded Objectives</span>
-        </div>
-        <div className="hidden sm:block w-1 h-1 rounded-full bg-slate-700" />
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-indigo-400" />
-          <span>Frictionless Passwordless Mode</span>
+        <div className="flex items-center gap-4">
+          <span>Deterministic State Sync</span>
+          <span className="text-zinc-700">•</span>
+          <span>Role-Based Access Control</span>
         </div>
       </div>
 
