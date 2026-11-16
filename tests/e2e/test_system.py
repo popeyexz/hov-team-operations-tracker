@@ -1,35 +1,9 @@
-import urllib.request
-import json
 import sys
 import os
 from datetime import datetime, timedelta
 
-def load_env():
-    env = {}
-    if os.path.exists('.env.local'):
-        with open('.env.local', 'r') as f:
-            for line in f:
-                if '=' in line and not line.startswith('#'):
-                    k, v = line.strip().split('=', 1)
-                    env[k.strip()] = v.strip()
-    return env
-
-ENV = load_env()
-TOKEN = ENV.get('SUPABASE_ACCESS_TOKEN') or os.environ.get('SUPABASE_ACCESS_TOKEN', '')
-PROJECT_REF = 'qglghldegdikwjzileno'
-QUERY_URL = f'https://api.supabase.com/v1/projects/{PROJECT_REF}/database/query'
-
-def run_query(sql):
-    req = urllib.request.Request(
-        QUERY_URL,
-        data=json.dumps({'query': sql}).encode('utf-8'),
-        headers={
-            'Authorization': f'Bearer {TOKEN}',
-            'Content-Type': 'application/json'
-        }
-    )
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read().decode('utf-8'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'scripts'))
+from db import run_query
 
 def test_profiles():
     print("[TEST 1] Verifying Core Profiles...")

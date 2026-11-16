@@ -33,4 +33,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# python & temp
+__pycache__/
+*.pyc
+supabase/.temp/

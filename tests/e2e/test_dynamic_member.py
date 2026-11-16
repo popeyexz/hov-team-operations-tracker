@@ -1,29 +1,8 @@
-import urllib.request
-import json
+import sys
 import os
 
-def load_env():
-    env = {}
-    if os.path.exists('.env.local'):
-        with open('.env.local') as f:
-            for l in f:
-                if '=' in l and not l.startswith('#'):
-                    k, v = l.strip().split('=', 1)
-                    env[k.strip()] = v.strip()
-    return env
-
-env = load_env()
-token = env.get('SUPABASE_ACCESS_TOKEN')
-url = 'https://api.supabase.com/v1/projects/qglghldegdikwjzileno/database/query'
-
-def run_query(sql):
-    req = urllib.request.Request(
-        url,
-        data=json.dumps({'query': sql}).encode(),
-        headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'}
-    )
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read().decode())
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'scripts'))
+from db import run_query
 
 def main():
     print("Testing dynamic member profile addition...")

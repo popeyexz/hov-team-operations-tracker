@@ -35,7 +35,7 @@ In `app/globals.css`, configure translucent glassmorphism classes:
 
 **Step 3: Setup .env.local with verified credentials**
 Pre-fill with verified credentials from `.env new.txt`:
-- `NEXT_PUBLIC_SUPABASE_URL=https://qglghldegdikwjzileno.supabase.co`
+- `NEXT_PUBLIC_SUPABASE_URL=https://cjmdzulucwuvzybvtgdz.supabase.co`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY=...`
 - `SUPABASE_SERVICE_ROLE_KEY=...`
 - `ADMIN_DEV_EMAIL=houseofventures.dev@gmail.com`

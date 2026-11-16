@@ -5,8 +5,10 @@ import os
 
 def load_env():
     env = {}
-    if os.path.exists('.env.local'):
-        with open('.env.local', 'r') as f:
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    env_path = os.path.join(base_dir, '.env.local')
+    if os.path.exists(env_path):
+        with open(env_path, 'r', encoding='utf-8') as f:
             for line in f:
                 if '=' in line and not line.startswith('#'):
                     k, v = line.strip().split('=', 1)
@@ -22,73 +24,103 @@ TEAM_ID = 'team_alfUxsgPPcvdqbgUASI5d6WP'
 ENV_VARS = [
     {
         "key": "NEXT_PUBLIC_SUPABASE_URL",
-        "value": "https://qglghldegdikwjzileno.supabase.co",
+        "value": ENV.get("NEXT_PUBLIC_SUPABASE_URL", "https://cjmdzulucwuvzybvtgdz.supabase.co"),
         "type": "plain",
         "target": ["production", "preview", "development"]
     },
     {
         "key": "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbGdobGRlZ2Rpa3dqemlsZW5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3MzIwMTQsImV4cCI6MjExMDMwODAxNH0.eYaZBeohuDy-2JlCFqE8X9zoTFlIyzM6pSJaeswZzfU",
+        "value": ENV.get("NEXT_PUBLIC_SUPABASE_ANON_KEY", ""),
         "type": "plain",
         "target": ["production", "preview", "development"]
     },
     {
         "key": "SUPABASE_SERVICE_ROLE_KEY",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbGdobGRlZ2Rpa3dqemlsZW5vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5NDczMjAxNCwiZXhwIjoyMTEwMzA4MDE0fQ.oTonEkWZ-ADYw8bcuVtI7eLmtJ4w9FLBW0dG1h19QHw",
+        "value": ENV.get("SUPABASE_SERVICE_ROLE_KEY", ""),
         "type": "encrypted",
         "target": ["production", "preview", "development"]
     },
     {
         "key": "ADMIN_DEV_EMAIL",
-        "value": "houseofventures.dev@gmail.com",
+        "value": ENV.get("ADMIN_DEV_EMAIL", "houseofventures.dev@gmail.com"),
         "type": "plain",
         "target": ["production", "preview", "development"]
     },
     {
         "key": "NEXT_PUBLIC_VAPID_PUBLIC_KEY",
-        "value": "BLbHvMoSjJ1w40IG7vp4h1bD8oIKzLYQun8fssWtv3xb6PJyj9IS8X_kPECA2RIPboc8BAfifrCL0nzGvL2l0os",
+        "value": ENV.get("NEXT_PUBLIC_VAPID_PUBLIC_KEY", "BLbHvMoSjJ1w40IG7vp4h1bD8oIKzLYQun8fssWtv3xb6PJyj9IS8X_kPECA2RIPboc8BAfifrCL0nzGvL2l0os"),
         "type": "plain",
         "target": ["production", "preview", "development"]
     },
     {
         "key": "VAPID_PRIVATE_KEY",
-        "value": "9dKuSSHEofZjLF9WmCMkqsL1F2-Wm-0lp8_y-ZVr3EQ",
+        "value": ENV.get("VAPID_PRIVATE_KEY", "9dKuSSHEofZjLF9WmCMkqsL1F2-Wm-0lp8_y-ZVr3EQ"),
         "type": "encrypted",
         "target": ["production", "preview", "development"]
     },
     {
         "key": "VAPID_SUBJECT",
-        "value": "mailto:houseofventures.dev@gmail.com",
+        "value": ENV.get("VAPID_SUBJECT", "mailto:houseofventures.dev@gmail.com"),
         "type": "plain",
         "target": ["production", "preview", "development"]
     }
 ]
 
+def get_existing_envs():
+    url = f"https://api.vercel.com/v9/projects/{PROJECT_ID}/env?teamId={TEAM_ID}"
+    req = urllib.request.Request(
+        url,
+        headers={'Authorization': f'Bearer {TOKEN}'}
+    )
+    with urllib.request.urlopen(req) as resp:
+        data = json.loads(resp.read().decode('utf-8'))
+        envs = data.get('envs', [])
+        return {e['key']: e['id'] for e in envs}
+
 def main():
-    print(f"Adding environment variables to Vercel project '{PROJECT}' ({PROJECT_ID})...")
-    url = f"https://api.vercel.com/v10/projects/{PROJECT_ID}/env?teamId={TEAM_ID}"
+    print(f"Syncing environment variables to Vercel project '{PROJECT}' ({PROJECT_ID})...")
+    existing = get_existing_envs()
+    print(f"Found {len(existing)} existing env vars on Vercel.")
 
     for item in ENV_VARS:
-        req = urllib.request.Request(
-            url,
-            data=json.dumps(item).encode('utf-8'),
-            headers={
-                'Authorization': f'Bearer {TOKEN}',
-                'Content-Type': 'application/json'
-            },
-            method='POST'
-        )
-        try:
-            with urllib.request.urlopen(req) as resp:
-                print(f"  Added {item['key']}: OK ({resp.status})")
-        except urllib.error.HTTPError as e:
-            err_body = e.read().decode('utf-8')
-            if 'already exists' in err_body or 'ENV_ALREADY_EXISTS' in err_body:
-                print(f"  {item['key']} already exists on Vercel.")
-            else:
-                print(f"  Failed {item['key']}: {err_body}")
-        except Exception as e:
-            print(f"  Error setting {item['key']}: {e}")
+        key = item['key']
+        if key in existing:
+            env_id = existing[key]
+            patch_url = f"https://api.vercel.com/v9/projects/{PROJECT_ID}/env/{env_id}?teamId={TEAM_ID}"
+            payload = {
+                "value": item["value"],
+                "target": item["target"]
+            }
+            req = urllib.request.Request(
+                patch_url,
+                data=json.dumps(payload).encode('utf-8'),
+                headers={
+                    'Authorization': f'Bearer {TOKEN}',
+                    'Content-Type': 'application/json'
+                },
+                method='PATCH'
+            )
+            try:
+                with urllib.request.urlopen(req) as resp:
+                    print(f"  PATCH {key}: OK ({resp.status})")
+            except Exception as e:
+                print(f"  Failed PATCH {key}: {e}")
+        else:
+            post_url = f"https://api.vercel.com/v10/projects/{PROJECT_ID}/env?teamId={TEAM_ID}"
+            req = urllib.request.Request(
+                post_url,
+                data=json.dumps(item).encode('utf-8'),
+                headers={
+                    'Authorization': f'Bearer {TOKEN}',
+                    'Content-Type': 'application/json'
+                },
+                method='POST'
+            )
+            try:
+                with urllib.request.urlopen(req) as resp:
+                    print(f"  POST {key}: OK ({resp.status})")
+            except Exception as e:
+                print(f"  Failed POST {key}: {e}")
 
 if __name__ == '__main__':
     main()
