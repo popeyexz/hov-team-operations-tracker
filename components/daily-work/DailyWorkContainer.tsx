@@ -45,6 +45,7 @@ import { FounderReviewModal } from './FounderReviewModal';
 import { AddActionItemModal } from './AddActionItemModal';
 import { AddObjectiveModal } from './AddObjectiveModal';
 import { AddKeyResultModal } from './AddKeyResultModal';
+import { NetflixAvatar } from '../auth/NetflixAvatar';
 
 interface DailyWorkContainerProps {
   initialData: {
@@ -204,46 +205,46 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
-      {/* Precision Operations Header */}
-      <div className="bg-zinc-900/60 border border-zinc-800 p-5 sm:p-6 rounded-xl shadow-sm relative">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+      {/* Liquid Operations Header */}
+      <div className="liquid-card !rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-1.5 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <div className="flex items-center gap-2 mb-2 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
               <span>TAB 1 // DAILY OPERATIONS</span>
               <span className="text-zinc-600">•</span>
               <span>13 Ventures</span>
             </div>
             
-            <h1 className="text-2xl sm:text-3xl font-semibold text-zinc-100 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
               Daily Work & OKR Hierarchy
             </h1>
             
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xl font-normal leading-relaxed">
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
               Track portfolio execution, review approvals, and real-time Key Result progress across all 13 ventures.
             </p>
           </div>
 
           {/* Controls & Creation CTA */}
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Dual View Mode Toggle */}
-            <div className="flex items-center bg-zinc-950 p-0.5 rounded-lg border border-zinc-800">
+            <div className="flex items-center bg-[#0d0f1a] p-1 rounded-2xl border border-white/[0.08] shadow-inner">
               <button
                 onClick={() => setViewMode('by_venture')}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                   viewMode === 'by_venture'
-                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'liquid-pill-active shadow-md'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 By Venture (13)
               </button>
               <button
                 onClick={() => setViewMode('by_lead')}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                   viewMode === 'by_lead'
-                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'liquid-pill-active shadow-md'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 By Lead
@@ -251,30 +252,30 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
             </div>
 
             {/* Scope Filter */}
-            <div className="flex items-center bg-zinc-950 p-0.5 rounded-lg border border-zinc-800">
+            <div className="flex items-center bg-[#0d0f1a] p-1 rounded-2xl border border-white/[0.08] shadow-inner">
               <button
                 onClick={() => setScopeFilter('all')}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                   scopeFilter === 'all'
-                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'liquid-pill-active shadow-md'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 All 13
               </button>
               <button
                 onClick={() => setScopeFilter('my_ventures')}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                   scopeFilter === 'my_ventures'
-                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'liquid-pill-active shadow-md'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 My Ventures ({myVentureIds.length})
               </button>
             </div>
 
-            {/* New Task Button */}
+            {/* New Task Button (Vibrant Liquid Gradient) */}
             <button
               onClick={() => {
                 setSelectedVentureForTask(ventures[0]?.id || '');
@@ -282,53 +283,53 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
                 setSelectedKeyResultForTask('');
                 setIsAddActionModalOpen(true);
               }}
-              className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-[0_4px_20px_rgba(124,58,237,0.45)] border border-violet-400/40 flex items-center gap-2 transition-all cursor-pointer transform active:scale-95"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-4 h-4" />
               <span>New Action Item</span>
             </button>
           </div>
         </div>
 
-        {/* Live Mini-Metrics Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-5 border-t border-zinc-800/80">
-          <div className="p-3 rounded-lg bg-zinc-950/70 border border-zinc-800/80 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300">
-              <Briefcase className="w-4 h-4" />
+        {/* Liquid Mini-Metrics Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-white/[0.08]">
+          <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.25)] shrink-0">
+              <Briefcase className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-zinc-100 font-mono">{ventures.length}</div>
-              <div className="text-[10px] text-zinc-500 font-mono">Ventures Portfolio</div>
+              <div className="text-base font-bold text-white font-mono">{ventures.length}</div>
+              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">Ventures Portfolio</div>
             </div>
           </div>
 
-          <div className="p-3 rounded-lg bg-zinc-950/70 border border-zinc-800/80 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300">
-              <Target className="w-4 h-4" />
+          <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.25)] shrink-0">
+              <Target className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-zinc-100 font-mono">{objectives.length}</div>
-              <div className="text-[10px] text-zinc-500 font-mono">Seeded Objectives</div>
+              <div className="text-base font-bold text-white font-mono">{objectives.length}</div>
+              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">Seeded Objectives</div>
             </div>
           </div>
 
-          <div className="p-3 rounded-lg bg-zinc-950/70 border border-zinc-800/80 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-emerald-400">
-              <CheckCheck className="w-4 h-4" />
+          <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.25)] shrink-0">
+              <CheckCheck className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-emerald-400 font-mono">{completedCount}</div>
-              <div className="text-[10px] text-zinc-500 font-mono">Completed Items</div>
+              <div className="text-base font-bold text-emerald-400 font-mono">{completedCount}</div>
+              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">Completed Items</div>
             </div>
           </div>
 
-          <div className="p-3 rounded-lg bg-zinc-950/70 border border-zinc-800/80 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-400">
-              <Clock className="w-4 h-4" />
+          <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.25)] shrink-0">
+              <Clock className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-amber-400 font-mono">{submittedCount + needsWorkCount}</div>
-              <div className="text-[10px] text-zinc-500 font-mono">Review Pipeline</div>
+              <div className="text-base font-bold text-amber-400 font-mono">{submittedCount + needsWorkCount}</div>
+              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">Review Pipeline</div>
             </div>
           </div>
         </div>
@@ -337,7 +338,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
       {/* Filter Pills & Search */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Status Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           {[
             { id: 'all', label: 'All Items' },
             { id: 'active', label: 'Active Work' },
@@ -345,30 +346,30 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
               id: 'submitted_for_review',
               label: 'In Review',
               badge: submittedCount,
-              badgeColor: 'bg-amber-500/10 text-amber-300 border-amber-500/30',
+              badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
             },
             {
               id: 'needs_work',
               label: 'Needs Work',
               badge: needsWorkCount,
-              badgeColor: 'bg-rose-500/10 text-rose-300 border-rose-500/30',
+              badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
             },
-            { id: 'completed', label: 'Completed', badge: completedCount, badgeColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' },
-            { id: 'blocker', label: 'Blockers', badge: blockerCount, badgeColor: 'bg-red-500/10 text-red-300 border-red-500/30' },
+            { id: 'completed', label: 'Completed', badge: completedCount, badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
+            { id: 'blocker', label: 'Blockers', badge: blockerCount, badgeColor: 'bg-red-500/20 text-red-300 border-red-500/40' },
           ].map((pill) => (
             <button
               key={pill.id}
               onClick={() => setStatusFilter(pill.id)}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all border cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border cursor-pointer ${
                 statusFilter === pill.id
-                  ? 'bg-zinc-800 text-zinc-100 border-zinc-700 shadow-sm'
-                  : 'bg-zinc-900/60 text-zinc-400 border-zinc-800/80 hover:text-zinc-200 hover:border-zinc-700'
+                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-violet-400/50 shadow-[0_2px_12px_rgba(124,58,237,0.4)]'
+                  : 'bg-[#121422]/70 text-zinc-400 border-white/[0.08] hover:text-white hover:border-white/20'
               }`}
             >
               <span>{pill.label}</span>
               {pill.badge !== undefined && pill.badge > 0 && (
                 <span
-                  className={`px-1.5 py-0.2 rounded text-[10px] font-mono border ${
+                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono border ${
                     pill.badgeColor || 'bg-zinc-800 text-zinc-300 border-zinc-700'
                   }`}
                 >
@@ -380,40 +381,40 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
         </div>
 
         {/* Search Input */}
-        <div className="relative min-w-[260px]">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-500" />
+        <div className="relative min-w-[280px]">
+          <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-zinc-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search tasks, OKRs, assignees..."
-            className="w-full bg-zinc-900/80 border border-zinc-800 focus:border-zinc-600 text-zinc-100 pl-8 pr-3 py-1.5 rounded-lg text-xs placeholder:text-zinc-500 focus:outline-none transition-colors"
+            className="w-full liquid-input pl-10 pr-4 py-2 text-xs placeholder:text-zinc-500"
           />
         </div>
       </div>
 
       {/* Main Content Area */}
       {filteredVentures.length === 0 ? (
-        <div className="p-8 sm:p-12 rounded-xl bg-zinc-900/40 border border-zinc-800 text-center space-y-4">
-          <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 mx-auto flex items-center justify-center">
-            <Briefcase className="w-6 h-6" />
+        <div className="p-8 sm:p-12 rounded-3xl liquid-card text-center space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/[0.1] text-zinc-400 mx-auto flex items-center justify-center">
+            <Briefcase className="w-7 h-7" />
           </div>
           <div>
-            <h3 className="text-base font-semibold text-zinc-100">No Assigned Ventures Under Scope</h3>
-            <p className="text-xs text-zinc-400 mt-1 max-w-md mx-auto leading-relaxed">
-              You currently have no direct lead ownership under this scope. Switch to viewing all 13 portfolio ventures.
+            <h3 className="text-base font-semibold text-white">No Ventures in Current View</h3>
+            <p className="text-xs text-zinc-400 mt-1 max-w-sm mx-auto">
+              Switch filter to "All 13" or check assigned ventures for your profile.
             </p>
           </div>
           <button
             onClick={() => setScopeFilter('all')}
-            className="px-4 py-2 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm transition-all cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-white text-black text-xs font-semibold hover:bg-zinc-200 transition-colors cursor-pointer"
           >
-            View All 13 Ventures
+            Show All 13 Ventures
           </button>
         </div>
       ) : viewMode === 'by_venture' ? (
-        // Standard 13-Venture Board
-        <div className="space-y-5">
+        // Standard View: Sorted Portfolio of 13 Ventures
+        <div className="space-y-6">
           {filteredVentures.map((venture) => (
             <VentureSection
               key={venture.id}
@@ -455,7 +456,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
         </div>
       ) : (
         // Dynamic Grouping by Venture Lead
-        <div className="space-y-9">
+        <div className="space-y-10">
           {dynamicLeads.map((lead) => {
             const leadVentures = filteredVentures.filter((v) =>
               lead.id === 'unassigned' ? !v.lead_id : v.lead_id === lead.id
@@ -464,14 +465,16 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
 
             return (
               <div key={lead.id} className="space-y-4">
-                <div className="flex items-center gap-3.5 pb-3 border-b border-zinc-800">
-                  <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-200 font-mono font-bold text-xs">
-                    {lead.name.charAt(0)}
-                  </div>
+                <div className="flex items-center gap-3.5 pb-3 border-b border-white/[0.08]">
+                  <NetflixAvatar
+                    name={lead.name}
+                    size="sm"
+                    className="!w-9 !h-9 rounded-xl shadow-md"
+                  />
                   <div>
-                    <h2 className="text-base font-semibold text-zinc-100 tracking-tight flex items-center gap-2">
+                    <h2 className="text-base font-semibold text-white tracking-tight flex items-center gap-2">
                       {lead.name}
-                      <span className="text-[10px] font-mono text-zinc-300 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                      <span className="text-[10px] font-mono text-zinc-300 bg-[#161828] px-2.5 py-0.5 rounded-full border border-white/[0.08]">
                         {leadVentures.length} {leadVentures.length === 1 ? 'Venture' : 'Ventures'}
                       </span>
                     </h2>
@@ -479,7 +482,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
                   </div>
                 </div>
 
-                <div className="space-y-4 pl-0 sm:pl-2">
+                <div className="space-y-5">
                   {leadVentures.map((venture) => (
                     <VentureSection
                       key={venture.id}
@@ -661,11 +664,11 @@ function VentureSection({
   );
 
   return (
-    <div className="rounded-xl bg-zinc-900/60 border border-zinc-800/90 overflow-hidden shadow-sm transition-all hover:border-zinc-700/80">
+    <div className="liquid-card !rounded-3xl overflow-hidden shadow-xl hover:border-white/20 transition-all">
       {/* Venture Header Bar */}
-      <div className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-zinc-800/20 transition-colors">
+      <div className="p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors">
         <div className="flex items-center gap-3.5 cursor-pointer" onClick={onToggle}>
-          <button className="p-1 rounded-md bg-zinc-800 border border-zinc-700/60 text-zinc-400 hover:text-white transition-colors">
+          <button className="p-1.5 rounded-xl bg-[#161828] border border-white/[0.1] text-zinc-300 hover:text-white transition-colors cursor-pointer shadow-sm">
             {isExpanded ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
@@ -675,21 +678,21 @@ function VentureSection({
 
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="font-mono text-xs font-semibold text-zinc-300 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700/70">
+              <span className="font-mono text-xs font-bold text-violet-300 bg-violet-500/15 px-2.5 py-0.5 rounded-lg border border-violet-500/30">
                 {venture.code}
               </span>
-              <h3 className="text-sm sm:text-base font-semibold text-zinc-100 tracking-tight">{venture.name}</h3>
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">{venture.name}</h3>
 
               {/* Automated Health Badge */}
               <span
-                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono border ${healthBadge.badgeClass}`}
+                className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-mono border ${healthBadge.badgeClass}`}
               >
                 <span className={`w-1.5 h-1.5 rounded-full ${healthBadge.dotClass}`} />
                 {healthBadge.label} Health
               </span>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-zinc-400 mt-1.5 flex-wrap font-mono">
+            <div className="flex items-center gap-3 text-xs text-zinc-400 mt-2 flex-wrap font-mono">
               {isFounder ? (
                 <div
                   className="inline-flex items-center gap-1.5 font-sans"
@@ -699,7 +702,7 @@ function VentureSection({
                   <select
                     value={venture.lead_id || ''}
                     onChange={(e) => onReassignLead(venture.id, e.target.value)}
-                    className="bg-zinc-950 text-[11px] font-mono px-2 py-0.5 rounded border border-zinc-800 text-zinc-200 cursor-pointer focus:outline-none"
+                    className="bg-[#12131d] text-[11px] font-mono px-2.5 py-1 rounded-lg border border-white/[0.1] text-zinc-200 cursor-pointer focus:outline-none"
                     title="Founder: Reassign Venture Lead"
                   >
                     <option value="">Unassigned</option>
@@ -712,24 +715,24 @@ function VentureSection({
                 </div>
               ) : (
                 <span>
-                  Lead: <strong className="text-slate-200">{venture.lead?.full_name || 'Unassigned'}</strong>
+                  Lead: <strong className="text-white">{venture.lead?.full_name || 'Unassigned'}</strong>
                 </span>
               )}
-              <span className="text-slate-600">•</span>
+              <span className="text-zinc-600">•</span>
               <span>{objectives.length} Objectives</span>
-              <span className="text-slate-600">•</span>
+              <span className="text-zinc-600">•</span>
               <span>{keyResults.length} KRs</span>
-              <span className="text-slate-600">•</span>
+              <span className="text-zinc-600">•</span>
               <span>{actionItems.length} Actions</span>
             </div>
           </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 pl-9 md:pl-0">
+        <div className="flex items-center gap-2 pl-9 md:pl-0 flex-wrap">
           <button
             onClick={onOpenDocs}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-medium text-zinc-300 transition-all cursor-pointer border border-zinc-700/60"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-xs font-medium text-zinc-200 transition-all cursor-pointer border border-white/[0.08] shadow-sm min-h-[36px]"
             title="Open Venture Documents"
           >
             <Paperclip className="w-3.5 h-3.5 text-zinc-400" />
@@ -739,7 +742,7 @@ function VentureSection({
           {isFounder && (
             <button
               onClick={onAddObjective}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-xs font-medium text-amber-300 transition-all cursor-pointer border border-amber-500/30"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-xs font-medium text-amber-300 transition-all cursor-pointer border border-amber-500/30 shadow-sm min-h-[36px]"
               title="Founder Privilege: Add Strategic Objective"
             >
               <Plus className="w-3.5 h-3.5 text-amber-400" />
@@ -749,7 +752,7 @@ function VentureSection({
 
           <button
             onClick={() => onAddTask()}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-semibold shadow-md transition-all cursor-pointer min-h-[36px]"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Task</span>
@@ -759,18 +762,18 @@ function VentureSection({
 
       {/* Accordion Body: OKRs & Action Items */}
       {isExpanded && (
-        <div className="p-4 sm:p-5 border-t border-zinc-800 space-y-5 bg-zinc-950/60">
+        <div className="p-5 sm:p-6 border-t border-white/[0.06] space-y-6 bg-[#0a0b12]/60">
           {/* Objectives Hierarchy */}
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-zinc-400 px-1">
-              <span className="flex items-center gap-1.5 text-zinc-300 font-semibold">
-                <Target className="w-3.5 h-3.5 text-zinc-400" />
+              <span className="flex items-center gap-2 text-zinc-300 font-semibold">
+                <Target className="w-4 h-4 text-violet-400" />
                 Strategic Objectives ({objectives.length})
               </span>
             </div>
 
             {objectives.length === 0 ? (
-              <div className="text-xs text-zinc-500 py-4 text-center bg-zinc-900/30 rounded-lg border border-zinc-800/60 font-mono">
+              <div className="text-xs text-zinc-500 py-6 text-center bg-[#10121d]/50 rounded-2xl border border-white/[0.06] font-mono">
                 No strategic objectives issued for this venture yet.
               </div>
             ) : (
@@ -782,25 +785,25 @@ function VentureSection({
                 return (
                   <div
                     key={obj.id}
-                    className="rounded-xl bg-zinc-900/40 border border-zinc-800/80 overflow-hidden transition-all hover:border-zinc-700/80"
+                    className="rounded-2xl bg-[#121422]/80 border border-white/[0.08] overflow-hidden transition-all hover:border-violet-500/40 shadow-sm"
                   >
                     {/* Objective Title Row */}
                     <div
-                      className="p-3 sm:p-3.5 flex items-start sm:items-center justify-between gap-3 cursor-pointer hover:bg-zinc-800/30 transition-colors"
+                      className="p-3.5 sm:p-4 flex items-start sm:items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02] transition-colors"
                       onClick={() => toggleObjective(obj.id)}
                     >
-                      <div className="flex items-start sm:items-center gap-2.5 min-w-0">
-                        <button className="mt-0.5 sm:mt-0 text-zinc-500 hover:text-zinc-200 transition-colors">
+                      <div className="flex items-start sm:items-center gap-3 min-w-0">
+                        <button className="mt-0.5 sm:mt-0 text-zinc-400 hover:text-white transition-colors">
                           {isObjExpanded ? (
                             <ChevronDown className="w-4 h-4" />
                           ) : (
                             <ChevronRight className="w-4 h-4" />
                           )}
                         </button>
-                        <span className="font-mono text-xs font-semibold text-zinc-300 bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-700 shrink-0">
+                        <span className="font-mono text-xs font-bold text-violet-300 bg-violet-500/15 px-2 py-0.5 rounded-md border border-violet-500/30 shrink-0">
                           #{obj.sl_no}
                         </span>
-                        <h4 className="text-xs sm:text-sm font-medium text-zinc-100 leading-snug">
+                        <h4 className="text-xs sm:text-sm font-semibold text-white leading-snug">
                           {obj.title}
                         </h4>
                       </div>
@@ -808,23 +811,23 @@ function VentureSection({
                       <div className="flex items-center gap-2 shrink-0">
                         {/* Status Badge */}
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-mono border ${
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono border ${
                             obj.status === 'completed'
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                              ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
                               : obj.status === 'blocker'
-                              ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                              ? 'bg-rose-500/15 text-rose-400 border-rose-500/30'
                               : obj.status === 'on_hold'
-                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                              ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
                               : obj.status === 'dropped'
                               ? 'bg-zinc-800 text-zinc-400 border-zinc-700'
-                              : 'bg-sky-500/10 text-sky-400 border-sky-500/20'
+                              : 'bg-sky-500/15 text-sky-400 border-sky-500/30'
                           }`}
                         >
                           {obj.status.replace('_', ' ')}
                         </span>
 
                         {/* Founder Ownership Badge */}
-                        <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-mono text-amber-300 bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/30">
                           <Crown className="w-3 h-3 text-amber-400" />
                           <span>By: Pratap (Founder)</span>
                         </span>
@@ -834,7 +837,7 @@ function VentureSection({
                             e.stopPropagation();
                             onAddTask(obj.id);
                           }}
-                          className="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-[10px] font-mono text-zinc-300 flex items-center gap-1 cursor-pointer border border-zinc-800 transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-[10px] font-mono text-zinc-200 flex items-center gap-1 cursor-pointer border border-white/[0.08] transition-colors"
                           title="Add task for this objective"
                         >
                           <Plus className="w-2.5 h-2.5" />
@@ -846,7 +849,7 @@ function VentureSection({
                             e.stopPropagation();
                             onAddKr(obj);
                           }}
-                          className="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-[10px] font-mono text-zinc-300 flex items-center gap-1 cursor-pointer border border-zinc-800 transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-cyan-950/40 hover:bg-cyan-900/40 text-[10px] font-mono text-cyan-300 flex items-center gap-1 cursor-pointer border border-cyan-500/30 transition-colors"
                           title="Add Key Result for this objective"
                         >
                           <Plus className="w-2.5 h-2.5" />
@@ -857,12 +860,12 @@ function VentureSection({
 
                     {/* Collapsible Key Results & Child Tasks */}
                     {isObjExpanded && (
-                      <div className="p-3.5 bg-zinc-950/80 border-t border-zinc-800/80 space-y-3">
+                      <div className="p-4 bg-[#0d0e18]/90 border-t border-white/[0.06] space-y-4">
                         {/* Key Results Section */}
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-[10px] uppercase font-mono tracking-wider text-zinc-400">
-                            <span className="flex items-center gap-1.5">
-                              <Compass className="w-3 h-3 text-zinc-400" />
+                        <div className="space-y-2.5">
+                          <div className="flex items-center justify-between text-[11px] uppercase font-mono tracking-wider text-zinc-400">
+                            <span className="flex items-center gap-1.5 text-cyan-300 font-semibold">
+                              <Compass className="w-3.5 h-3.5 text-cyan-400" />
                               Key Results ({objKrs.length})
                             </span>
                             <button
@@ -870,16 +873,16 @@ function VentureSection({
                                 e.stopPropagation();
                                 onAddKr(obj);
                               }}
-                              className="text-[10px] text-teal-400 hover:text-teal-300 flex items-center gap-1 transition-colors cursor-pointer"
+                              className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors cursor-pointer"
                               title="Add Key Result to this objective"
                             >
-                              <Plus className="w-2.5 h-2.5" />
+                              <Plus className="w-3 h-3" />
                               <span>Add KR</span>
                             </button>
                           </div>
 
                           {objKrs.length === 0 ? (
-                            <div className="p-3 rounded-lg bg-zinc-900/30 border border-dashed border-zinc-800 text-xs text-zinc-400 font-mono flex items-center justify-between gap-3">
+                            <div className="p-3.5 rounded-xl bg-[#12131f]/60 border border-dashed border-white/[0.08] text-xs text-zinc-400 font-mono flex items-center justify-between gap-3">
                               <span>No Key Results defined yet for Objective #{obj.sl_no}.</span>
                               <div className="flex items-center gap-2">
                                 <button
@@ -887,9 +890,9 @@ function VentureSection({
                                     e.stopPropagation();
                                     onAddKr(obj);
                                   }}
-                                  className="px-2.5 py-1 rounded bg-teal-500/10 hover:bg-teal-500/20 text-[10px] font-mono text-teal-300 border border-teal-500/30 flex items-center gap-1 transition-colors cursor-pointer"
+                                  className="px-3 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-[11px] font-mono text-cyan-300 border border-cyan-500/30 flex items-center gap-1 transition-colors cursor-pointer"
                                 >
-                                  <Plus className="w-2.5 h-2.5" />
+                                  <Plus className="w-3 h-3" />
                                   <span>Create KR</span>
                                 </button>
                                 <button
@@ -897,47 +900,47 @@ function VentureSection({
                                     e.stopPropagation();
                                     onAddTask(obj.id);
                                   }}
-                                  className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-[10px] font-mono text-zinc-200 border border-zinc-700 flex items-center gap-1 transition-colors cursor-pointer"
+                                  className="px-3 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-[11px] font-mono text-zinc-200 border border-white/[0.08] flex items-center gap-1 transition-colors cursor-pointer"
                                 >
-                                  <Plus className="w-2.5 h-2.5" />
+                                  <Plus className="w-3 h-3" />
                                   <span>Add Task</span>
                                 </button>
                               </div>
                             </div>
                           ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               {objKrs.map((kr) => {
                                 const krTaskCount = actionItems.filter((a) => a.key_result_id === kr.id).length;
                                 return (
                                   <div
                                     key={kr.id}
-                                    className="p-3 rounded-lg bg-zinc-900/60 border border-zinc-800 text-xs flex items-start justify-between gap-2 shadow-sm"
+                                    className="p-3.5 rounded-xl bg-[#151726]/80 border border-cyan-500/20 text-xs flex items-start justify-between gap-2 shadow-sm"
                                   >
                                     <div>
                                       <div className="flex items-center gap-2">
-                                        <span className="font-mono text-[10px] font-semibold text-zinc-400">
+                                        <span className="font-mono text-[11px] font-bold text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/30">
                                           KR {kr.kr_code}
                                         </span>
                                         {krTaskCount > 0 && (
-                                          <span className="text-[9px] font-mono text-teal-400 bg-teal-500/10 px-1.5 py-0.2 rounded border border-teal-500/20">
+                                          <span className="text-[10px] font-mono text-teal-300 bg-teal-500/15 px-2 py-0.2 rounded-full border border-teal-500/30">
                                             {krTaskCount} {krTaskCount === 1 ? 'task' : 'tasks'}
                                           </span>
                                         )}
                                       </div>
-                                      <div className="font-medium text-zinc-200 mt-1 leading-snug">
+                                      <div className="font-medium text-white mt-1.5 leading-snug">
                                         {kr.title}
                                       </div>
                                       {kr.target_measure && (
-                                        <div className="text-[11px] text-zinc-500 mt-1 font-mono">
+                                        <div className="text-[11px] text-zinc-400 mt-1 font-mono">
                                           Target: {kr.target_measure}
                                         </div>
                                       )}
                                     </div>
-                                    <div className="flex items-center gap-1.5 shrink-0">
+                                    <div className="flex items-center gap-2 shrink-0">
                                       <span
-                                        className={`px-2 py-0.5 rounded text-[9px] font-mono uppercase border ${
+                                        className={`px-2 py-0.5 rounded-full text-[9px] font-mono uppercase border ${
                                           kr.status === 'completed'
-                                            ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                                            ? 'text-emerald-300 bg-emerald-500/15 border-emerald-500/30'
                                             : 'text-zinc-400 bg-zinc-800 border-zinc-700'
                                         }`}
                                       >
@@ -945,7 +948,7 @@ function VentureSection({
                                       </span>
                                       <button
                                         onClick={() => onAddTask(obj.id, kr.id)}
-                                        className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-[10px] font-mono text-zinc-300 flex items-center gap-1 cursor-pointer border border-zinc-700/60 transition-colors"
+                                        className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-[10px] font-mono text-zinc-200 flex items-center gap-1 cursor-pointer border border-white/[0.08] transition-colors"
                                         title="Add task for this Key Result"
                                       >
                                         <Plus className="w-2.5 h-2.5" />
@@ -961,7 +964,7 @@ function VentureSection({
 
                         {/* Associated Actions */}
                         {objActions.length > 0 && (
-                          <div className="space-y-2 pt-2">
+                          <div className="space-y-2.5 pt-2">
                             <div className="text-[10px] uppercase font-mono tracking-wider text-zinc-400">
                               Linked Action Items ({objActions.length})
                             </div>
@@ -990,20 +993,20 @@ function VentureSection({
           </div>
 
           {/* Standalone Action Items */}
-          <div className="space-y-2 pt-2">
+          <div className="space-y-3 pt-2">
             <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-zinc-400 px-1">
-              <span className="flex items-center gap-1.5 text-zinc-300 font-semibold">
-                <Briefcase className="w-3.5 h-3.5 text-zinc-400" />
+              <span className="flex items-center gap-2 text-zinc-300 font-semibold">
+                <Briefcase className="w-4 h-4 text-zinc-400" />
                 All Venture Action Items ({visibleActions.length})
               </span>
             </div>
 
             {visibleActions.length === 0 ? (
-              <div className="text-xs text-zinc-500 py-3 text-center bg-zinc-900/30 rounded-lg border border-zinc-800/60 font-mono">
+              <div className="text-xs text-zinc-500 py-4 text-center bg-[#10121d]/40 rounded-2xl border border-white/[0.06] font-mono">
                 No action items match the selected filter.
               </div>
             ) : (
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {visibleActions.map((action) => (
                   <ActionItemCard
                     key={action.id}
@@ -1028,7 +1031,7 @@ function VentureSection({
 }
 
 // ----------------------------------------------------
-// Sub-Component: ActionItemCard (Interactive Row)
+// Sub-Component: ActionItemCard (Liquid Interactive Row)
 // ----------------------------------------------------
 function ActionItemCard({
   action,
@@ -1066,31 +1069,31 @@ function ActionItemCard({
       case 'submitted_for_review':
         return {
           label: 'Submitted for Review',
-          color: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
+          color: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
           icon: Clock,
         };
       case 'needs_work':
         return {
           label: 'Needs Work',
-          color: 'bg-rose-500/10 text-rose-300 border-rose-500/20',
+          color: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
           icon: AlertCircle,
         };
       case 'completed':
         return {
           label: 'Completed',
-          color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+          color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
           icon: CheckCircle2,
         };
       case 'in_progress':
         return {
           label: 'In Progress',
-          color: 'bg-sky-500/10 text-sky-300 border-sky-500/20',
+          color: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
           icon: Clock,
         };
       case 'blocker':
         return {
           label: 'Blocker',
-          color: 'bg-red-500/15 text-red-400 border-red-500/30',
+          color: 'bg-red-500/20 text-red-400 border-red-500/40',
           icon: AlertTriangle,
         };
       default:
@@ -1106,12 +1109,12 @@ function ActionItemCard({
   const StatusIcon = statusInfo.icon;
 
   return (
-    <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/90 hover:border-zinc-700/80 transition-all duration-150 flex flex-col md:flex-row md:items-center justify-between gap-3 group shadow-sm">
+    <div className="p-4 sm:p-4.5 rounded-2xl bg-[#141624]/90 hover:bg-[#181a2e] border border-white/[0.08] hover:border-violet-500/40 transition-all duration-200 flex flex-col md:flex-row md:items-center justify-between gap-3.5 group shadow-sm hover:shadow-lg">
       {/* Title & metadata */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span
-            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono border ${statusInfo.color}`}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono border ${statusInfo.color}`}
           >
             <StatusIcon className="w-3 h-3" />
             <span>{statusInfo.label}</span>
@@ -1119,7 +1122,7 @@ function ActionItemCard({
 
           {matchedObj && (
             <span
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-sky-500/10 text-sky-400 border border-sky-500/20"
+              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-violet-500/15 text-violet-300 border border-violet-500/30"
               title={`Objective #${matchedObj.sl_no}: ${matchedObj.title}`}
             >
               <Target className="w-2.5 h-2.5" />
@@ -1129,7 +1132,7 @@ function ActionItemCard({
 
           {matchedKr && (
             <span
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-teal-500/10 text-teal-400 border border-teal-500/20"
+              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-cyan-500/15 text-cyan-300 border border-cyan-500/30"
               title={`Key Result: KR ${matchedKr.kr_code} - ${matchedKr.title}`}
             >
               <Compass className="w-2.5 h-2.5" />
@@ -1138,31 +1141,31 @@ function ActionItemCard({
           )}
 
           {action.is_founder_confirmed && (
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
               <Shield className="w-2.5 h-2.5" />
               Founder Confirmed
             </span>
           )}
 
           {overdue && (
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-red-500/15 text-red-400 border border-red-500/30">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-red-500/20 text-red-400 border border-red-500/40">
               Overdue
             </span>
           )}
         </div>
 
-        <h5 className="text-xs sm:text-sm font-medium text-zinc-100 mt-2 leading-snug group-hover:text-zinc-200 transition-colors">
+        <h5 className="text-xs sm:text-sm font-semibold text-white mt-2 leading-snug group-hover:text-zinc-100 transition-colors">
           {action.title}
         </h5>
 
         {/* Outcome summary if available */}
         {action.outcome_achieved && (
-          <p className="text-[11px] text-zinc-400 mt-1.5 font-mono line-clamp-2 bg-zinc-950/60 p-2 rounded border border-zinc-800/60">
+          <p className="text-[11px] text-zinc-300 mt-2 font-mono line-clamp-2 bg-[#0d0e18]/80 p-2.5 rounded-xl border border-white/[0.06]">
             Deliverable: {action.outcome_achieved}
           </p>
         )}
 
-        {/* Date & Assignee metadata */}
+        {/* Date & Assignee metadata with Netflix mini avatar */}
         <div className="flex items-center gap-3 text-[11px] text-zinc-400 mt-2.5 font-mono">
           <div className="flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5 text-zinc-500" />
@@ -1173,14 +1176,15 @@ function ActionItemCard({
 
           <span className="text-zinc-700">•</span>
 
-          <div className="flex items-center gap-1.5">
-            <div
-              className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow-sm ring-1 ring-zinc-700"
-              style={{ backgroundColor: action.assignee?.avatar_color || '#6366f1' }}
-            >
-              {action.assignee?.full_name?.charAt(0) || 'U'}
-            </div>
-            <span className="text-zinc-300">
+          <div className="flex items-center gap-2">
+            <NetflixAvatar
+              name={action.assignee?.full_name || 'U'}
+              role={action.assignee?.role}
+              avatarColor={action.assignee?.avatar_color}
+              size="sm"
+              className="!w-4.5 !h-4.5 rounded-sm shadow-sm"
+            />
+            <span className="text-zinc-200">
               {action.assignee?.full_name || 'Unassigned'}
             </span>
           </div>
@@ -1188,14 +1192,14 @@ function ActionItemCard({
       </div>
 
       {/* Review & Feedback Actions */}
-      <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-zinc-800/60">
+      <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/[0.06]">
         {/* Stage 1: Member Submit for Review button */}
         {(isAssignedToMe || isFounder) &&
           action.status !== 'completed' &&
           action.status !== 'submitted_for_review' && (
             <button
               onClick={onSubmitReview}
-              className="px-3 py-1 rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-xs font-semibold flex items-center gap-1.5 shadow-md transition-all cursor-pointer min-h-[36px]"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Submit for Review</span>
@@ -1206,7 +1210,7 @@ function ActionItemCard({
         {isFounder && action.status === 'submitted_for_review' && (
           <button
             onClick={onFounderReview}
-            className="px-3 py-1 rounded-md bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black text-xs font-semibold flex items-center gap-1.5 shadow-md transition-all cursor-pointer min-h-[36px]"
           >
             <Shield className="w-3.5 h-3.5" />
             <span>Founder Review</span>
@@ -1216,20 +1220,20 @@ function ActionItemCard({
         {/* Audit & Feedback Log Modal Button */}
         <button
           onClick={onOpenLogs}
-          className="p-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 transition-all cursor-pointer border border-zinc-700/60"
+          className="p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white transition-all cursor-pointer border border-white/[0.08]"
           title="Threaded Feedback Log"
         >
-          <MessageSquare className="w-3.5 h-3.5" />
+          <MessageSquare className="w-4 h-4" />
         </button>
 
         {/* Delete Action Item Button (for owner or Founder) */}
         {(isAssignedToMe || isFounder) && (
           <button
             onClick={onDeleteTask}
-            className="p-1.5 rounded-md bg-zinc-800 hover:bg-rose-500/10 text-zinc-500 hover:text-rose-400 transition-all cursor-pointer border border-zinc-700/60"
+            className="p-2 rounded-xl bg-white/[0.06] hover:bg-rose-500/20 text-zinc-400 hover:text-rose-400 transition-all cursor-pointer border border-white/[0.08]"
             title="Delete Action Item"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-4 h-4" />
           </button>
         )}
       </div>

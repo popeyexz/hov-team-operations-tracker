@@ -1,8 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { InAppNotification, Profile } from '@/lib/types';
 import { getProfiles } from '@/app/actions/profile-actions';
+import { markAllNotificationsRead, sendTestNotification } from '@/app/actions/work-actions';
 import { createClient } from '@/lib/supabase/client';
 
 interface ActiveProfileContextType {
@@ -17,6 +18,9 @@ interface ActiveProfileContextType {
   notifications: InAppNotification[];
   unreadCount: number;
   markNotificationRead: (id: string) => Promise<void>;
+  markAllRead: () => Promise<void>;
+  triggerTestNotification: () => Promise<boolean>;
+  refreshNotifications: () => Promise<void>;
   isEmailModalOpen: boolean;
   setIsEmailModalOpen: (open: boolean) => void;
   isAddMemberModalOpen: boolean;
@@ -100,9 +104,28 @@ export function ActiveProfileProvider({ children }: { children: React.ReactNode 
     };
 
     fetchNotifs();
-    const interval = setInterval(fetchNotifs, 10000);
+    const interval = setInterval(fetchNotifs, 5000);
     return () => clearInterval(interval);
   }, [activeProfile?.id]);
+
+  const refreshNotifications = useCallback(async () => {
+    if (!activeProfile) return;
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('in_app_notifications')
+        .select('*, actor:actor_id(*)')
+        .eq('recipient_id', activeProfile.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (!error && data) {
+        setNotifications(data as InAppNotification[]);
+      }
+    } catch (err) {
+      console.error('Error refreshing notifications:', err);
+    }
+  }, [activeProfile]);
 
   const markNotificationRead = async (id: string) => {
     try {
@@ -111,6 +134,36 @@ export function ActiveProfileProvider({ children }: { children: React.ReactNode 
       setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const markAllRead = async () => {
+    if (!activeProfile) return;
+    try {
+      await markAllNotificationsRead(activeProfile.id);
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const triggerTestNotification = async (): Promise<boolean> => {
+    if (!activeProfile) return false;
+    try {
+      const res = await sendTestNotification({
+        recipientId: activeProfile.id,
+        actorId: activeProfile.id,
+        title: 'HOV Operations Alert',
+        message: `Notification system operational for ${activeProfile.full_name} (${activeProfile.email || 'in-app'}).`,
+      });
+      if (res.success) {
+        await refreshNotifications();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error(e);
+      return false;
     }
   };
 
@@ -130,6 +183,9 @@ export function ActiveProfileProvider({ children }: { children: React.ReactNode 
         notifications,
         unreadCount,
         markNotificationRead,
+        markAllRead,
+        triggerTestNotification,
+        refreshNotifications,
         isEmailModalOpen,
         setIsEmailModalOpen,
         isAddMemberModalOpen,

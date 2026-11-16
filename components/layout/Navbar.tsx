@@ -7,6 +7,7 @@ import { useActiveProfile } from '@/context/ActiveProfileContext';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { EmailPromptModal } from '../auth/EmailPromptModal';
 import { AddMemberModal } from '../auth/AddMemberModal';
+import { NetflixAvatar } from '../auth/NetflixAvatar';
 import {
   Briefcase,
   Calendar,
@@ -16,10 +17,10 @@ import {
   Mail,
   LogOut,
   Eye,
-  Shield,
   Menu,
   X,
   Crown,
+  Bell,
 } from 'lucide-react';
 
 export function Navbar() {
@@ -40,6 +41,7 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isFounder = activeProfile?.role === 'founder';
+  const isHomePage = pathname === '/';
 
   const navLinks = [
     { href: '/daily-work', label: 'Daily Work & OKRs', icon: Briefcase },
@@ -49,32 +51,39 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-xl transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+      <header
+        className={`sticky top-0 z-40 w-full transition-all duration-200 ${
+          isHomePage
+            ? 'bg-[#141414]/95 border-b border-zinc-800/40 backdrop-blur-md'
+            : 'bg-[#0b0c14]/85 border-b border-white/[0.06] backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.6)]'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           {/* Logo & Brand Identity */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-7 h-7 rounded bg-zinc-100 text-zinc-950 flex items-center justify-center font-mono font-bold text-xs tracking-wider transition-transform group-hover:scale-105">
+            <Link href="/" className="flex items-center gap-2.5 group cursor-pointer">
+              {/* Netflix-styled bold red HOV mark */}
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-600 to-rose-700 text-white flex items-center justify-center font-mono font-black text-xs tracking-wider shadow-lg shadow-red-600/30 transition-transform group-hover:scale-105">
                 HOV
               </div>
-              <div className="hidden sm:block">
-                <div className="text-xs font-semibold text-zinc-100 tracking-tight leading-none group-hover:text-zinc-300 transition-colors">
+              <div>
+                <div className="text-xs font-bold text-white tracking-tight leading-none group-hover:text-zinc-200 transition-colors">
                   House of Ventures
                 </div>
-                <div className="text-[10px] text-zinc-500 font-mono tracking-widest mt-0.5">
+                <div className="text-[9px] text-zinc-400 font-mono tracking-widest mt-0.5">
                   OPERATIONS OS
                 </div>
               </div>
             </Link>
 
             {/* Impersonation Indicator Pill */}
-            {impersonatedMember && (
-              <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-0.5 rounded border border-amber-500/30 bg-amber-500/10 text-amber-300 text-[11px] font-mono">
-                <Eye className="w-3 h-3" />
+            {!isHomePage && impersonatedMember && (
+              <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs font-mono">
+                <Eye className="w-3.5 h-3.5" />
                 <span>VIEWING: {impersonatedMember.full_name}</span>
                 <button
                   onClick={() => setImpersonatedMember(null)}
-                  className="ml-1 text-zinc-400 hover:text-white transition-colors"
+                  className="ml-1 text-zinc-400 hover:text-white transition-colors cursor-pointer"
                   title="Clear View As"
                 >
                   <X className="w-3 h-3" />
@@ -83,9 +92,9 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Desktop Navigation Tabs (Tactile Segmented Control) - Only visible when an operator profile is selected */}
-          {activeProfile && (
-            <nav className="hidden md:flex items-center bg-zinc-900/90 p-0.5 rounded-lg border border-zinc-800 animate-in fade-in duration-150">
+          {/* Desktop Navigation Tabs (Liquid Segmented Control) */}
+          {!isHomePage && activeProfile && (
+            <nav className="hidden md:flex items-center bg-[#13141f]/90 p-1 rounded-2xl border border-white/[0.08] shadow-inner">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = pathname.startsWith(link.href);
@@ -93,10 +102,10 @@ export function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 ${
+                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-sm'
-                        : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
+                        ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-[0_2px_12px_rgba(124,58,237,0.4)] border border-violet-400/30'
+                        : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -110,7 +119,7 @@ export function Navbar() {
           {/* Right Header Controls */}
           <div className="flex items-center gap-2.5">
             {/* Founder "View As" Dropdown */}
-            {activeProfile && isFounder && (
+            {!isHomePage && activeProfile && isFounder && (
               <div className="hidden sm:block relative">
                 <select
                   value={impersonatedMember?.id || 'master'}
@@ -123,7 +132,7 @@ export function Navbar() {
                       setImpersonatedMember(member || null);
                     }
                   }}
-                  className="text-[11px] font-mono px-2.5 py-1 rounded-md text-zinc-300 cursor-pointer bg-zinc-900 border border-zinc-800 hover:border-zinc-700 focus:outline-none transition-colors"
+                  className="text-[11px] font-mono px-3 py-1.5 rounded-xl text-zinc-200 cursor-pointer bg-[#141624] border border-white/[0.08] hover:border-violet-500/50 focus:outline-none transition-colors shadow-sm"
                 >
                   <option value="master">Founder Mode (All 13)</option>
                   <optgroup label="View As Member">
@@ -139,29 +148,30 @@ export function Navbar() {
               </div>
             )}
 
-            {/* Notification Center - only active when profile selected */}
-            {activeProfile && <NotificationBell />}
+            {/* Notification Center */}
+            {!isHomePage && activeProfile && <NotificationBell />}
 
             {/* Active Profile Switcher */}
             {activeProfile ? (
               <div className="relative">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-zinc-900/80 hover:bg-zinc-800/80 border border-zinc-800 hover:border-zinc-700 transition-all focus:outline-none cursor-pointer group"
+                  className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-[#141624]/90 hover:bg-[#1a1d30] border border-white/[0.08] hover:border-white/20 transition-all focus:outline-none cursor-pointer group shadow-sm"
                 >
-                  <div
-                    className="w-5 h-5 rounded flex items-center justify-center text-white text-[10px] font-bold"
-                    style={{ backgroundColor: activeProfile.avatar_color || '#3b82f6' }}
-                  >
-                    {activeProfile.full_name.charAt(0)}
-                  </div>
+                  <NetflixAvatar
+                    name={activeProfile.full_name}
+                    role={activeProfile.role}
+                    avatarColor={activeProfile.avatar_color}
+                    size="sm"
+                    className="!w-6 !h-6 rounded-md shadow"
+                  />
                   <div className="hidden sm:block text-left">
-                    <div className="text-xs font-medium text-zinc-200 flex items-center gap-1">
+                    <div className="text-xs font-medium text-zinc-100 flex items-center gap-1">
                       {activeProfile.full_name}
                       {isFounder && <Crown className="w-2.5 h-2.5 text-amber-400" />}
                     </div>
                   </div>
-                  <ChevronDown className="w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+                  <ChevronDown className="w-3 h-3 text-zinc-400 group-hover:text-white transition-colors" />
                 </button>
 
                 {isDropdownOpen && (
@@ -170,17 +180,17 @@ export function Navbar() {
                       className="fixed inset-0 z-40"
                       onClick={() => setIsDropdownOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-56 rounded-xl bg-zinc-900 border border-zinc-800 p-1.5 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-100">
-                      <div className="px-3 py-2 border-b border-zinc-800 mb-1">
-                        <div className="text-xs font-semibold text-zinc-200 flex items-center justify-between">
+                    <div className="absolute right-0 mt-3 w-60 rounded-2xl bg-[#12131d]/95 backdrop-blur-2xl border border-white/[0.1] p-2 shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.12)] z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-2.5 border-b border-zinc-800/80 mb-1">
+                        <div className="text-xs font-semibold text-zinc-100 flex items-center justify-between">
                           <span>{activeProfile.full_name}</span>
                           {isFounder && (
-                            <span className="text-[10px] font-mono bg-amber-500/10 text-amber-300 px-1 rounded border border-amber-500/20">
+                            <span className="text-[10px] font-mono bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded-full border border-amber-500/20">
                               FOUNDER
                             </span>
                           )}
                         </div>
-                        <div className="text-[11px] text-zinc-500 truncate mt-0.5 font-mono">
+                        <div className="text-[11px] text-zinc-400 truncate mt-0.5 font-mono">
                           {activeProfile.email || 'No email configured'}
                         </div>
                       </div>
@@ -190,7 +200,7 @@ export function Navbar() {
                           setIsDropdownOpen(false);
                           setIsEmailModalOpen(true);
                         }}
-                        className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800/80 rounded-lg transition-colors text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800/80 rounded-xl transition-colors text-left cursor-pointer"
                       >
                         <Mail className="w-3.5 h-3.5 text-zinc-400" />
                         <span>Update Alert Email</span>
@@ -201,13 +211,13 @@ export function Navbar() {
                           setIsDropdownOpen(false);
                           setIsAddMemberModalOpen(true);
                         }}
-                        className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800/80 rounded-lg transition-colors text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800/80 rounded-xl transition-colors text-left cursor-pointer"
                       >
                         <UserPlus className="w-3.5 h-3.5 text-zinc-400" />
                         <span>Add Team Member</span>
                       </button>
 
-                      <div className="border-t border-zinc-800 my-1" />
+                      <div className="border-t border-zinc-800/80 my-1" />
 
                       <button
                         onClick={() => {
@@ -216,10 +226,10 @@ export function Navbar() {
                           setImpersonatedMember(null);
                           router.push('/');
                         }}
-                        className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors text-left cursor-pointer font-medium"
+                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors text-left cursor-pointer font-medium"
                       >
                         <LogOut className="w-3.5 h-3.5" />
-                        <span>Switch Profile</span>
+                        <span>Switch Profile (Netflix Picker)</span>
                       </button>
                     </div>
                   </>
@@ -228,25 +238,27 @@ export function Navbar() {
             ) : (
               <Link
                 href="/"
-                className="px-3 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                className="px-4 py-1.5 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-semibold shadow-sm transition-all cursor-pointer"
               >
                 Select Profile
               </Link>
             )}
 
             {/* Mobile menu trigger */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
-            >
-              {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </button>
+            {!isHomePage && (
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 rounded-xl bg-[#141624] border border-white/[0.08] text-zinc-400 hover:text-white cursor-pointer"
+              >
+                {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              </button>
+            )}
           </div>
         </div>
 
         {/* Mobile menu drawer */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-zinc-800 px-4 py-3 bg-[#09090b] space-y-2">
+        {!isHomePage && isMobileMenuOpen && (
+          <div className="md:hidden border-t border-zinc-800 px-4 py-3 bg-[#0b0c14] space-y-2">
             {activeProfile ? (
               <>
                 {navLinks.map((link) => {
@@ -257,9 +269,9 @@ export function Navbar() {
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium ${
+                      className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-medium ${
                         isActive
-                          ? 'bg-zinc-800 text-white'
+                          ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white'
                           : 'text-zinc-400 hover:bg-zinc-900'
                       }`}
                     >
@@ -275,7 +287,7 @@ export function Navbar() {
                       setIsMobileMenuOpen(false);
                       setIsAddMemberModalOpen(true);
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 rounded-lg text-left"
+                    className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-zinc-300 hover:bg-zinc-900 rounded-xl text-left"
                   >
                     <UserPlus className="w-4 h-4 text-zinc-400" />
                     <span>Add Team Member</span>
@@ -286,7 +298,7 @@ export function Navbar() {
                       setIsMobileMenuOpen(false);
                       setIsEmailModalOpen(true);
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 rounded-lg text-left"
+                    className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-zinc-300 hover:bg-zinc-900 rounded-xl text-left"
                   >
                     <Mail className="w-4 h-4 text-zinc-400" />
                     <span>Update Alert Email</span>
@@ -299,7 +311,7 @@ export function Navbar() {
                       setImpersonatedMember(null);
                       router.push('/');
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-rose-400 hover:bg-rose-500/10 rounded-lg text-left"
+                    className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-rose-400 hover:bg-rose-500/10 rounded-xl text-left"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Switch Profile</span>
@@ -311,7 +323,7 @@ export function Navbar() {
                 <Link
                   href="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="inline-block w-full py-2 rounded-lg bg-zinc-100 text-zinc-950 font-semibold text-xs"
+                  className="inline-block w-full py-2.5 rounded-xl bg-white text-black font-semibold text-xs"
                 >
                   Select Operator Profile
                 </Link>
@@ -320,6 +332,47 @@ export function Navbar() {
           </div>
         )}
       </header>
+
+      {/* Mobile Floating Bottom Dock (For quick thumb navigation on mobile phones) */}
+      {!isHomePage && activeProfile && (
+        <div className="md:hidden fixed bottom-3 inset-x-3 z-50 pointer-events-auto">
+          <div className="liquid-card !rounded-2xl p-1.5 flex items-center justify-around shadow-[0_10px_35px_rgba(0,0,0,0.8)] border border-white/[0.12] bg-[#0e101a]/95 backdrop-blur-2xl">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              const isActive = pathname.startsWith(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-[10px] font-medium transition-all min-h-[44px] ${
+                    isActive
+                      ? 'text-white bg-violet-600/30 border border-violet-500/40 shadow-sm'
+                      : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 mb-0.5" />
+                  <span>{link.label.split(' ')[0]}</span>
+                </Link>
+              );
+            })}
+
+            {/* Profile avatar link to switch profile */}
+            <Link
+              href="/"
+              className="flex flex-col items-center justify-center py-1.5 px-3 rounded-xl text-[10px] font-medium text-zinc-400 hover:text-white transition-all min-h-[44px]"
+            >
+              <NetflixAvatar
+                name={activeProfile.full_name}
+                role={activeProfile.role}
+                avatarColor={activeProfile.avatar_color}
+                size="sm"
+                className="!w-4 !h-4 rounded-sm mb-0.5"
+              />
+              <span>Profile</span>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       <EmailPromptModal

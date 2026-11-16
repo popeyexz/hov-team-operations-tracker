@@ -9,15 +9,12 @@ import {
   Calendar,
   ArrowRightCircle,
   Plus,
-  Sparkles,
   Building2,
   Clock,
-  Compass,
-  Layers,
   Send,
-  CheckCircle2,
 } from 'lucide-react';
 import { PlanTaskModal } from './PlanTaskModal';
+import { NetflixAvatar } from '../auth/NetflixAvatar';
 
 interface NextPlansBoardProps {
   plannedItems: ActionItem[];
@@ -53,31 +50,31 @@ export function NextPlansBoard({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
-      {/* Precision Operations Header */}
-      <div className="bg-zinc-900/60 border border-zinc-800 p-5 sm:p-6 rounded-xl shadow-sm relative">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+      {/* Liquid Operations Header */}
+      <div className="liquid-card !rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-1.5 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <div className="flex items-center gap-2 mb-2 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
               <span>TAB 2 // FORWARD ROADMAP</span>
               <span className="text-zinc-600">•</span>
               <span>Milestone Pipeline</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-semibold text-zinc-100 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
               Next Plans & Milestone Roadmapping
             </h1>
 
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xl font-normal leading-relaxed">
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 max-w-xl font-normal leading-relaxed">
               Draft upcoming OKR initiatives, set target milestones, and promote tasks to active daily work in 1 click.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3 flex-wrap">
             <select
               value={selectedVenture}
               onChange={(e) => setSelectedVenture(e.target.value)}
-              className="text-xs font-mono px-3 py-1.5 rounded-lg text-zinc-300 bg-zinc-950 border border-zinc-800 hover:border-zinc-700 cursor-pointer focus:outline-none"
+              className="text-xs font-mono px-3.5 py-2 rounded-xl text-zinc-200 bg-[#12131f] border border-white/[0.1] hover:border-violet-500/40 cursor-pointer focus:outline-none shadow-sm"
             >
               <option value="all">All Ventures ({ventures.length})</option>
               {ventures.map((v) => (
@@ -89,43 +86,43 @@ export function NextPlansBoard({
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-[0_4px_20px_rgba(124,58,237,0.45)] border border-violet-400/40 flex items-center gap-2 transition-all cursor-pointer transform active:scale-95"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-4 h-4" />
               <span>Schedule Next Plan</span>
             </button>
           </div>
         </div>
 
-        {/* Live Plan Metrics Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-5 pt-5 border-t border-zinc-800/80">
-          <div className="bg-zinc-950/60 p-3 rounded-lg border border-zinc-800 flex items-center gap-3">
-            <div className="w-7 h-7 rounded-md bg-zinc-800 flex items-center justify-center text-zinc-300">
-              <Calendar className="w-3.5 h-3.5" />
+        {/* Liquid Plan Metrics Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6 pt-6 border-t border-white/[0.08]">
+          <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.25)] shrink-0">
+              <Calendar className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-base font-semibold text-zinc-100 font-mono">{plannedItems.length}</div>
-              <div className="text-[11px] text-zinc-500 font-mono">Scheduled Deliverables</div>
+              <div className="text-base font-bold text-white font-mono">{plannedItems.length}</div>
+              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">Scheduled Deliverables</div>
             </div>
           </div>
 
-          <div className="bg-zinc-950/60 p-3 rounded-lg border border-zinc-800 flex items-center gap-3">
-            <div className="w-7 h-7 rounded-md bg-zinc-800 flex items-center justify-center text-zinc-300">
-              <Building2 className="w-3.5 h-3.5" />
+          <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.25)] shrink-0">
+              <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-base font-semibold text-zinc-100 font-mono">{ventures.length}</div>
-              <div className="text-[11px] text-zinc-500 font-mono">Participating Ventures</div>
+              <div className="text-base font-bold text-white font-mono">{ventures.length}</div>
+              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">Participating Ventures</div>
             </div>
           </div>
 
-          <div className="bg-zinc-950/60 p-3 rounded-lg border border-zinc-800 flex items-center gap-3">
-            <div className="w-7 h-7 rounded-md bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <ArrowRightCircle className="w-3.5 h-3.5" />
+          <div className="liquid-card !rounded-2xl p-3.5 flex items-center gap-3.5 hover:translate-y-[-2px] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.25)] shrink-0">
+              <ArrowRightCircle className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-base font-semibold text-emerald-400 font-mono">1-Click</div>
-              <div className="text-[11px] text-zinc-500 font-mono">Instant Daily Promotion</div>
+              <div className="text-base font-bold text-emerald-400 font-mono">1-Click</div>
+              <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">Instant Daily Promotion</div>
             </div>
           </div>
         </div>
@@ -133,68 +130,69 @@ export function NextPlansBoard({
 
       {/* Planned Deliverables Grid */}
       {filteredItems.length === 0 ? (
-        <div className="p-10 sm:p-14 rounded-xl bg-zinc-900/40 border border-zinc-800 text-center space-y-4">
-          <div className="w-12 h-12 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-400 mx-auto flex items-center justify-center">
-            <Calendar className="w-6 h-6" />
+        <div className="p-10 sm:p-14 rounded-3xl liquid-card text-center space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/[0.1] text-zinc-400 mx-auto flex items-center justify-center">
+            <Calendar className="w-7 h-7" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-zinc-200">No Planned Initiatives Found</h3>
-            <p className="text-xs text-zinc-500 mt-1 max-w-md mx-auto font-normal">
+            <h3 className="text-base font-semibold text-white">No Planned Initiatives Found</h3>
+            <p className="text-xs text-zinc-400 mt-1 max-w-md mx-auto font-normal">
               No roadmapped deliverables found for this venture selection. Schedule upcoming tasks and OKRs to plan out future velocity.
             </p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold shadow-sm transition-all cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-white text-black text-xs font-semibold hover:bg-zinc-200 transition-colors cursor-pointer"
           >
             Schedule Your First Plan
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/90 hover:border-zinc-700 flex flex-col justify-between group shadow-sm transition-all"
+              className="liquid-card !rounded-2xl p-5 hover:border-violet-500/40 hover:shadow-xl flex flex-col justify-between group transition-all"
             >
               <div>
                 {/* Venture Code & Target Date */}
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="font-mono text-xs font-semibold text-zinc-300 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">
+                  <span className="font-mono text-xs font-bold text-violet-300 bg-violet-500/15 px-2.5 py-0.5 rounded-lg border border-violet-500/30">
                     {item.venture?.code || 'HOV'}
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 bg-zinc-950 px-2 py-0.5 rounded border border-zinc-800">
-                    <Clock className="w-3 h-3 text-zinc-500" />
+                  <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-300 bg-[#0e0f18] px-2.5 py-0.5 rounded-full border border-white/[0.08]">
+                    <Clock className="w-3.5 h-3.5 text-zinc-400" />
                     <span>Target: {formatDateDDMMYYYY(item.date)}</span>
                   </div>
                 </div>
 
-                <h4 className="text-sm font-medium text-zinc-100 leading-snug group-hover:text-zinc-200 transition-colors">
+                <h4 className="text-sm font-semibold text-white leading-snug group-hover:text-zinc-100 transition-colors">
                   {item.title}
                 </h4>
 
-                <p className="text-xs text-zinc-500 mt-1 font-mono">
+                <p className="text-xs text-zinc-400 mt-1 font-mono">
                   {item.venture?.name}
                 </p>
 
                 {item.objective && (
-                  <div className="mt-3 p-2 rounded-lg bg-zinc-950/80 border border-zinc-800 text-[11px] text-zinc-300 flex items-start gap-2">
-                    <span className="font-mono font-medium text-zinc-400">Obj #{item.objective.sl_no}</span>
+                  <div className="mt-3.5 p-2.5 rounded-xl bg-[#0e101a] border border-white/[0.06] text-[11px] text-zinc-300 flex items-start gap-2">
+                    <span className="font-mono font-semibold text-violet-300 shrink-0">Obj #{item.objective.sl_no}</span>
                     <span className="truncate">{item.objective.title}</span>
                   </div>
                 )}
               </div>
 
               {/* Assignee & Promote Button */}
-              <div className="mt-5 pt-3.5 border-t border-zinc-800/80 flex items-center justify-between gap-2">
+              <div className="mt-5 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-sm ring-1 ring-zinc-700"
-                    style={{ backgroundColor: item.assignee?.avatar_color || '#6366f1' }}
-                  >
-                    {item.assignee?.full_name?.charAt(0) || 'U'}
-                  </div>
-                  <span className="text-xs text-zinc-300 font-medium">
+                  <NetflixAvatar
+                    name={item.assignee?.full_name || 'U'}
+                    role={item.assignee?.role}
+                    avatarColor={item.assignee?.avatar_color}
+                    size="sm"
+                    className="!w-5 !h-5 rounded-md shadow-sm"
+                  />
+                  <span className="text-xs text-zinc-200 font-medium">
                     {item.assignee?.full_name || 'Unassigned'}
                   </span>
                 </div>
@@ -202,7 +200,7 @@ export function NextPlansBoard({
                 <button
                   onClick={() => handlePromote(item)}
                   disabled={promotingId === item.id}
-                  className="px-3 py-1 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-md disabled:opacity-50"
                   title="Move to Tab 1 (Daily Work)"
                 >
                   <Send className="w-3 h-3" />

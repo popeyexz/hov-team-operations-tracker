@@ -8,9 +8,13 @@
 }
 
 body {
-  background-color: #09090b;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-color: #09090d;
+  background-image: 
+    radial-gradient(at 15% 15%, rgba(124, 58, 237, 0.08) 0px, transparent 40%),
+    radial-gradient(at 85% 10%, rgba(6, 182, 212, 0.07) 0px, transparent 40%),
+    radial-gradient(at 50% 80%, rgba(244, 63, 94, 0.04) 0px, transparent 50%),
+    radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px;
   background-attachment: fixed;
   color: #fafafa;
   min-height: 100vh;
@@ -20,136 +24,117 @@ body {
 }
 
 /* =========================================================================
-   TECHNICAL WORKBENCH & QUIET LUXURY DESIGN SYSTEM
+   LIQUID NEO-SKEUOMORPHIC DARK THEME (REFERENCE-ALIGNED)
    ========================================================================= */
 
-/* Structured Obsidian Panels */
-.glass-panel {
-  background: rgba(14, 16, 22, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 1px 2px 0 rgba(0, 0, 0, 0.6),
-    0 8px 24px -4px rgba(0, 0, 0, 0.8);
-}
-
-.glass-panel-luxury {
-  background: rgba(15, 17, 23, 0.9);
+/* Soft Pillowy Liquid Card Container */
+.liquid-card {
+  background: linear-gradient(145deg, rgba(22, 24, 38, 0.8) 0%, rgba(14, 15, 24, 0.9) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 
-    0 1px 3px 0 rgba(0, 0, 0, 0.6),
-    0 12px 32px -4px rgba(0, 0, 0, 0.85);
+    0 16px 40px -8px rgba(0, 0, 0, 0.75),
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.4);
+  border-radius: 1.25rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.glass-panel-hover {
-  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease, background-color 0.18s ease;
-}
-
-.glass-panel-hover:hover {
-  background: rgba(22, 25, 35, 0.95);
-  border-color: rgba(255, 255, 255, 0.18);
-  transform: translateY(-2px);
-}
-
-.glass-panel-hover:active {
-  transform: translateY(0) scale(0.99);
-}
-
-/* Solid Structured Cards */
-.glass-card {
-  background: rgba(18, 20, 28, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.5);
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glass-card:hover {
+.liquid-card:hover {
   border-color: rgba(255, 255, 255, 0.14);
 }
 
-.glass-card-bright {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-}
-
-/* Restrained Badges & Pills */
-.glass-pill {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* Precision Workbench Inputs */
-.glass-input {
-  background: rgba(10, 11, 15, 0.9);
+/* Elevated Liquid Card for Metrics & Highlights */
+.liquid-card-elevated {
+  background: linear-gradient(145deg, rgba(28, 31, 48, 0.85) 0%, rgba(18, 19, 30, 0.95) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 20px 48px -10px rgba(0, 0, 0, 0.85),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.5);
+  border-radius: 1.5rem;
+}
+
+/* Liquid Pill Badges & Segmented Controls */
+.liquid-pill {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+
+.liquid-pill-active {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 4px 16px rgba(139, 92, 246, 0.45),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+/* Liquid Neon Accent Glows */
+.liquid-glow-violet {
+  box-shadow: 0 0 24px -4px rgba(139, 92, 246, 0.35);
+}
+
+.liquid-glow-cyan {
+  box-shadow: 0 0 24px -4px rgba(6, 182, 212, 0.35);
+}
+
+.liquid-glow-rose {
+  box-shadow: 0 0 24px -4px rgba(244, 63, 94, 0.35);
+}
+
+.liquid-glow-emerald {
+  box-shadow: 0 0 24px -4px rgba(16, 185, 129, 0.35);
+}
+
+.liquid-glow-amber {
+  box-shadow: 0 0 24px -4px rgba(245, 158, 11, 0.35);
+}
+
+/* Tactile Liquid Inputs */
+.liquid-input {
+  background: rgba(12, 13, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
   color: #fafafa;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  border-radius: 0.75rem;
+  transition: all 0.15s ease;
 }
 
-.glass-input:focus {
+.liquid-input:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* Precision Status Indicators */
-.led-emerald {
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
-}
-
-.led-amber {
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
-}
-
-.led-rose {
-  box-shadow: 0 0 6px rgba(244, 63, 94, 0.6);
-}
-
-.led-cyan {
-  box-shadow: 0 0 6px rgba(6, 182, 212, 0.6);
-}
-
-.led-violet {
-  box-shadow: 0 0 6px rgba(139, 92, 246, 0.6);
-}
-
-/* Custom Scrollbar for High-Density Views */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: #09090d;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border-radius: 3px;
+  background: #272733;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #3f3f52;
 }
 
-/* Clean typography */
-.text-gradient-silver {
-  color: #fafafa;
-}
-
-.text-gradient-gold {
-  color: #f59e0b;
-}
-
-/* Selection */
+/* Smooth selection */
 ::selection {
-  background: #27272a;
+  background: #7c3aed;
   color: #ffffff;
 }

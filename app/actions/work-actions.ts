@@ -708,3 +708,78 @@ export async function getVenturesForGateway() {
   const res = await getGatewayData();
   return res.ventures;
 }
+
+export async function sendTestNotification(params: {
+  recipientId: string;
+  actorId?: string | null;
+  title?: string;
+  message?: string;
+}) {
+  try {
+    const cleanActorId = params.actorId && params.actorId.trim() ? params.actorId.trim() : null;
+    const title = params.title || 'HOV OS System Alert';
+    const message = params.message || 'Real-time alert notification verified. Everything is operational.';
+
+    const { data: notif, error } = await supabaseAdmin
+      .from('in_app_notifications')
+      .insert({
+        recipient_id: params.recipientId,
+        actor_id: cleanActorId,
+        type: 'general',
+        title,
+        message,
+        is_read: false,
+      })
+      .select('*, actor:actor_id(*)')
+      .single();
+
+    if (error) return { success: false, error: error.message };
+
+    // Also send email alert if recipient has email
+    const { data: recipient } = await supabaseAdmin
+      .from('profiles')
+      .select('email, full_name')
+      .eq('id', params.recipientId)
+      .single();
+
+    if (recipient?.email) {
+      await sendEmailNotification({
+        to: recipient.email,
+        subject: `[HOV Tracker Alert] ${title}`,
+        html: `
+          <div style="font-family: sans-serif; padding: 20px; background: #0f172a; color: #f8fafc; border-radius: 12px;">
+            <h2 style="color: #38bdf8;">HOV Tracker Alert Verified</h2>
+            <p>Hello <strong>${recipient.full_name}</strong>,</p>
+            <p>${message}</p>
+            <p style="font-size: 12px; color: #94a3b8; margin-top: 20px;">House of Ventures Operations OS</p>
+          </div>
+        `,
+      });
+    }
+
+    await sendWebPushToProfile(params.recipientId, {
+      title,
+      body: message,
+      url: '/daily-work',
+    });
+
+    return { success: true, notification: notif };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to dispatch test notification' };
+  }
+}
+
+export async function markAllNotificationsRead(recipientId: string) {
+  try {
+    const { error } = await supabaseAdmin
+      .from('in_app_notifications')
+      .update({ is_read: true })
+      .eq('recipient_id', recipientId);
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
