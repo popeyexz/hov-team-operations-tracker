@@ -82,19 +82,20 @@ export async function getWorkData(activeProfileId?: string, impersonatedMemberId
       // Check cross-venture visibility for effectiveProfileId
       if (effectiveProfileId) {
         const effProfile = profiles.find((p) => p.id === effectiveProfileId);
-        if (effProfile?.role === 'founder' && !impersonatedMemberId) {
+        const isFounderEffective = effProfile?.role === 'founder' && !impersonatedMemberId;
+        if (isFounderEffective) {
           myVentureIds.add(v.id);
         } else {
           if (v.lead_id === effectiveProfileId) {
             myVentureIds.add(v.id);
           }
-          if (vObjs.some((o) => o.owner_id === effectiveProfileId)) {
+          if (vActions.some((a) => a.assigned_to === effectiveProfileId || (a as any).assignee?.id === effectiveProfileId)) {
             myVentureIds.add(v.id);
           }
           if (vKrs.some((k) => k.owner_id === effectiveProfileId)) {
             myVentureIds.add(v.id);
           }
-          if (vActions.some((a) => a.assigned_to === effectiveProfileId)) {
+          if (vObjs.some((o) => o.owner_id === effectiveProfileId)) {
             myVentureIds.add(v.id);
           }
         }

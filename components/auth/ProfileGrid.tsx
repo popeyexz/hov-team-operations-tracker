@@ -22,13 +22,8 @@ export function ProfileGrid() {
   const [isManageMode, setIsManageMode] = useState(false);
 
   const handleProfileClick = (profile: Profile) => {
-    if (!profile.email) {
-      setSelectedForEmail(profile);
-      setIsEmailModalOpen(true);
-    } else {
-      setActiveProfile(profile);
-      router.push('/daily-work');
-    }
+    setActiveProfile(profile);
+    router.push('/daily-work');
   };
 
   const handleEditProfile = (profile: Profile) => {

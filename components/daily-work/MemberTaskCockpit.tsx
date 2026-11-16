@@ -55,23 +55,37 @@ export function MemberTaskCockpit({
 }: MemberTaskCockpitProps) {
   // Filter for cockpit views
   const [cockpitFilter, setCockpitFilter] = useState<'all' | 'cross_venture' | 'leading_ventures' | 'team_in_my_ventures'>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'completed'>('active');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'completed'>('all');
+
+  // Robust matching helpers
+  const isAssignedToMember = (a: ActionItem) => {
+    return a.assigned_to === member.id || a.assignee?.id === member.id;
+  };
+
+  const getActionVenture = (a: ActionItem) => {
+    return a.venture || ventures.find((v) => v.id === a.venture_id);
+  };
+
+  const isActionInMemberLeadingVenture = (a: ActionItem) => {
+    const v = getActionVenture(a);
+    return v?.lead_id === member.id || v?.lead?.id === member.id;
+  };
 
   // 1. Ventures led by this member
-  const leadingVentures = ventures.filter((v) => v.lead_id === member.id);
+  const leadingVentures = ventures.filter((v) => v.lead_id === member.id || v.lead?.id === member.id);
 
   // 2. All tasks assigned to this member to complete
-  const allMyAssignedTasks = actionItems.filter((a) => a.assigned_to === member.id);
+  const allMyAssignedTasks = actionItems.filter((a) => isAssignedToMember(a));
 
   // 3. Tasks assigned to this member within the ventures they lead
-  const tasksInMyVentures = allMyAssignedTasks.filter((a) => a.venture?.lead_id === member.id);
+  const tasksInMyVentures = allMyAssignedTasks.filter((a) => isActionInMemberLeadingVenture(a));
 
   // 4. Cross-venture tasks: assigned to this member, but from a venture led by someone else (or where assigner is different)
-  const crossVentureTasks = allMyAssignedTasks.filter((a) => a.venture?.lead_id !== member.id);
+  const crossVentureTasks = allMyAssignedTasks.filter((a) => !isActionInMemberLeadingVenture(a));
 
   // 5. Tasks in this member's leading ventures assigned to OTHER team members
   const teamTasksInMyVentures = actionItems.filter(
-    (a) => a.venture?.lead_id === member.id && a.assigned_to !== member.id
+    (a) => isActionInMemberLeadingVenture(a) && !isAssignedToMember(a)
   );
 
   // Filter tasks based on current tab and status
@@ -281,28 +295,28 @@ export function MemberTaskCockpit({
         {/* Status Toggle */}
         <div className="flex items-center bg-[#020B20] p-1 rounded-xl border border-[#F4AEBE]/20 self-start sm:self-auto">
           <button
-            onClick={() => setStatusFilter('active')}
+            onClick={() => setStatusFilter('all')}
             className={`px-3 py-1 rounded-lg text-xs font-mono transition-all cursor-pointer ${
-              statusFilter === 'active' ? 'bg-[#F4AEBE] text-[#03153D] font-bold' : 'text-zinc-400 hover:text-white'
+              statusFilter === 'all' ? 'bg-[#F4AEBE] text-[#03153D] font-bold shadow' : 'text-zinc-400 hover:text-white'
             }`}
           >
-            Active Work
+            All ({allMyAssignedTasks.length})
+          </button>
+          <button
+            onClick={() => setStatusFilter('active')}
+            className={`px-3 py-1 rounded-lg text-xs font-mono transition-all cursor-pointer ${
+              statusFilter === 'active' ? 'bg-[#F4AEBE] text-[#03153D] font-bold shadow' : 'text-zinc-400 hover:text-white'
+            }`}
+          >
+            Active ({activeCount})
           </button>
           <button
             onClick={() => setStatusFilter('completed')}
             className={`px-3 py-1 rounded-lg text-xs font-mono transition-all cursor-pointer ${
-              statusFilter === 'completed' ? 'bg-[#F4AEBE] text-[#03153D] font-bold' : 'text-zinc-400 hover:text-white'
+              statusFilter === 'completed' ? 'bg-[#F4AEBE] text-[#03153D] font-bold shadow' : 'text-zinc-400 hover:text-white'
             }`}
           >
-            Completed
-          </button>
-          <button
-            onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1 rounded-lg text-xs font-mono transition-all cursor-pointer ${
-              statusFilter === 'all' ? 'bg-[#F4AEBE] text-[#03153D] font-bold' : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            All
+            Completed ({completedCount})
           </button>
         </div>
       </div>
@@ -312,18 +326,33 @@ export function MemberTaskCockpit({
         {currentList.length === 0 ? (
           <div className="p-8 rounded-2xl bg-[#020B20]/60 border border-[#F4AEBE]/15 text-center space-y-2">
             <CheckCircle2 className="w-8 h-8 text-[#F4AEBE]/50 mx-auto" />
-            <div className="text-sm font-semibold text-white font-display">No tasks in this view</div>
+            <div className="text-sm font-semibold text-white font-display">
+              {statusFilter === 'active' && completedCount > 0
+                ? 'All active tasks completed!'
+                : 'No tasks in this view'}
+            </div>
             <p className="text-xs text-zinc-400 font-mono">
-              {cockpitFilter === 'cross_venture'
+              {statusFilter === 'active' && completedCount > 0
+                ? `You have ${completedCount} completed task${completedCount === 1 ? '' : 's'}. Click below to view all tasks.`
+                : cockpitFilter === 'cross_venture'
                 ? 'No cross-venture tasks assigned to this member currently.'
                 : 'All tasks in this section are up to date!'}
             </p>
+            {statusFilter === 'active' && completedCount > 0 && (
+              <button
+                onClick={() => setStatusFilter('all')}
+                className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F4AEBE] text-[#03153D] text-xs font-mono font-bold hover:bg-[#f7bac8] transition-colors cursor-pointer"
+              >
+                <span>View All Tasks ({allMyAssignedTasks.length})</span>
+              </button>
+            )}
           </div>
         ) : (
           currentList.map((action) => {
-            const isCrossVenture = action.venture?.lead_id !== member.id;
+            const v = getActionVenture(action);
+            const isCrossVenture = !isActionInMemberLeadingVenture(action);
             const overdue = action.status !== 'completed' && action.status !== 'dropped' && isOverdue(action.date);
-            const ventureLead = action.venture?.lead || profiles.find((p) => p.id === action.venture?.lead_id);
+            const ventureLead = v?.lead || profiles.find((p) => p.id === v?.lead_id);
             const assigner = action.assigner || profiles.find((p) => p.id === action.assigned_by);
 
             return (

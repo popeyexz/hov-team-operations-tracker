@@ -16,14 +16,14 @@ export default function DailyWorkPage() {
 }
 
 function DailyWorkContent() {
-  const { activeProfile, effectiveProfile } = useActiveProfile();
+  const { activeProfile, impersonatedMember, effectiveProfile } = useActiveProfile();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
     if (!activeProfile) return;
     try {
-      const res = await getWorkData(activeProfile.id, effectiveProfile?.id);
+      const res = await getWorkData(activeProfile.id, impersonatedMember?.id);
       setData(res);
     } catch (e) {
       console.error(e);
@@ -36,7 +36,7 @@ function DailyWorkContent() {
     if (activeProfile) {
       loadData();
     }
-  }, [activeProfile?.id, effectiveProfile?.id]);
+  }, [activeProfile?.id, impersonatedMember?.id, effectiveProfile?.id]);
 
   if (loading || !data) {
     return (
@@ -47,5 +47,5 @@ function DailyWorkContent() {
     );
   }
 
-  return <DailyWorkContainer initialData={data} onRefresh={loadData} />;
+  return <DailyWorkContainer key={effectiveProfile?.id} initialData={data} onRefresh={loadData} />;
 }

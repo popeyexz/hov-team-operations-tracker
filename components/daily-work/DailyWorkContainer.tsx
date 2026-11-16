@@ -64,7 +64,7 @@ interface DailyWorkContainerProps {
 
 export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContainerProps) {
   const { effectiveProfile, activeProfile } = useActiveProfile();
-  const isFounder = activeProfile?.role === 'founder';
+  const isFounder = effectiveProfile?.role === 'founder';
 
   const {
     profiles,
@@ -151,6 +151,30 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
   const completedCount = actionItems.filter((a) => a.status === 'completed').length;
   const blockerCount = actionItems.filter((a) => a.status === 'blocker').length;
 
+  // Filter ventures by scope (cross-venture visibility)
+  const filteredVentures = ventures.filter((v) => {
+    if (!isFounder) {
+      return myVentureIds.includes(v.id);
+    }
+    if (scopeFilter === 'my_ventures') {
+      return myVentureIds.includes(v.id);
+    }
+    return true;
+  });
+
+  // Scoped metrics for strip
+  const scopedVentures = filteredVentures;
+  const scopedObjectives = objectives.filter((o) => scopedVentures.some((v) => v.id === o.venture_id));
+  const scopedActions = actionItems.filter((a) =>
+    scopedVentures.some((v) => v.id === a.venture_id) ||
+    a.assigned_to === effectiveProfile?.id ||
+    a.assignee?.id === effectiveProfile?.id
+  );
+  const scopedCompletedCount = scopedActions.filter((a) => a.status === 'completed').length;
+  const scopedPipelineCount = scopedActions.filter(
+    (a) => a.status === 'submitted_for_review' || a.status === 'needs_work'
+  ).length;
+
   const toggleVenture = (vId: string) => {
     setExpandedVentures((prev) => ({ ...prev, [vId]: !prev[vId] }));
   };
@@ -158,14 +182,6 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
   const toggleObjective = (oId: string) => {
     setExpandedObjectives((prev) => ({ ...prev, [oId]: !prev[oId] }));
   };
-
-  // Filter ventures by scope (cross-venture visibility)
-  const filteredVentures = ventures.filter((v) => {
-    if (scopeFilter === 'my_ventures' && effectiveProfile) {
-      return myVentureIds.includes(v.id);
-    }
-    return true;
-  });
 
   const handleReassignLead = async (ventureId: string, leadId: string) => {
     const profile = profiles.find((p) => p.id === leadId);
@@ -220,7 +236,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
               <span className="w-2 h-2 rounded-full bg-[#F4AEBE] shadow-[0_0_8px_rgba(244,174,190,0.8)]" />
               <span>TAB 1 // DAILY OPERATIONS</span>
               <span className="text-zinc-500">•</span>
-              <span>13 Ventures</span>
+              <span>{isFounder ? '13 Ventures Portfolio' : `${filteredVentures.length} Assigned Ventures`}</span>
             </div>
             
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight font-display">
@@ -228,7 +244,9 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
             </h1>
             
             <p className="text-xs sm:text-sm text-zinc-300 mt-1.5 max-w-xl font-normal leading-relaxed">
-              Track portfolio execution, review approvals, and real-time Key Result progress across all 13 ventures.
+              {isFounder
+                ? 'Track portfolio execution, review approvals, and real-time Key Result progress across all 13 ventures.'
+                : `Managing assigned ventures, OKRs, and cross-venture deliverables for ${effectiveProfile?.full_name}.`}
             </p>
           </div>
 
@@ -244,43 +262,52 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
                     : 'text-[#F4AEBE]/80 hover:text-white'
                 }`}
               >
-                By Venture (13)
+                {isFounder ? 'By Venture (13)' : `By Venture (${filteredVentures.length})`}
               </button>
-              <button
-                onClick={() => setViewMode('by_lead')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === 'by_lead'
-                    ? 'liquid-pill-active shadow-md'
-                    : 'text-[#F4AEBE]/80 hover:text-white'
-                }`}
-              >
-                By Lead
-              </button>
+              {isFounder && (
+                <button
+                  onClick={() => setViewMode('by_lead')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    viewMode === 'by_lead'
+                      ? 'liquid-pill-active shadow-md'
+                      : 'text-[#F4AEBE]/80 hover:text-white'
+                  }`}
+                >
+                  By Lead
+                </button>
+              )}
             </div>
 
             {/* Scope Filter */}
-            <div className="flex items-center bg-[#020B20] p-1 rounded-2xl border border-[#F4AEBE]/25 shadow-inner">
-              <button
-                onClick={() => setScopeFilter('all')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  scopeFilter === 'all'
-                    ? 'liquid-pill-active shadow-md'
-                    : 'text-[#F4AEBE]/80 hover:text-white'
-                }`}
-              >
-                All 13
-              </button>
-              <button
-                onClick={() => setScopeFilter('my_ventures')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  scopeFilter === 'my_ventures'
-                    ? 'liquid-pill-active shadow-md'
-                    : 'text-[#F4AEBE]/80 hover:text-white'
-                }`}
-              >
-                My Ventures ({myVentureIds.length})
-              </button>
-            </div>
+            {isFounder ? (
+              <div className="flex items-center bg-[#020B20] p-1 rounded-2xl border border-[#F4AEBE]/25 shadow-inner">
+                <button
+                  onClick={() => setScopeFilter('all')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    scopeFilter === 'all'
+                      ? 'liquid-pill-active shadow-md'
+                      : 'text-[#F4AEBE]/80 hover:text-white'
+                  }`}
+                >
+                  All 13
+                </button>
+                <button
+                  onClick={() => setScopeFilter('my_ventures')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    scopeFilter === 'my_ventures'
+                      ? 'liquid-pill-active shadow-md'
+                      : 'text-[#F4AEBE]/80 hover:text-white'
+                  }`}
+                >
+                  My Ventures ({myVentureIds.length})
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-[#020B20] border border-[#F4AEBE]/30 text-xs font-mono text-[#F4AEBE] shadow-inner font-semibold">
+                <Briefcase className="w-3.5 h-3.5 text-[#F4AEBE]" />
+                <span>My Assigned Ventures ({filteredVentures.length})</span>
+              </div>
+            )}
 
             {/* Founder Studio Button (Authority to Edit Everything) */}
             {isFounder && (
@@ -320,8 +347,10 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-base font-bold text-white font-mono">{ventures.length}</div>
-              <div className="text-[10px] text-[#F4AEBE]/80 font-mono uppercase tracking-wider font-semibold">Ventures Portfolio</div>
+              <div className="text-base font-bold text-white font-mono">{scopedVentures.length}</div>
+              <div className="text-[10px] text-[#F4AEBE]/80 font-mono uppercase tracking-wider font-semibold">
+                {isFounder ? 'Ventures Portfolio' : 'Assigned Ventures'}
+              </div>
             </div>
           </div>
 
@@ -330,7 +359,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
               <Target className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-base font-bold text-white font-mono">{objectives.length}</div>
+              <div className="text-base font-bold text-white font-mono">{scopedObjectives.length}</div>
               <div className="text-[10px] text-[#F4AEBE]/80 font-mono uppercase tracking-wider font-semibold">Seeded Objectives</div>
             </div>
           </div>
@@ -340,7 +369,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
               <CheckCheck className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-base font-bold text-emerald-300 font-mono">{completedCount}</div>
+              <div className="text-base font-bold text-emerald-300 font-mono">{scopedCompletedCount}</div>
               <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider font-semibold">Completed Items</div>
             </div>
           </div>
@@ -350,7 +379,7 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
               <Clock className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-base font-bold text-[#F4AEBE] font-mono">{submittedCount + needsWorkCount}</div>
+              <div className="text-base font-bold text-[#F4AEBE] font-mono">{scopedPipelineCount}</div>
               <div className="text-[10px] text-[#F4AEBE]/80 font-mono uppercase tracking-wider font-semibold">Review Pipeline</div>
             </div>
           </div>

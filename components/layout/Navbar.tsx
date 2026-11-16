@@ -248,6 +248,54 @@ export function Navbar() {
                         </button>
                       )}
 
+                      {/* Quick Profile Switcher (Netflix style) */}
+                      <div className="border-t border-[#F4AEBE]/20 my-1 pt-1.5">
+                        <div className="px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-[#F4AEBE] font-bold">
+                          Switch Operator
+                        </div>
+                        <div className="max-h-44 overflow-y-auto space-y-0.5 scrollbar-thin">
+                          {profiles.map((p) => {
+                            const isCurrent = p.id === activeProfile.id;
+                            return (
+                              <button
+                                key={p.id}
+                                onClick={() => {
+                                  setIsDropdownOpen(false);
+                                  setImpersonatedMember(null);
+                                  setActiveProfile(p);
+                                }}
+                                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs transition-colors text-left cursor-pointer ${
+                                  isCurrent
+                                    ? 'bg-[#F4AEBE]/20 text-white font-semibold'
+                                    : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 truncate">
+                                  <NetflixAvatar
+                                    name={p.full_name}
+                                    role={p.role}
+                                    avatarColor={p.avatar_color}
+                                    avatarUrl={p.avatar_url}
+                                    size="sm"
+                                    className="!w-5 !h-5 rounded-md shrink-0"
+                                  />
+                                  <span className="truncate">{p.full_name}</span>
+                                </div>
+                                {p.role === 'founder' ? (
+                                  <span className="text-[9px] font-mono text-[#F4AEBE] bg-[#F4AEBE]/10 px-1.5 py-0.2 rounded border border-[#F4AEBE]/25">
+                                    FOUNDER
+                                  </span>
+                                ) : (
+                                  <span className="text-[9px] font-mono text-zinc-400 truncate max-w-[70px]">
+                                    {p.lead_title?.split(' ')[0] || 'Member'}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
                       <div className="border-t border-[#F4AEBE]/20 my-1" />
 
                       <button
@@ -260,7 +308,7 @@ export function Navbar() {
                         className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[#F4AEBE] hover:bg-[#F4AEBE]/10 rounded-xl transition-colors text-left cursor-pointer font-bold font-display"
                       >
                         <LogOut className="w-3.5 h-3.5" />
-                        <span>Switch Profile</span>
+                        <span>All Profiles (Gateway)</span>
                       </button>
                     </div>
                   </>
