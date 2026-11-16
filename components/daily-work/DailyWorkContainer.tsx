@@ -35,6 +35,8 @@ import {
   Activity,
   CheckCheck,
   Compass,
+  Sliders,
+  Zap,
 } from 'lucide-react';
 import { updateVentureLead, deleteActionItem } from '@/app/actions/work-actions';
 import { VentureDocumentsDrawer } from '../venture/VentureDocumentsDrawer';
@@ -44,6 +46,8 @@ import { FounderReviewModal } from './FounderReviewModal';
 import { AddActionItemModal } from './AddActionItemModal';
 import { AddObjectiveModal } from './AddObjectiveModal';
 import { AddKeyResultModal } from './AddKeyResultModal';
+import { MemberTaskCockpit } from './MemberTaskCockpit';
+import { FounderAdminModal } from '../admin/FounderAdminModal';
 import { NetflixAvatar } from '../auth/NetflixAvatar';
 
 interface DailyWorkContainerProps {
@@ -136,6 +140,10 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
 
   const [isAddKrModalOpen, setIsAddKrModalOpen] = useState(false);
   const [selectedObjectiveForKr, setSelectedObjectiveForKr] = useState<Objective | null>(null);
+
+  // Founder Studio state
+  const [isFounderAdminOpen, setIsFounderAdminOpen] = useState(false);
+  const [adminVentureId, setAdminVentureId] = useState<string | undefined>(undefined);
 
   // Status counts for filter pills
   const submittedCount = actionItems.filter((a) => a.status === 'submitted_for_review').length;
@@ -274,6 +282,21 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
               </button>
             </div>
 
+            {/* Founder Studio Button (Authority to Edit Everything) */}
+            {isFounder && (
+              <button
+                onClick={() => {
+                  setAdminVentureId(undefined);
+                  setIsFounderAdminOpen(true);
+                }}
+                className="px-4 py-2 rounded-2xl bg-[#020B20] hover:bg-[#071D49] text-[#F4AEBE] border border-[#F4AEBE]/40 text-xs font-bold shadow-md flex items-center gap-2 transition-all cursor-pointer font-display uppercase tracking-wider"
+                title="Founder Master Admin: Edit team profiles, ventures, and reassign leads"
+              >
+                <Sliders className="w-3.5 h-3.5 text-[#F4AEBE]" />
+                <span>Portfolio & Team Studio</span>
+              </button>
+            )}
+
             {/* New Task Button (Rose Silk Luxury CTA) */}
             <button
               onClick={() => {
@@ -333,6 +356,29 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
           </div>
         </div>
       </div>
+
+      {/* Member Profile Cockpit: Leading Ventures & Tasks for every member (except Founder) */}
+      {effectiveProfile && effectiveProfile.role !== 'founder' && (
+        <MemberTaskCockpit
+          member={effectiveProfile}
+          ventures={ventures}
+          actionItems={actionItems}
+          objectives={objectives}
+          keyResults={keyResults}
+          profiles={profiles}
+          onOpenLogs={(item) => setSelectedLogItem(item)}
+          onSubmitReview={(item) => setSelectedSubmitItem(item)}
+          onFounderReview={(item) => setSelectedFounderReviewItem(item)}
+          onDeleteTask={handleDeleteTask}
+          onAddTask={(vId) => {
+            setSelectedVentureForTask(vId || ventures[0]?.id || '');
+            setSelectedObjectiveForTask('');
+            setSelectedKeyResultForTask('');
+            setIsAddActionModalOpen(true);
+          }}
+          isFounder={isFounder}
+        />
+      )}
 
       {/* Filter Pills & Search */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
@@ -447,6 +493,10 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
               onSubmitReview={(item) => setSelectedSubmitItem(item)}
               onFounderReview={(item) => setSelectedFounderReviewItem(item)}
               onReassignLead={handleReassignLead}
+              onEditVenture={(id) => {
+                setAdminVentureId(id);
+                setIsFounderAdminOpen(true);
+              }}
               onDeleteTask={handleDeleteTask}
               effectiveProfile={effectiveProfile}
               isFounder={isFounder}
@@ -515,6 +565,10 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
                       onSubmitReview={(item) => setSelectedSubmitItem(item)}
                       onFounderReview={(item) => setSelectedFounderReviewItem(item)}
                       onReassignLead={handleReassignLead}
+                      onEditVenture={(id) => {
+                        setAdminVentureId(id);
+                        setIsFounderAdminOpen(true);
+                      }}
                       onDeleteTask={handleDeleteTask}
                       effectiveProfile={effectiveProfile}
                       isFounder={isFounder}
@@ -602,6 +656,17 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
         onClose={() => setIsAddKrModalOpen(false)}
         onSuccess={() => onRefresh()}
       />
+
+      {/* Founder Master Studio (Portfolio & Team Admin) */}
+      <FounderAdminModal
+        isOpen={isFounderAdminOpen}
+        onClose={() => setIsFounderAdminOpen(false)}
+        profiles={profiles}
+        ventures={ventures}
+        onRefresh={onRefresh}
+        defaultTab={adminVentureId ? 'ventures' : 'profiles'}
+        preselectedVentureId={adminVentureId}
+      />
     </div>
   );
 }
@@ -629,6 +694,7 @@ function VentureSection({
   onSubmitReview,
   onFounderReview,
   onReassignLead,
+  onEditVenture,
   onDeleteTask,
   effectiveProfile,
   isFounder,
@@ -652,6 +718,7 @@ function VentureSection({
   onSubmitReview: (item: ActionItem) => void;
   onFounderReview: (item: ActionItem) => void;
   onReassignLead: (ventureId: string, leadId: string) => void;
+  onEditVenture: (ventureId: string) => void;
   onDeleteTask: (id: string) => void;
   effectiveProfile: Profile | null;
   isFounder: boolean;
@@ -744,6 +811,17 @@ function VentureSection({
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 pl-9 md:pl-0 flex-wrap">
+          {isFounder && (
+            <button
+              onClick={() => onEditVenture(venture.id)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#020B20] hover:bg-[#071D49] text-xs font-medium text-[#F4AEBE] transition-all cursor-pointer border border-[#F4AEBE]/35 shadow-sm min-h-[36px]"
+              title="Founder: Edit Venture Name, Code, Description & Lead"
+            >
+              <Sliders className="w-3.5 h-3.5 text-[#F4AEBE]" />
+              <span>Edit Venture</span>
+            </button>
+          )}
+
           <button
             onClick={onOpenDocs}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#03153D]/80 hover:bg-[#F4AEBE]/10 text-xs font-medium text-[#F4AEBE] transition-all cursor-pointer border border-[#F4AEBE]/25 shadow-sm min-h-[36px]"
@@ -1154,6 +1232,14 @@ function ActionItemCard({
             </span>
           )}
 
+          {/* Cross-Venture badge if assignee is not the venture lead */}
+          {action.venture?.lead_id && action.assignee?.id && action.venture.lead_id !== action.assignee.id && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-[#F4AEBE]/20 text-[#F4AEBE] border border-[#F4AEBE]/35 font-bold">
+              <Zap className="w-2.5 h-2.5" />
+              <span>⚡ Cross-Venture</span>
+            </span>
+          )}
+
           {action.is_founder_confirmed && (
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
               <Shield className="w-2.5 h-2.5" />
@@ -1179,8 +1265,8 @@ function ActionItemCard({
           </p>
         )}
 
-        {/* Date & Assignee metadata with Netflix mini avatar */}
-        <div className="flex items-center gap-3 text-[11px] text-zinc-400 mt-2.5 font-mono">
+        {/* Date, Assignee, Venture Lead, and Origin metadata */}
+        <div className="flex items-center gap-3 text-[11px] text-zinc-400 mt-2.5 font-mono flex-wrap">
           <div className="flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5 text-zinc-500" />
             <span className={overdue ? 'text-red-400 font-bold' : ''}>
@@ -1190,7 +1276,8 @@ function ActionItemCard({
 
           <span className="text-zinc-700">•</span>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <span className="text-zinc-500">Assignee:</span>
             <NetflixAvatar
               name={action.assignee?.full_name || 'U'}
               role={action.assignee?.role}
@@ -1198,10 +1285,30 @@ function ActionItemCard({
               size="sm"
               className="!w-4.5 !h-4.5 rounded-sm shadow-sm"
             />
-            <span className="text-zinc-200">
+            <span className="text-zinc-200 font-semibold">
               {action.assignee?.full_name || 'Unassigned'}
             </span>
           </div>
+
+          {action.venture?.lead && (
+            <>
+              <span className="text-zinc-700">•</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-zinc-500">Lead:</span>
+                <span className="text-[#F4AEBE] font-semibold">{action.venture.lead.full_name}</span>
+              </div>
+            </>
+          )}
+
+          {action.assigner && action.assigner.id !== action.assignee?.id && (
+            <>
+              <span className="text-zinc-700">•</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-zinc-500">Assigned by:</span>
+                <span className="text-white font-medium">{action.assigner.full_name}</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

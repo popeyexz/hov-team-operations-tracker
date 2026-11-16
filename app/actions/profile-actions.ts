@@ -112,3 +112,38 @@ export async function updateProfileAvatar(params: {
   return { success: true, profile: data as Profile };
 }
 
+export async function updateProfileAdmin(params: {
+  profileId: string;
+  fullName: string;
+  leadTitle?: string;
+  email?: string;
+  role?: 'founder' | 'member';
+  avatarColor?: string;
+}) {
+  const payload: Record<string, any> = {
+    full_name: params.fullName.trim(),
+    updated_at: new Date().toISOString(),
+  };
+  if (params.leadTitle !== undefined) payload.lead_title = params.leadTitle.trim();
+  if (params.email !== undefined) payload.email = params.email.trim().toLowerCase();
+  if (params.role !== undefined) payload.role = params.role;
+  if (params.avatarColor !== undefined) payload.avatar_color = params.avatarColor;
+
+  const { data, error } = await supabaseAdmin
+    .from('profiles')
+    .update(payload)
+    .eq('id', params.profileId)
+    .select()
+    .single();
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath('/');
+  revalidatePath('/daily-work');
+  revalidatePath('/next-plans');
+  revalidatePath('/progress');
+  return { success: true, profile: data as Profile };
+}
+

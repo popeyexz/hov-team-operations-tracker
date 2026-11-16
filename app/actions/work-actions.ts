@@ -44,7 +44,7 @@ export async function getWorkData(activeProfileId?: string, impersonatedMemberId
     // Fetch action items (active daily work, not planned) with linked relations
     const { data: actionsData } = await supabaseAdmin
       .from('action_items')
-      .select('*, assignee:assigned_to(*), venture:venture_id(*), objective:objective_id(*), key_result:key_result_id(*)')
+      .select('*, assignee:assigned_to(*), assigner:assigned_by(*), venture:venture_id(*, lead:lead_id(*)), objective:objective_id(*), key_result:key_result_id(*)')
       .eq('is_planned', false)
       .order('date', { ascending: false, nullsFirst: false });
     const actionItems = (actionsData || []) as ActionItem[];
@@ -358,6 +358,7 @@ export async function createActionItem(params: {
   keyResultId?: string | null;
   title: string;
   assignedTo?: string | null;
+  assignedBy?: string | null;
   date?: string | null; // ISO YYYY-MM-DD
   status?: string;
   comments?: string;
@@ -388,19 +389,20 @@ export async function createActionItem(params: {
       key_result_id: keyResultId,
       title: params.title.trim(),
       assigned_to: params.assignedTo || null,
+      assigned_by: params.assignedBy || null,
       date: params.date || null,
       status: params.status || 'not_started',
       comments: params.comments?.trim() || '',
       is_planned: params.isPlanned || false,
     })
-    .select('*, assignee:assigned_to(*), venture:venture_id(*), objective:objective_id(*), key_result:key_result_id(*)')
+    .select('*, assignee:assigned_to(*), assigner:assigned_by(*), venture:venture_id(*, lead:lead_id(*)), objective:objective_id(*), key_result:key_result_id(*)')
     .single();
 
   if (error) return { success: false, error: error.message };
 
   await supabaseAdmin.from('task_activity_log').insert({
     action_item_id: data.id,
-    actor_id: params.assignedTo || null,
+    actor_id: params.assignedBy || params.assignedTo || null,
     action: 'created',
     content: `Created action item: "${params.title}"`,
   });
@@ -408,6 +410,40 @@ export async function createActionItem(params: {
   revalidatePath('/daily-work');
   revalidatePath('/next-plans');
   return { success: true, item: data };
+}
+
+export async function updateVentureAdmin(params: {
+  ventureId: string;
+  name: string;
+  code: string;
+  description?: string;
+  leadId: string | null;
+  leadTitle?: string;
+}) {
+  const payload: Record<string, any> = {
+    name: params.name.trim(),
+    code: params.code.trim().toUpperCase(),
+    lead_id: params.leadId || null,
+    updated_at: new Date().toISOString(),
+  };
+  if (params.description !== undefined) payload.description = params.description.trim();
+  if (params.leadTitle !== undefined) payload.lead_title = params.leadTitle.trim();
+
+  const { data, error } = await supabaseAdmin
+    .from('ventures')
+    .update(payload)
+    .eq('id', params.ventureId)
+    .select('*, lead:lead_id(*)')
+    .single();
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath('/daily-work');
+  revalidatePath('/next-plans');
+  revalidatePath('/progress');
+  return { success: true, venture: data as Venture };
 }
 
 export async function updateActionItem(params: {

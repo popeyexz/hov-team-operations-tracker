@@ -21,7 +21,9 @@ import {
   Menu,
   X,
   Bell,
+  Sliders,
 } from 'lucide-react';
+import { FounderAdminModal } from '../admin/FounderAdminModal';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -39,6 +41,7 @@ export function Navbar() {
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isFounderAdminOpen, setIsFounderAdminOpen] = useState(false);
 
   const isFounder = activeProfile?.role === 'founder';
   const isHomePage = pathname === '/';
@@ -148,6 +151,18 @@ export function Navbar() {
               </div>
             )}
 
+            {/* Founder Master Studio Button */}
+            {!isHomePage && activeProfile && isFounder && (
+              <button
+                onClick={() => setIsFounderAdminOpen(true)}
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#020B20] hover:bg-[#071D49] border border-[#F4AEBE]/35 text-[#F4AEBE] hover:text-white text-[11px] font-mono font-bold transition-all shadow-sm cursor-pointer"
+                title="Founder Master Admin: Edit team profiles, ventures, and reassign leads"
+              >
+                <Sliders className="w-3.5 h-3.5 text-[#F4AEBE]" />
+                <span>Studio</span>
+              </button>
+            )}
+
             {/* Theme Toggle (Light / Dark) */}
             <ThemeToggle />
 
@@ -219,6 +234,19 @@ export function Navbar() {
                         <UserPlus className="w-3.5 h-3.5 text-[#F4AEBE]" />
                         <span>Add Team Member</span>
                       </button>
+
+                      {isFounder && (
+                        <button
+                          onClick={() => {
+                            setIsDropdownOpen(false);
+                            setIsFounderAdminOpen(true);
+                          }}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[#F4AEBE] hover:text-white hover:bg-[#F4AEBE]/10 rounded-xl transition-colors text-left cursor-pointer font-bold font-display"
+                        >
+                          <Sliders className="w-3.5 h-3.5" />
+                          <span>Master Studio (Edit All)</span>
+                        </button>
+                      )}
 
                       <div className="border-t border-[#F4AEBE]/20 my-1" />
 
@@ -399,6 +427,15 @@ export function Navbar() {
           refreshProfiles();
         }}
       />
+
+      {isFounder && (
+        <FounderAdminModal
+          isOpen={isFounderAdminOpen}
+          onClose={() => setIsFounderAdminOpen(false)}
+          profiles={profiles}
+          onRefresh={refreshProfiles}
+        />
+      )}
     </>
   );
 }

@@ -86,6 +86,7 @@ export interface ActionItem {
   key_result_id: string | null;
   title: string;
   assigned_to: string | null;
+  assigned_by?: string | null;
   date: string | null;
   status: ActionStatus;
   is_member_completed: boolean;
@@ -95,6 +96,7 @@ export interface ActionItem {
   comments: string;
   created_at: string;
   assignee?: Profile;
+  assigner?: Profile;
   venture?: Venture;
   objective?: Objective;
   key_result?: KeyResult;
