@@ -19,17 +19,17 @@ def escape_sql(val):
     return f"'{s}'"
 
 def main():
-    print("Starting fast batched database seeding...", flush=True)
+    print("Starting fast batched database seeding (preserving cross-venture owners)...", flush=True)
 
-    # 1. Seed Profiles
     profiles_data = [
-        ('pratap', 'Pratap', 'founder', 'Founder', 'houseofventures.dev@gmail.com', '#ef4444'),
-        ('atharav', 'Atharav', 'member', 'Venture Lead', '', '#3b82f6'),
-        ('sharuk', 'Sharuk', 'member', 'Venture Lead', '', '#8b5cf6'),
-        ('rufus', 'Rufus', 'member', 'Venture Lead', '', '#10b981'),
-        ('shristy', 'Shristy', 'member', 'Collaborator', '', '#ec4899'),
-        ('sarth', 'Sarth', 'member', 'Collaborator', '', '#f59e0b'),
-        ('rohini', 'Rohini', 'member', 'Collaborator', '', '#06b6d4'),
+        ('pratap', 'Pratap', 'founder', 'Founder & Managing Partner', 'houseofventures.dev@gmail.com', '#F43F5E'),
+        ('atharav', 'Atharav', 'member', 'Venture & NGO Lead', '', '#3B82F6'),
+        ('sharuk', 'Sharuk', 'member', 'Venture & AI Tool Lead', '', '#8B5CF6'),
+        ('rufus', 'Rufus', 'member', 'Venture & Program Lead', '', '#10B981'),
+        ('shristy', 'Shristy', 'member', 'Cross-Venture Associate', '', '#EC4899'),
+        ('sarth', 'Sarth', 'member', 'Growth & Ops Associate', '', '#F59E0B'),
+        ('rohini', 'Rohini', 'member', 'Community & Content Associate', '', '#06B6D4'),
+        ('caracal', 'Caracal', 'member', 'Collaborator', '', '#06B6D4'),
     ]
 
     profile_sqls = []
@@ -41,14 +41,11 @@ def main():
         SET full_name = EXCLUDED.full_name, role = EXCLUDED.role, lead_title = EXCLUDED.lead_title, avatar_color = EXCLUDED.avatar_color;
         """)
     run_query("\n".join(profile_sqls))
-    print("Profiles seeded.", flush=True)
 
-    # Get profile id map
     profiles_res = run_query("SELECT id, slug, full_name FROM public.profiles;")
     profile_by_slug = {p['slug']: p['id'] for p in profiles_res}
     profile_by_name = {p['full_name'].strip().lower(): p['id'] for p in profiles_res}
 
-    # 2. Seed Ventures (13 Ventures)
     ventures_meta = [
         ('PS.HOV', 'HOV', 'atharav', 'Venture Lead', None, 1),
         ('PS.HOV - House_of_Business_Markering (HBM)', 'HBM', 'rufus', 'Venture Lead', None, 2),
@@ -66,8 +63,10 @@ def main():
     ]
 
     venture_sqls = []
+    venture_lead_by_name = {}
     for name, code, lead_slug, lead_title, desc, order in ventures_meta:
         lead_id = profile_by_slug.get(lead_slug)
+        venture_lead_by_name[name] = lead_id
         venture_sqls.append(f"""
         INSERT INTO public.ventures (name, code, lead_id, lead_title, description, display_order)
         VALUES ({escape_sql(name)}, {escape_sql(code)}, {escape_sql(lead_id)}, {escape_sql(lead_title)}, {escape_sql(desc)}, {order})
@@ -75,26 +74,24 @@ def main():
         SET code = EXCLUDED.code, lead_id = EXCLUDED.lead_id, lead_title = EXCLUDED.lead_title, description = EXCLUDED.description, display_order = EXCLUDED.display_order;
         """)
     run_query("\n".join(venture_sqls))
-    print("Ventures seeded.", flush=True)
 
-    # Get venture id map
     ventures_res = run_query("SELECT id, name FROM public.ventures;")
     venture_map = {v['name'].strip(): v['id'] for v in ventures_res}
 
-    # 3. Seed Objectives from PS.HOV_Work_Tracker.xlsx
     wb = openpyxl.load_workbook('PS.HOV_Work_Tracker.xlsx', data_only=True)
     sheet = wb['Objectives by Ventures']
     col = 1
     total_objs_seeded = 0
 
     run_query("DELETE FROM public.action_items; DELETE FROM public.key_results; DELETE FROM public.objectives;")
-
     objective_value_clauses = []
 
     while col <= sheet.max_column:
         vname = sheet.cell(1, col).value
         if vname and vname.strip() in venture_map:
-            v_id = venture_map[vname.strip()]
+            v_clean = vname.strip()
+            v_id = venture_map[v_clean]
+            default_lead_id = venture_lead_by_name.get(v_clean)
             for r in range(4, sheet.max_row + 1):
                 sl = sheet.cell(r, col).value
                 title = sheet.cell(r, col+1).value
@@ -106,7 +103,6 @@ def main():
                 if sl is not None and title is not None and str(title).strip():
                     sl_no = int(sl) if isinstance(sl, (int, float)) else 1
                     title_str = str(title).strip()
-                    
                     status_clean = 'no_krs'
                     if status_raw:
                         s_lower = str(status_raw).lower().replace('-', '_').replace(' ', '_')
@@ -121,8 +117,17 @@ def main():
                         elif 'dropped' in s_lower:
                             status_clean = 'dropped'
 
-                    # Objectives can ONLY be issued/owned by the Founder
+                    # Founder Pratap owns objectives by default unless an owner is explicitly assigned in Excel
+                    comments_str = str(comments_raw).strip() if comments_raw else ''
                     owner_id = profile_by_slug.get('pratap')
+                    if owner_raw and str(owner_raw).strip():
+                        o_key = str(owner_raw).strip().lower()
+                        if o_key in profile_by_name:
+                            owner_id = profile_by_name[o_key]
+                        elif o_key in profile_by_slug:
+                            owner_id = profile_by_slug[o_key]
+                        else:
+                            comments_str = f"Partner/Vendor: {str(owner_raw).strip()}" + (f" | {comments_str}" if comments_str else "")
 
                     due_date = None
                     if due_raw:
@@ -130,8 +135,6 @@ def main():
                             due_date = due_raw.strftime('%Y-%m-%d')
                         elif isinstance(due_raw, str) and re.match(r'^\d{4}-\d{2}-\d{2}', due_raw):
                             due_date = due_raw[:10]
-
-                    comments_str = str(comments_raw).strip() if comments_raw else ''
 
                     objective_value_clauses.append(f"""
                     ('{v_id}', {sl_no}, {escape_sql(title_str)}, '{status_clean}', {escape_sql(owner_id)}, {escape_sql(due_date)}, {escape_sql(comments_str)})
@@ -146,16 +149,13 @@ def main():
         """
         run_query(batch_insert_sql)
 
-    print(f"Objectives seeded: {total_objs_seeded}", flush=True)
+    print(f"Objectives seeded with exact owners: {total_objs_seeded}", flush=True)
 
-    # Seed baseline KRs across all 13 ventures
     try:
         from seed_baseline_krs import main as seed_krs_main
         seed_krs_main()
     except Exception as e:
         print(f"Notice: seed_baseline_krs: {e}")
-
-    print("Database seeding from Excel completed successfully! (Zero mock data seeded)", flush=True)
 
 if __name__ == '__main__':
     main()

@@ -22,6 +22,7 @@ import {
   X,
   Bell,
   Sliders,
+  Layers,
 } from 'lucide-react';
 import { FounderAdminModal } from '../admin/FounderAdminModal';
 
@@ -47,9 +48,10 @@ export function Navbar() {
   const isHomePage = pathname === '/';
 
   const navLinks = [
-    { href: '/daily-work', label: 'Daily Work & OKRs', icon: Briefcase },
-    { href: '/next-plans', label: 'Next Plans', icon: Calendar },
-    { href: '/progress', label: 'Progress Analytics', icon: BarChart3 },
+    { href: '/daily-work', label: '01 Daily Tracker', icon: Briefcase },
+    { href: '/next-plans', label: '02 Next Plans', icon: Calendar },
+    { href: '/progress', label: '03 Analytics', icon: BarChart3 },
+    { href: '/all-tabs', label: '04 All Tabs & Guide', icon: Layers },
   ];
 
   return (

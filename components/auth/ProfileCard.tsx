@@ -3,7 +3,7 @@
 import React from 'react';
 import { Profile } from '@/lib/types';
 import { NetflixAvatar } from './NetflixAvatar';
-import { Edit2, Camera } from 'lucide-react';
+import { Camera, Edit2 } from 'lucide-react';
 
 interface ProfileCardProps {
   profile: Profile;
@@ -22,7 +22,7 @@ export function ProfileCard({
 }: ProfileCardProps) {
   const isFounder = profile.role === 'founder';
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isManageMode && onEdit) {
       onEdit(profile);
@@ -31,7 +31,7 @@ export function ProfileCard({
     }
   };
 
-  const handleAvatarButtonClick = (e: React.MouseEvent) => {
+  const handleAvatarTrigger = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onChangeAvatar) {
       onChangeAvatar(profile);
@@ -41,73 +41,52 @@ export function ProfileCard({
   };
 
   return (
-    <div className="group flex flex-col items-center justify-start text-center select-none p-2 relative">
-      {/* Avatar Container with Hover Scale & Glow */}
-      <div className="relative">
-        <button
-          onClick={handleClick}
-          className="relative rounded-lg overflow-hidden transition-all duration-200 transform group-hover:scale-105 group-hover:shadow-[0_8px_30px_rgba(244,174,190,0.3)] group-focus:scale-105 group-hover:ring-4 group-hover:ring-[#F4AEBE] group-focus:ring-4 group-focus:ring-[#F4AEBE] cursor-pointer focus:outline-none"
-        >
-          <NetflixAvatar
-            name={profile.full_name}
-            role={profile.role}
-            avatarColor={profile.avatar_color}
-            avatarUrl={profile.avatar_url}
-            size="lg"
-          />
+    <div
+      onClick={handleCardClick}
+      className="group cursor-pointer flex flex-col items-center text-center w-28 sm:w-36 transition-transform duration-200 hover:-translate-y-1 relative"
+    >
+      <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-xl border-2 border-[#FFF7E6]/25 group-hover:border-[#FFF7E6] bg-[#101B3B] flex items-center justify-center overflow-hidden shadow-xl transition-all">
+        <NetflixAvatar
+          name={profile.full_name}
+          role={profile.role}
+          avatarColor={profile.avatar_color}
+          avatarUrl={profile.avatar_url}
+          size="lg"
+        />
 
-          {/* Manage Mode Overlay with Edit Pencil */}
-          {isManageMode ? (
-            <div className="absolute inset-0 bg-[#03153D]/80 flex flex-col items-center justify-center transition-all animate-in fade-in duration-150 gap-1.5 p-2">
-              <div className="w-9 h-9 rounded-full border border-[#F4AEBE] bg-[#020B20] flex items-center justify-center text-[#F4AEBE] group-hover:bg-[#F4AEBE] group-hover:text-[#03153D] transition-colors shadow-lg">
-                <Edit2 className="w-4 h-4" />
-              </div>
-              <span className="text-[10px] text-[#F4AEBE] font-bold font-mono tracking-tight uppercase">
-                Edit Info
-              </span>
-            </div>
-          ) : null}
-        </button>
-
-        {/* Change Picture Quick Trigger Button */}
-        <button
-          onClick={handleAvatarButtonClick}
-          className="absolute -bottom-1 -right-1 z-20 p-1.5 rounded-full bg-[#03153D] border border-[#F4AEBE] text-[#F4AEBE] hover:bg-[#F4AEBE] hover:text-[#03153D] shadow-lg transition-all transform hover:scale-110 cursor-pointer opacity-90 group-hover:opacity-100"
-          title="Change Profile Picture"
-          aria-label="Change Profile Picture"
-        >
-          <Camera className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* Operator Name Beneath Avatar */}
-      <button
-        onClick={handleClick}
-        className="mt-3.5 sm:mt-4 flex flex-col items-center max-w-[140px] sm:max-w-[160px] cursor-pointer focus:outline-none"
-      >
-        <span className="text-base sm:text-lg text-zinc-300 group-hover:text-[#F4AEBE] transition-colors duration-200 font-display font-medium tracking-wide truncate w-full text-center">
-          {profile.full_name}
-        </span>
-
-        {/* Role Tag (Zero Crown) */}
-        <span className="text-[11px] text-zinc-400 font-mono mt-0.5 truncate w-full text-center">
-          {isFounder ? 'Founder' : profile.lead_title || 'Collaborator'}
-        </span>
-
-        {/* Action prompt */}
-        {isManageMode ? (
-          <span className="text-[10px] text-[#F4AEBE] font-mono truncate w-full text-center mt-1 font-semibold">
-            Click to edit photo/info
-          </span>
-        ) : (
-          <span
-            onClick={handleAvatarButtonClick}
-            className="text-[10px] text-zinc-500 hover:text-[#F4AEBE] font-mono mt-1 transition-colors cursor-pointer"
-          >
-            Change photo
+        {isFounder && (
+          <span className="absolute bottom-1.5 px-2 py-0.5 rounded text-[9px] font-mono uppercase tracking-widest bg-[#FFF7E6] text-[#0A122A] font-bold z-10 shadow">
+            Founder
           </span>
         )}
+
+        {isManageMode && (
+          <div className="absolute inset-0 bg-[#0A122A]/85 z-20 flex flex-col items-center justify-center gap-1 text-[#FFF7E6]">
+            <Edit2 className="w-5 h-5 text-[#F4AEBE]" />
+            <span className="text-[10px] font-mono uppercase tracking-widest font-bold">
+              Edit
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Quick Camera Trigger */}
+      <button
+        onClick={handleAvatarTrigger}
+        type="button"
+        title="Change Avatar"
+        aria-label="Change Avatar"
+        className="absolute top-0 right-1 sm:right-3 p-1 rounded-full bg-[#0A122A] border border-[#FFF7E6]/40 text-[#FFF7E6] opacity-0 group-hover:opacity-100 transition-opacity z-30 hover:scale-110 cursor-pointer shadow-md"
+      >
+        <Camera className="w-3 h-3" />
       </button>
+
+      <span className="mt-3 font-display text-sm sm:text-base font-bold tracking-wide text-[#FFF7E6]/85 group-hover:text-[#FFF7E6] transition-colors">
+        {profile.full_name}
+      </span>
+      <span className="text-[11px] font-mono text-[#FFF7E6]/50 uppercase tracking-wider">
+        {isFounder ? 'Founder' : profile.lead_title || 'Collaborator'}
+      </span>
     </div>
   );
 }

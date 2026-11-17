@@ -1,280 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Playfair+Display:wght@500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --rose-silk: #F4AEBE;
-    --blue-velvet: #03153D;
-    --blue-velvet-deep: #020B20;
-    --blue-velvet-card: #071D49;
-    --background: 224 85% 6%;
-    --foreground: 346 76% 82%;
-  }
+:root {
+  --bg-primary: #0A122A;
+  --bg-secondary: #0E1836;
+  --text-primary: #FFF7E6;
 }
 
-.font-display {
-  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+html.light {
+  --bg-primary: #FFF7E6;
+  --bg-secondary: #FFFDF8;
+  --text-primary: #0A122A;
+}
+
+*, body, button, input, select, textarea, table, th, td {
+  font-family: 'Playfair Display', 'Cinzel', Georgia, serif !important;
   letter-spacing: 0.02em;
 }
 
-.font-serif-luxury {
-  font-family: 'Playfair Display', 'Cinzel', serif;
-}
-
 body {
-  background-color: #03153D;
-  background-image: 
-    radial-gradient(at 15% 15%, rgba(244, 174, 190, 0.12) 0px, transparent 45%),
-    radial-gradient(at 85% 10%, rgba(7, 36, 104, 0.8) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, rgba(244, 174, 190, 0.06) 0px, transparent 50%),
-    radial-gradient(rgba(244, 174, 190, 0.08) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px;
-  background-attachment: fixed;
-  color: #f8fafc;
-  min-height: 100vh;
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  letter-spacing: -0.012em;
-  overflow-x: hidden;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
-/* =========================================================================
-   ROSE SILK (#F4AEBE) & BLUE VELVET (#03153D) LIQUID LUXURY THEME
-   ========================================================================= */
+.font-display {
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif !important;
+  letter-spacing: 0.06em;
+}
 
-/* Soft Pillowy Liquid Card Container (Blue Velvet Surface + Rose Silk Rim) */
 .liquid-card {
-  background: linear-gradient(145deg, rgba(7, 29, 73, 0.82) 0%, rgba(3, 21, 61, 0.95) 100%);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(244, 174, 190, 0.18);
-  box-shadow: 
-    0 16px 40px -8px rgba(1, 10, 30, 0.85),
-    0 4px 14px rgba(2, 11, 32, 0.6),
-    inset 0 1px 1px 0 rgba(244, 174, 190, 0.25),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.5);
-  border-radius: 1.25rem;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.liquid-card:hover {
-  border-color: rgba(244, 174, 190, 0.35);
-  box-shadow: 
-    0 20px 48px -8px rgba(1, 10, 30, 0.95),
-    inset 0 1px 1px 0 rgba(244, 174, 190, 0.35);
-}
-
-/* Elevated Liquid Card for Metrics & Highlights */
-.liquid-card-elevated {
-  background: linear-gradient(145deg, rgba(12, 38, 94, 0.9) 0%, rgba(4, 23, 66, 0.98) 100%);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(244, 174, 190, 0.28);
-  box-shadow: 
-    0 20px 48px -10px rgba(1, 10, 30, 0.95),
-    inset 0 1px 1.5px 0 rgba(244, 174, 190, 0.35),
-    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.6);
-  border-radius: 1.5rem;
-}
-
-/* Liquid Pill Badges & Segmented Controls */
-.liquid-pill {
-  background: rgba(3, 21, 61, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(244, 174, 190, 0.16);
-  box-shadow: inset 0 1px 1px rgba(244, 174, 190, 0.15);
-  border-radius: 9999px;
-}
-
-/* High-Contrast Active Pill: Rose Silk Background + Blue Velvet Text */
-.liquid-pill-active {
-  background: linear-gradient(135deg, #F4AEBE 0%, #e895a9 100%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 
-    0 4px 16px rgba(244, 174, 190, 0.45),
-    inset 0 1px 1px rgba(255, 255, 255, 0.6);
-  color: #03153D;
-  font-weight: 700;
-}
-
-/* Liquid Neon Accent Glows */
-.liquid-glow-rose {
-  box-shadow: 0 0 24px -4px rgba(244, 174, 190, 0.45);
-}
-
-.liquid-glow-blue {
-  box-shadow: 0 0 24px -4px rgba(7, 36, 104, 0.6);
-}
-
-/* Tactile Liquid Inputs */
-.liquid-input {
-  background: rgba(2, 11, 32, 0.85);
-  border: 1px solid rgba(244, 174, 190, 0.22);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
-  color: #fafafa;
-  border-radius: 0.75rem;
-  transition: all 0.15s ease;
-}
-
-.liquid-input:focus {
-  outline: none;
-  border-color: #F4AEBE;
-  box-shadow: 0 0 0 3px rgba(244, 174, 190, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* Custom Scrollbar in Rose Silk & Blue Velvet */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #020B20;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #0A2B6C;
-  border-radius: 4px;
-  border: 1px solid rgba(244, 174, 190, 0.15);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #F4AEBE;
-}
-
-/* Smooth selection */
-::selection {
-  background: #F4AEBE;
-  color: #03153D;
-}
-
-/* =========================================================================
-   LIGHT THEME: EDITORIAL SILK ALABASTER & ROSE SILK / BLUE VELVET
-   ========================================================================= */
-
-html.light body {
-  background-color: #FAF5F7;
-  background-image: 
-    radial-gradient(at 15% 15%, rgba(244, 174, 190, 0.45) 0px, transparent 50%),
-    radial-gradient(at 85% 10%, rgba(3, 21, 61, 0.06) 0px, transparent 55%),
-    radial-gradient(at 50% 80%, rgba(244, 174, 190, 0.3) 0px, transparent 55%),
-    radial-gradient(rgba(3, 21, 61, 0.04) 1px, transparent 1px);
-  color: #03153D;
-}
-
-html.light .liquid-card {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(244, 174, 190, 0.45);
-  box-shadow: 
-    0 16px 36px -6px rgba(3, 21, 61, 0.07),
-    0 4px 14px rgba(244, 174, 190, 0.14),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
-  color: #03153D;
-}
-
-html.light .liquid-card:hover {
-  border-color: rgba(244, 174, 190, 0.75);
-  box-shadow: 
-    0 20px 44px -6px rgba(3, 21, 61, 0.12),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 1);
-}
-
-html.light .liquid-card-elevated {
-  background: rgba(255, 255, 255, 0.98);
-  border: 1px solid rgba(244, 174, 190, 0.6);
-  box-shadow: 
-    0 20px 48px -8px rgba(3, 21, 61, 0.1),
-    inset 0 1px 1.5px 0 rgba(255, 255, 255, 1);
-}
-
-html.light .liquid-pill {
-  background: rgba(244, 174, 190, 0.18);
-  border: 1px solid rgba(244, 174, 190, 0.35);
-  color: #03153D;
-}
-
-html.light .liquid-pill-active {
-  background: linear-gradient(135deg, #F4AEBE 0%, #e895a9 100%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 
-    0 4px 14px rgba(244, 174, 190, 0.5),
-    inset 0 1px 1px rgba(255, 255, 255, 0.8);
-  color: #03153D;
-}
-
-html.light .liquid-input {
-  background: #FFFFFF;
-  border: 1px solid rgba(3, 21, 61, 0.2);
-  color: #03153D;
-  box-shadow: inset 0 1px 2px rgba(3, 21, 61, 0.05);
-}
-
-html.light .liquid-input:focus {
-  border-color: #F4AEBE;
-  box-shadow: 0 0 0 3px rgba(244, 174, 190, 0.3);
-}
-
-html.light .text-white {
-  color: #03153D !important;
-}
-
-html.light .text-zinc-100 {
-  color: #03153D !important;
-}
-
-html.light .text-zinc-200 {
-  color: #1E293B !important;
-}
-
-html.light .text-zinc-300 {
-  color: #334155 !important;
-}
-
-html.light .text-zinc-400 {
-  color: #475569 !important;
-}
-
-html.light .text-zinc-500 {
-  color: #64748B !important;
-}
-
-html.light [class*="bg-[#020B20]"],
-html.light [class*="bg-[#03153D]"] {
-  background-color: #FFFFFF !important;
-}
-
-html.light [class*="bg-[#071D49]"] {
-  background-color: rgba(244, 174, 190, 0.25) !important;
-}
-
-html.light [class*="bg-[#121422]"],
-html.light [class*="bg-[#141624]"],
-html.light [class*="bg-[#10121d]"],
-html.light [class*="bg-[#0e101a]"],
-html.light [class*="bg-[#0e0f18]"],
-html.light [class*="bg-[#0d0e18]"],
-html.light [class*="bg-[#0a0b12]"],
-html.light .bg-zinc-950,
-html.light .bg-zinc-900,
-html.light .bg-zinc-800 {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-}
-
-html.light [class*="border-white"],
-html.light .border-zinc-800,
-html.light .border-zinc-700 {
-  border-color: rgba(3, 21, 61, 0.12) !important;
-}
-
-html.light [class*="hover:bg-white"]:hover {
-  background-color: rgba(244, 174, 190, 0.2) !important;
-}
-
-html.light ::-webkit-scrollbar-track {
-  background: #FAF5F7;
-}
-
-html.light ::-webkit-scrollbar-thumb {
-  background: #F4AEBE;
+  background-color: var(--bg-secondary);
+  border: 1px solid rgba(255, 247, 230, 0.16);
+  color: var(--text-primary);
+  border-radius: 1rem;
 }
