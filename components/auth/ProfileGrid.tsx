@@ -73,10 +73,6 @@ export function ProfileGrid() {
                 setSelectedForAvatar(p);
                 setIsAvatarModalOpen(true);
               }}
-              onChangeAvatar={(p) => {
-                setSelectedForAvatar(p);
-                setIsAvatarModalOpen(true);
-              }}
             />
           ))}
 
