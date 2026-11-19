@@ -47,6 +47,10 @@ export function Navbar() {
   const isFounder = activeProfile?.role === 'founder';
   const isHomePage = pathname === '/';
 
+  if (isHomePage) {
+    return null;
+  }
+
   const navLinks = [
     { href: '/daily-work', label: '01 Daily Tracker', icon: Briefcase },
     { href: '/next-plans', label: '02 Next Plans', icon: Calendar },
