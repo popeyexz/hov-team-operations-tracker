@@ -56,11 +56,13 @@ export async function importExcelWorkbookToSupabase(payload: ParsedExcelPayload)
       await supabaseAdmin.from('objectives').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     }
 
-    const { data: profiles } = await supabaseAdmin.from('profiles').select('id, slug, full_name');
+    const { data: profiles } = await supabaseAdmin.from('profiles').select('id, slug, full_name, role');
     const profileByName: Record<string, string> = {};
+    let founderId: string | null = null;
     (profiles || []).forEach((p) => {
       profileByName[p.full_name.trim().toLowerCase()] = p.id;
       profileByName[p.slug.trim().toLowerCase()] = p.id;
+      if (p.role === 'founder') founderId = p.id;
     });
     profileByName['atharva'] = profileByName['atharav'];
     profileByName['athrava'] = profileByName['atharav'];
@@ -101,7 +103,7 @@ export async function importExcelWorkbookToSupabase(payload: ParsedExcelPayload)
       const vRef = ventureByName[o.venture_name.trim().toLowerCase()];
       if (!vRef) continue;
       const ownerKey = (o.owner_name || '').trim().toLowerCase();
-      const resolvedOwnerId = ownerKey && profileByName[ownerKey] ? profileByName[ownerKey] : vRef.lead_id;
+      const resolvedOwnerId = ownerKey && profileByName[ownerKey] ? profileByName[ownerKey] : (founderId || vRef.lead_id);
       objRowsToInsert.push({
         venture_id: vRef.id,
         sl_no: o.sl_no,

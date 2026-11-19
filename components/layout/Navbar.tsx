@@ -21,6 +21,7 @@ import {
   Shield,
   Layers,
   Smartphone,
+  FileSpreadsheet,
 } from 'lucide-react';
 
 export function Navbar() {
@@ -40,6 +41,7 @@ export function Navbar() {
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [isFounderAdminOpen, setIsFounderAdminOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isExcelDropdownOpen, setIsExcelDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // If on Home page, ProfileGrid has its own dedicated top bar matching Image 3
@@ -183,14 +185,44 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Right Action Controls: Import Excel, Mobile View, Theme Toggle */}
+          {/* Right Action Controls: Import Excel Dropdown, Mobile View, Theme Toggle */}
           <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => setIsImportModalOpen(true)}
-              className="px-4 py-1.5 rounded-full bg-[#FFF7E6] text-[#0A122A] font-display text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-all cursor-pointer shadow-md"
-            >
-              IMPORT EXCEL
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsExcelDropdownOpen(!isExcelDropdownOpen)}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FFF7E6] text-[#0A122A] font-display text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-all cursor-pointer shadow-md"
+              >
+                <span>IMPORT EXCEL</span>
+                <ChevronDown className="w-3.5 h-3.5 opacity-80" />
+              </button>
+
+              {isExcelDropdownOpen && (
+                <div
+                  className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#0E1836] border border-[#FFF7E6]/25 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2"
+                  onClick={() => setIsExcelDropdownOpen(false)}
+                >
+                  <button
+                    onClick={() => {
+                      setIsExcelDropdownOpen(false);
+                      setIsImportModalOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#FFF7E6] hover:bg-white/10 text-left transition-colors cursor-pointer"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-[#FFF7E6]" />
+                    <span>Re-import Excel (.xlsx)</span>
+                  </button>
+
+                  <a
+                    href="/PS.HOV_Work_Tracker.xlsx"
+                    download="PS.HOV_Work_Tracker.xlsx"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#FFF7E6]/80 hover:bg-white/10 hover:text-[#FFF7E6] text-left transition-colors cursor-pointer"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-[#FFF7E6]/60" />
+                    <span>Download Workbook</span>
+                  </a>
+                </div>
+              )}
+            </div>
 
             <button
               onClick={() => {
