@@ -54,7 +54,6 @@ export async function importExcelWorkbookToSupabase(payload: ParsedExcelPayload)
       await supabaseAdmin.from('action_items').delete().neq('id', '00000000-0000-0000-0000-000000000000');
       await supabaseAdmin.from('key_results').delete().neq('id', '00000000-0000-0000-0000-000000000000');
       await supabaseAdmin.from('objectives').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-      await supabaseAdmin.from('ventures').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     }
 
     const { data: profiles } = await supabaseAdmin.from('profiles').select('id, slug, full_name');

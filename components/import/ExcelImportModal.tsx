@@ -100,11 +100,8 @@ export function ExcelImportModal({
         }
       }
 
-      const krSheet = sheetNames.find(
-        (s) => s === 'Key Results by Ventures' || s.toLowerCase().includes('key result') || s.toLowerCase().includes('kr')
-      );
-      if (krSheet) {
-        const rows: any[][] = XLSX.utils.sheet_to_json(wb.Sheets[krSheet], { header: 1, defval: null });
+      if (sheetNames.includes('Key Results by Ventures')) {
+        const rows: any[][] = XLSX.utils.sheet_to_json(wb.Sheets['Key Results by Ventures'], { header: 1, defval: null });
         const row0 = rows[0] || [];
         for (let c = 0; c < row0.length; c++) {
           const vName = row0[c] ? String(row0[c]).trim() : '';
@@ -129,11 +126,8 @@ export function ExcelImportModal({
         }
       }
 
-      const actSheet = sheetNames.find(
-        (s) => s === 'Team Action Plan' || s.toLowerCase().includes('action') || s.toLowerCase().includes('task') || s.toLowerCase().includes('work tracker')
-      );
-      if (actSheet) {
-        const rows: any[][] = XLSX.utils.sheet_to_json(wb.Sheets[actSheet], { header: 1, defval: null });
+      if (sheetNames.includes('Team Action Plan')) {
+        const rows: any[][] = XLSX.utils.sheet_to_json(wb.Sheets['Team Action Plan'], { header: 1, defval: null });
         const row0 = rows[0] || [];
         for (let c = 0; c < row0.length; c++) {
           const memName = row0[c] ? String(row0[c]).trim() : '';
