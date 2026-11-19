@@ -16,13 +16,15 @@ def main():
     assert len(res) == 1 and res[0]['slug'] == 'jordanblake', "Member insertion failed"
     print("  -> Inserted dynamic member successfully:", res[0])
 
-    # Verify query returns 8 profiles now
-    all_profiles = run_query("SELECT count(*) FROM public.profiles WHERE is_active = true;")
-    assert all_profiles[0]['count'] == 8, f"Expected 8 profiles, got {all_profiles[0]['count']}"
-    print("  -> Total profiles in DB verified: 8 profiles.")
-
-    # Cleanup test member
-    run_query("DELETE FROM public.profiles WHERE slug = 'jordanblake';")
+    try:
+        # Verify query returns 8 profiles now
+        all_profiles = run_query("SELECT count(*) FROM public.profiles WHERE is_active = true;")
+        assert all_profiles[0]['count'] == 8, f"Expected 8 profiles, got {all_profiles[0]['count']}"
+        print("  -> Total profiles in DB verified: 8 profiles.")
+    finally:
+        # Cleanup test member
+        run_query("DELETE FROM public.profiles WHERE slug = 'jordanblake';")
+    
     after_clean = run_query("SELECT count(*) FROM public.profiles WHERE is_active = true;")
     assert after_clean[0]['count'] == 7, "Cleaned up baseline back to 7 profiles"
     print("  -> Cleanup verified: 7 core profiles restored.")
