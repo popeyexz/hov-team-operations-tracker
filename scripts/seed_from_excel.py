@@ -29,7 +29,6 @@ def main():
         ('shristy', 'Shristy', 'member', 'Cross-Venture Associate', '', '#EC4899'),
         ('sarth', 'Sarth', 'member', 'Growth & Ops Associate', '', '#F59E0B'),
         ('rohini', 'Rohini', 'member', 'Community & Content Associate', '', '#06B6D4'),
-        ('caracal', 'Caracal', 'member', 'Collaborator', '', '#06B6D4'),
     ]
 
     profile_sqls = []
@@ -117,15 +116,13 @@ def main():
                         elif 'dropped' in s_lower:
                             status_clean = 'dropped'
 
-                    # Founder Pratap owns objectives by default unless an owner is explicitly assigned in Excel
+                    # Preserve exact Excel Owner (including cross-venture owners like Sharuk on PS.HOV #9 & XARM #1, Atharav on HBM #4)
                     comments_str = str(comments_raw).strip() if comments_raw else ''
-                    owner_id = profile_by_slug.get('pratap')
+                    owner_id = default_lead_id
                     if owner_raw and str(owner_raw).strip():
                         o_key = str(owner_raw).strip().lower()
                         if o_key in profile_by_name:
                             owner_id = profile_by_name[o_key]
-                        elif o_key in profile_by_slug:
-                            owner_id = profile_by_slug[o_key]
                         else:
                             comments_str = f"Partner/Vendor: {str(owner_raw).strip()}" + (f" | {comments_str}" if comments_str else "")
 

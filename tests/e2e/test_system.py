@@ -419,15 +419,18 @@ def test_key_result_and_action_item_hierarchy():
 
 def test_all_13_ventures_krs_and_auto_resolution():
     print("[TEST 14] Verifying 13-Venture Key Result Distribution & Auto-Resolution Logic...")
-    # Verify all 13 ventures have Objective #1 authentically mapped from Excel
-    obj_counts = run_query("""
-    SELECT v.name, count(o.id) as obj_count
+    # Check that all 13 ventures have baseline Key Results under Objective #1
+    kr_counts = run_query("""
+    SELECT v.name, count(k.id) as kr_count
     FROM public.ventures v
     JOIN public.objectives o ON o.venture_id = v.id AND o.sl_no = 1
+    LEFT JOIN public.key_results k ON k.objective_id = o.id
     WHERE v.is_active = true
     GROUP BY v.name;
     """)
-    assert len(obj_counts) == 13, f"Expected 13 active ventures with Objective #1, got {len(obj_counts)}"
+    assert len(kr_counts) == 13, f"Expected 13 active ventures, got {len(kr_counts)}"
+    for row in kr_counts:
+        assert row['kr_count'] >= 2, f"Venture '{row['name']}' has less than 2 baseline Key Results under Objective #1: {row['kr_count']}"
 
     # Test auto-resolution of venture_id from objective_id when creating a new KR
     test_obj = run_query("SELECT id, venture_id FROM public.objectives WHERE sl_no = 2 LIMIT 1;")[0]
