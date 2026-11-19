@@ -22,28 +22,31 @@ def main():
     print("Starting fast batched database seeding (preserving cross-venture owners)...", flush=True)
 
     profiles_data = [
-        ('pratap', 'Pratap', 'founder', 'Founder & Managing Partner', 'houseofventures.dev@gmail.com', '#F43F5E'),
-        ('atharav', 'Atharav', 'member', 'Venture & NGO Lead', '', '#3B82F6'),
-        ('sharuk', 'Sharuk', 'member', 'Venture & AI Tool Lead', '', '#8B5CF6'),
-        ('rufus', 'Rufus', 'member', 'Venture & Program Lead', '', '#10B981'),
-        ('shristy', 'Shristy', 'member', 'Cross-Venture Associate', '', '#EC4899'),
-        ('sarth', 'Sarth', 'member', 'Growth & Ops Associate', '', '#F59E0B'),
-        ('rohini', 'Rohini', 'member', 'Community & Content Associate', '', '#06B6D4'),
+        ('pratap', 'Pratap', 'founder', 'Founder & Managing Partner', 'houseofventures.dev@gmail.com', '#F43F5E', True),
+        ('atharav', 'Atharav', 'member', 'Venture & NGO Lead', '', '#3B82F6', True),
+        ('sharuk', 'Sharuk', 'member', 'Venture & AI Tool Lead', '', '#8B5CF6', True),
+        ('rufus', 'Rufus', 'member', 'Venture & Program Lead', '', '#10B981', True),
+        ('shristy', 'Shristy', 'member', 'Cross-Venture Associate', '', '#EC4899', True),
+        ('sarth', 'Sarth', 'member', 'Growth & Ops Associate', '', '#F59E0B', True),
+        ('rohini', 'Rohini', 'member', 'Community & Content Associate', '', '#06B6D4', True),
+        ('caracal', 'Caracal', 'member', 'Collaborator', '', '#06B6D4', False),
     ]
 
     profile_sqls = []
-    for slug, name, role, lead_title, email, color in profiles_data:
+    for slug, name, role, lead_title, email, color, is_act in profiles_data:
+        act_val = 'TRUE' if is_act else 'FALSE'
         profile_sqls.append(f"""
-        INSERT INTO public.profiles (slug, full_name, role, lead_title, email, avatar_color)
-        VALUES ('{slug}', '{name}', '{role}', '{lead_title}', '{email}', '{color}')
+        INSERT INTO public.profiles (slug, full_name, role, lead_title, email, avatar_color, is_active)
+        VALUES ('{slug}', '{name}', '{role}', '{lead_title}', '{email}', '{color}', {act_val})
         ON CONFLICT (slug) DO UPDATE 
-        SET full_name = EXCLUDED.full_name, role = EXCLUDED.role, lead_title = EXCLUDED.lead_title, avatar_color = EXCLUDED.avatar_color;
+        SET full_name = EXCLUDED.full_name, role = EXCLUDED.role, lead_title = EXCLUDED.lead_title, avatar_color = EXCLUDED.avatar_color, is_active = EXCLUDED.is_active;
         """)
     run_query("\n".join(profile_sqls))
 
     profiles_res = run_query("SELECT id, slug, full_name FROM public.profiles;")
     profile_by_slug = {p['slug']: p['id'] for p in profiles_res}
     profile_by_name = {p['full_name'].strip().lower(): p['id'] for p in profiles_res}
+    founder_id = profile_by_slug.get('pratap')
 
     ventures_meta = [
         ('PS.HOV', 'HOV', 'atharav', 'Venture Lead', None, 1),
@@ -77,7 +80,9 @@ def main():
     ventures_res = run_query("SELECT id, name FROM public.ventures;")
     venture_map = {v['name'].strip(): v['id'] for v in ventures_res}
 
-    wb = openpyxl.load_workbook('PS.HOV_Work_Tracker.xlsx', data_only=True)
+    excel_file = sys.argv[1] if len(sys.argv) > 1 else 'PS.HOV_Work_Tracker.xlsx'
+    print(f"Loading workbook from: {excel_file}", flush=True)
+    wb = openpyxl.load_workbook(excel_file, data_only=True)
     sheet = wb['Objectives by Ventures']
     col = 1
     total_objs_seeded = 0
@@ -116,13 +121,15 @@ def main():
                         elif 'dropped' in s_lower:
                             status_clean = 'dropped'
 
-                    # Preserve exact Excel Owner (including cross-venture owners like Sharuk on PS.HOV #9 & XARM #1, Atharav on HBM #4)
+                    # Exact Excel Owner: defaults to Founder unless explicitly assigned in Excel
                     comments_str = str(comments_raw).strip() if comments_raw else ''
-                    owner_id = default_lead_id
+                    owner_id = founder_id
                     if owner_raw and str(owner_raw).strip():
                         o_key = str(owner_raw).strip().lower()
                         if o_key in profile_by_name:
                             owner_id = profile_by_name[o_key]
+                        elif o_key in profile_by_slug:
+                            owner_id = profile_by_slug[o_key]
                         else:
                             comments_str = f"Partner/Vendor: {str(owner_raw).strip()}" + (f" | {comments_str}" if comments_str else "")
 
@@ -149,10 +156,13 @@ def main():
     print(f"Objectives seeded with exact owners: {total_objs_seeded}", flush=True)
 
     try:
-        from seed_baseline_krs import main as seed_krs_main
+        try:
+            from seed_baseline_krs import main as seed_krs_main
+        except ImportError:
+            from scripts.seed_baseline_krs import main as seed_krs_main
         seed_krs_main()
     except Exception as e:
-        print(f"Notice: seed_baseline_krs: {e}")
+        print(f"Notice: seed_baseline_krs: {e}", flush=True)
 
 if __name__ == '__main__':
     main()

@@ -236,21 +236,23 @@ export function DailyWorkContainer({ initialData, onRefresh }: DailyWorkContaine
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 select-none pb-24">
-      {/* 1. Hero Card: IMPORT YOUR EXCEL WORKBOOK (Matching Image 4) */}
-      <div className="rounded-2xl border border-[#FFF7E6]/15 bg-[#0E1836] p-8 text-center shadow-xl">
-        <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-wider uppercase text-[#FFF7E6] mb-2">
-          IMPORT YOUR EXCEL WORKBOOK
-        </h2>
-        <p className="text-xs sm:text-sm text-[#FFF7E6]/70 max-w-xl mx-auto mb-6">
-          Select your .xlsx workbook to populate Ventures, Venture Leads, Objectives, Key Results, and Action Items.
-        </p>
-        <button
-          onClick={() => setIsImportModalOpen(true)}
-          className="px-6 py-2.5 rounded-full bg-[#FFF7E6] text-[#0A122A] font-display text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-all shadow-md cursor-pointer"
-        >
-          IMPORT EXCEL (.XLSX)
-        </button>
-      </div>
+      {/* 1. Hero Card: IMPORT YOUR EXCEL WORKBOOK (Only show when database is empty) */}
+      {(!ventures || ventures.length === 0) && (
+        <div className="rounded-2xl border border-[#FFF7E6]/15 bg-[#0E1836] p-8 text-center shadow-xl">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-wider uppercase text-[#FFF7E6] mb-2">
+            IMPORT YOUR EXCEL WORKBOOK
+          </h2>
+          <p className="text-xs sm:text-sm text-[#FFF7E6]/70 max-w-xl mx-auto mb-6">
+            Select your .xlsx workbook to populate Ventures, Venture Leads, Objectives, Key Results, and Action Items.
+          </p>
+          <button
+            onClick={() => setIsImportModalOpen(true)}
+            className="px-6 py-2.5 rounded-full bg-[#FFF7E6] text-[#0A122A] font-display text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-all shadow-md cursor-pointer"
+          >
+            IMPORT EXCEL (.XLSX)
+          </button>
+        </div>
+      )}
 
       {/* 2. Filter Controls Bar 1 (Pills Left, Venture Dropdown & Search & Actions Right) */}
       <div className="rounded-2xl border border-[#FFF7E6]/15 bg-[#0E1836] p-3 flex flex-wrap items-center justify-between gap-3 shadow-md">

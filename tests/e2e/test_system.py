@@ -29,14 +29,14 @@ def test_dynamic_member_addition():
     res = run_query(insert_sql)
     assert len(res) == 1 and res[0]['slug'] == 'e2etestmember', "Dynamic member insertion failed"
     
-    # Check count is baseline + 1 (8 core + 1 = 9)
+    # Check count is baseline + 1 (7 core + 1 = 8)
     count_res = run_query("SELECT count(*) FROM public.profiles WHERE is_active = true;")
-    assert count_res[0]['count'] == 9, f"Expected 9 profiles, got {count_res[0]['count']}"
+    assert count_res[0]['count'] == 8, f"Expected 8 profiles, got {count_res[0]['count']}"
 
     # Cleanup dynamic member
     run_query("DELETE FROM public.profiles WHERE slug = 'e2etestmember';")
     clean_res = run_query("SELECT count(*) FROM public.profiles WHERE is_active = true;")
-    assert clean_res[0]['count'] == 8, "Cleaned up baseline back to 8 profiles"
+    assert clean_res[0]['count'] == 7, "Cleaned up baseline back to 7 profiles"
     print("  -> Passed! Dynamic member addition and cleanup verified.")
 
 def test_ventures():
