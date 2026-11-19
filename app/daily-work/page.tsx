@@ -5,7 +5,7 @@ import { getWorkData } from '@/app/actions/work-actions';
 import { DailyWorkContainer } from '@/components/daily-work/DailyWorkContainer';
 import { useActiveProfile } from '@/context/ActiveProfileContext';
 import { ProfileGate } from '@/components/auth/ProfileGate';
-import { Loader2 } from 'lucide-react';
+import { EXCEL_SEED_DATA } from '@/lib/data/excel-seed-data';
 
 export default function DailyWorkPage() {
   return (
@@ -15,20 +15,30 @@ export default function DailyWorkPage() {
   );
 }
 
+const defaultInitialData = {
+  profiles: EXCEL_SEED_DATA.profiles as any,
+  ventures: EXCEL_SEED_DATA.ventures as any,
+  objectives: EXCEL_SEED_DATA.objectives as any,
+  keyResults: EXCEL_SEED_DATA.keyResults as any,
+  actionItems: EXCEL_SEED_DATA.actionItems as any,
+  myVentureIds: EXCEL_SEED_DATA.ventures.map((v) => v.id),
+  assignedFromOtherVentures: [],
+  venturesLed: EXCEL_SEED_DATA.ventures as any,
+};
+
 function DailyWorkContent() {
   const { activeProfile, impersonatedMember, effectiveProfile } = useActiveProfile();
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any>(defaultInitialData);
 
   const loadData = async () => {
     if (!activeProfile) return;
     try {
       const res = await getWorkData(activeProfile.id, impersonatedMember?.id);
-      setData(res);
+      if (res && res.ventures) {
+        setData(res);
+      }
     } catch (e) {
       console.error(e);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -37,15 +47,6 @@ function DailyWorkContent() {
       loadData();
     }
   }, [activeProfile?.id, impersonatedMember?.id, effectiveProfile?.id]);
-
-  if (loading || !data) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-7 h-7 text-zinc-400 animate-spin" />
-        <p className="text-xs text-zinc-500 font-mono">Loading operations and OKR hierarchy...</p>
-      </div>
-    );
-  }
 
   return <DailyWorkContainer key={effectiveProfile?.id} initialData={data} onRefresh={loadData} />;
 }

@@ -5,6 +5,7 @@ import { InAppNotification, Profile } from '@/lib/types';
 import { getProfiles } from '@/app/actions/profile-actions';
 import { markAllNotificationsRead, sendTestNotification } from '@/app/actions/work-actions';
 import { createClient } from '@/lib/supabase/client';
+import { EXCEL_SEED_DATA } from '@/lib/data/excel-seed-data';
 
 interface ActiveProfileContextType {
   activeProfile: Profile | null;
@@ -29,14 +30,16 @@ interface ActiveProfileContextType {
 
 const ActiveProfileContext = createContext<ActiveProfileContextType | undefined>(undefined);
 
+const defaultFounder = (EXCEL_SEED_DATA.profiles.find((p) => p.role === 'founder') || EXCEL_SEED_DATA.profiles[0]) as unknown as Profile;
+
 export function ActiveProfileProvider({ children }: { children: React.ReactNode }) {
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [activeProfile, setActiveProfileState] = useState<Profile | null>(null);
+  const [profiles, setProfiles] = useState<Profile[]>(EXCEL_SEED_DATA.profiles as unknown as Profile[]);
+  const [activeProfile, setActiveProfileState] = useState<Profile | null>(defaultFounder);
   const [impersonatedMember, setImpersonatedMember] = useState<Profile | null>(null);
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Load profiles on mount
   const refreshProfiles = async () => {
