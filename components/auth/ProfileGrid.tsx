@@ -10,11 +10,12 @@ import { ChangeAvatarModal } from './ChangeAvatarModal';
 import { ExcelImportModal } from '../import/ExcelImportModal';
 import { Profile } from '@/lib/types';
 import { Plus } from 'lucide-react';
-import { ThemeToggle } from '../ui/ThemeToggle';
+import { useTheme } from '@/context/ThemeContext';
 
 export function ProfileGrid() {
   const router = useRouter();
   const { profiles, setActiveProfile, refreshProfiles } = useActiveProfile();
+  const { theme, toggleTheme } = useTheme();
   const [selectedForEmail, setSelectedForEmail] = useState<Profile | null>(null);
   const [selectedForAvatar, setSelectedForAvatar] = useState<Profile | null>(null);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
@@ -52,11 +53,16 @@ export function ProfileGrid() {
           >
             Import Excel
           </button>
-          <ThemeToggle />
+          <button
+            onClick={toggleTheme}
+            className="px-4 py-2 rounded-lg border border-[#FFF7E6]/30 text-[#FFF7E6] font-display text-xs font-bold uppercase tracking-widest hover:border-[#FFF7E6] transition-all cursor-pointer"
+          >
+            {theme === 'dark' ? 'LIGHT VANILLA' : 'DARK BLUE'}
+          </button>
         </div>
       </div>
 
-      {/* Center Minimalist Netflix Profile Selector */}
+      {/* Center Minimalist Profile Selector */}
       <div className="my-auto py-12 text-center max-w-4xl mx-auto w-full">
         <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold tracking-wider uppercase mb-12 text-[#FFF7E6]">
           {isManageMode ? 'Manage Profiles' : "Who's Working?"}
@@ -84,7 +90,7 @@ export function ProfileGrid() {
             <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl border-2 border-dashed border-[#FFF7E6]/30 group-hover:border-[#FFF7E6] flex items-center justify-center transition-all">
               <Plus className="w-10 h-10 text-[#FFF7E6]/70 group-hover:text-[#FFF7E6]" />
             </div>
-            <span className="mt-3 font-display text-sm sm:text-base font-bold tracking-wide text-[#FFF7E6]/70 group-hover:text-[#FFF7E6]">
+            <span className="mt-3 font-display text-sm sm:text-base font-bold tracking-wide text-[#FFF7E6]/70 group-hover:text-[#FFF7E6] uppercase">
               Add Profile
             </span>
           </div>
@@ -101,7 +107,7 @@ export function ProfileGrid() {
       </div>
 
       <div className="text-center text-[11px] font-mono text-[#FFF7E6]/50">
-        Select your profile or click Import Excel to load your workbook
+        Select your profile to begin
       </div>
 
       <ExcelImportModal

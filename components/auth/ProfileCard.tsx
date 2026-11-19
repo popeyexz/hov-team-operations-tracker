@@ -31,7 +31,7 @@ export function ProfileCard({
         </span>
         {isFounder && (
           <span className="absolute bottom-2 px-2 py-0.5 rounded text-[9px] font-mono uppercase tracking-widest bg-[#FFF7E6] text-[#0A122A] font-bold">
-            Founder
+            FOUNDER
           </span>
         )}
         {isManageMode && (
@@ -40,7 +40,7 @@ export function ProfileCard({
           </div>
         )}
       </div>
-      <span className="mt-3 font-display text-sm sm:text-base font-bold tracking-wide text-[#FFF7E6]/85 group-hover:text-[#FFF7E6] transition-colors">
+      <span className="mt-3 font-display text-sm sm:text-base font-bold tracking-wide text-[#FFF7E6]/85 group-hover:text-[#FFF7E6] transition-colors uppercase">
         {profile.full_name}
       </span>
     </div>
